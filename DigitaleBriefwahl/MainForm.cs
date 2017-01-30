@@ -2,6 +2,8 @@
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 using System;
+using System.Diagnostics;
+using System.Reflection;
 using System.Text;
 using DigitaleBriefwahl.Model;
 using DigitaleBriefwahl.Views;
@@ -41,7 +43,7 @@ namespace DigitaleBriefwahl
 			quitCommand.Executed += (sender, e) => Application.Instance.Quit();
 
 			var aboutCommand = new Command { MenuText = "Über..." };
-			aboutCommand.Executed += (sender, e) => MessageBox.Show(this, "About my app...");
+			aboutCommand.Executed += OnAboutClicked;
 
 			// create menu
 			Menu = new MenuBar
@@ -67,6 +69,15 @@ namespace DigitaleBriefwahl
 
 			// create toolbar
 			ToolBar = new ToolBar { Items = { sendCommand } };
+		}
+
+		private void OnAboutClicked(object sender, EventArgs e)
+		{
+			var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
+			var version = versionInfo.FileVersion;
+			MessageBox.Show(
+				$"{Configuration.Current.Title}\n\nVersion {version}\n\n{versionInfo.LegalCopyright}",
+				"Digitale Briefwahl");
 		}
 
 		private void OnSendClicked(object sender, EventArgs e)
