@@ -8,7 +8,7 @@ using DigitaleBriefwahl.Model;
 
 namespace DigitaleBriefwahl.Views
 {
-    internal abstract class ElectionViewBase
+	internal abstract class ElectionViewBase
 	{
 		private TabPage _page;
 
@@ -42,4 +42,3 @@ namespace DigitaleBriefwahl.Views
 		public abstract string GetResult();
 	}
 }
-

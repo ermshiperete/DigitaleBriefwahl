@@ -9,6 +9,7 @@ Each election section can contain a `Text=` with a short description that explai
 This will show up in the GUI in the election tab.
 
 The field `Typ=` configures the type of the election. Valid values are:
+
 - `JN` - this is only valid if there is only one nominee. The nominee will be shown in the UI with
   yes/no radio buttons next to the name.
 - `Punktesystem` - the votes are weighted according to their rank (nominee on first vote gets

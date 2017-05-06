@@ -133,4 +133,3 @@ namespace DigitaleBriefwahl.Encryption
 		}
 	}
 }
-

@@ -30,7 +30,7 @@ namespace DigitaleBriefwahl
 			// scrollable region as the main content
 			Content = new Scrollable
 			{
-				Content = CreateTabControl(_configuration)
+				Content = CreateContent(_configuration)
 			};
 
 			// create a few commands that can be used for the menu and toolbar
@@ -154,6 +154,20 @@ namespace DigitaleBriefwahl
 				tabControl.Pages.Add(page);
 			}
 			return tabControl;
+		}
+
+		private Control CreateContent(Configuration configuration)
+		{
+			var stackLayout = new StackLayout {Orientation = Orientation.Vertical};
+
+			var item = new StackLayoutItem(CreateTabControl(configuration), VerticalAlignment.Top);
+			stackLayout.Items.Add(item);
+			var buttonBar = new StackLayout() { Orientation = Orientation.Horizontal,
+				HorizontalContentAlignment = HorizontalAlignment.Right};
+			buttonBar.Items.Add(new StackLayoutItem(new Button() { Text = "Weiter" }, HorizontalAlignment.Right));
+			buttonBar.Items.Add(new StackLayoutItem(new Button() { Text = "Zurück", Enabled = false }, HorizontalAlignment.Right, true));
+			stackLayout.Items.Add(buttonBar);
+			return stackLayout;
 		}
 	}
 }
