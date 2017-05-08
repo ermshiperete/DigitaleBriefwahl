@@ -22,6 +22,7 @@ namespace DigitaleBriefwahl
 
 		public MainForm()
 		{
+			ExceptionLogging.Initialize("5012aef9a281f091c1fceea40c03003b");
 			_configuration = Configuration.Configure("wahl.ini");
 			Title = _configuration.Title;
 
