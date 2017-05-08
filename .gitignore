@@ -6,6 +6,8 @@
 [Bb]in/
 packages/
 TestResults/
+output/
+lib/
 
 # globs
 Makefile.in
@@ -38,3 +40,8 @@ Thumbs.db
 
 #dotCover
 *.dotCover
+
+.idea/
+
+build/NuGet.exe
+build/DigitaleBriefwahl.files

@@ -1,59 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{92307315-8B23-4D90-8C3B-29EF6508EEA7}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <RootNamespace>DigitaleBriefwahl</RootNamespace>
-    <AssemblyName>DigitaleBriefwahl</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+	<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+	<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+	<ProjectGuid>{92307315-8B23-4D90-8C3B-29EF6508EEA7}</ProjectGuid>
+	<OutputType>Library</OutputType>
+	<RootNamespace>DigitaleBriefwahl</RootNamespace>
+	<AssemblyName>DigitaleBriefwahl</AssemblyName>
+	<TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
+	<DebugSymbols>true</DebugSymbols>
+	<DebugType>full</DebugType>
+	<Optimize>false</Optimize>
+	<OutputPath>..\output\Debug</OutputPath>
+	<DefineConstants>DEBUG;</DefineConstants>
+	<ErrorReport>prompt</ErrorReport>
+	<WarningLevel>4</WarningLevel>
+	<ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
+	<DebugType>full</DebugType>
+	<Optimize>true</Optimize>
+	<OutputPath>..\output\Release</OutputPath>
+	<ErrorReport>prompt</ErrorReport>
+	<WarningLevel>4</WarningLevel>
+	<ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="MainForm.cs" />
-    <Compile Include="Model\ElectionType.cs" />
-    <Compile Include="Model\Configuration.cs" />
-    <Compile Include="Model\ElectionModel.cs" />
-    <Compile Include="Views\YesNoElectionView.cs" />
-    <Compile Include="Views\ElectionViewBase.cs" />
-    <Compile Include="Views\ElectionViewFactory.cs" />
-    <Compile Include="Views\WeightedElectionView.cs" />
-    <Compile Include="InvalidConfigurationException.cs" />
+	<Compile Include="Properties\AssemblyInfo.cs" />
+	<Compile Include="MainForm.cs" />
+	<Compile Include="Model\ElectionType.cs" />
+	<Compile Include="Model\Configuration.cs" />
+	<Compile Include="Model\ElectionModel.cs" />
+	<Compile Include="Views\YesNoElectionView.cs" />
+	<Compile Include="Views\ElectionViewBase.cs" />
+	<Compile Include="Views\ElectionViewFactory.cs" />
+	<Compile Include="Views\WeightedElectionView.cs" />
+	<Compile Include="InvalidConfigurationException.cs" />
+	<Compile Include="Encryption\EncryptVote.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Reference Include="Eto">
-      <HintPath>..\packages\Eto.Forms.2.2.0\lib\net45\Eto.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="INIFileParser">
-      <HintPath>..\packages\ini-parser.2.2.4\lib\net20\INIFileParser.dll</HintPath>
-    </Reference>
+	<Reference Include="System" />
+	<Reference Include="BouncyCastle.OpenPgp">
+	  <HintPath>..\packages\BouncyCastle.OpenPGP.1.8.1\lib\net20\BouncyCastle.OpenPgp.dll</HintPath>
+	</Reference>
+	<Reference Include="Eto">
+	  <HintPath>..\packages\Eto.Forms.2.3.0\lib\net45\Eto.dll</HintPath>
+	</Reference>
+	<Reference Include="INIFileParser">
+	  <HintPath>..\packages\ini-parser.2.3.0\lib\net20\INIFileParser.dll</HintPath>
+	</Reference>
+	<Reference Include="SIL.Core">
+	  <HintPath>..\lib/SIL.Core.dll</HintPath>
+	</Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+	<None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Model\" />
-    <Folder Include="Views\" />
+	<Folder Include="Model\" />
+	<Folder Include="Views\" />
+	<Folder Include="Encryption\" />
   </ItemGroup>
 </Project>

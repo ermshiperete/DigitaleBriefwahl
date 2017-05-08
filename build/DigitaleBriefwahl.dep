@@ -1,0 +1,16 @@
+# This file lists dependencies
+# It can be edited with the BuildDependencyManager application.
+# See https://github.com/ermshiperete/BuildDependency for more information.
+
+[[TC]]
+Type=TeamCity
+Url=http://build.palaso.org
+
+[TC::bt223]
+Name=palaso-win32-master Continuous
+RevisionName=lastSuccessful
+RevisionValue=latest.lastSuccessful
+Condition=All
+Path=SIL.Core.dll*=>lib/
+SIL.Core.pdb=>lib/
+
