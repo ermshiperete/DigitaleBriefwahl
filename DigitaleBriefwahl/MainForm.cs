@@ -19,6 +19,9 @@ namespace DigitaleBriefwahl
 	public class MainForm : Form
 	{
 		private Configuration _configuration;
+		private TabControl _tabControl;
+		private Button _nextButton;
+		private Button _backButton;
 
 		public MainForm()
 		{
@@ -145,29 +148,70 @@ namespace DigitaleBriefwahl
 
 		private TabControl CreateTabControl(Configuration configuration)
 		{
-			var tabControl = new TabControl();
+			_tabControl = new TabControl();
 			foreach (var election in configuration.Elections)
 			{
 				var view = ElectionViewFactory.Create(election);
 				var page = view.Layout();
 				page.Tag = view;
-				tabControl.Pages.Add(page);
+				_tabControl.Pages.Add(page);
 			}
-			return tabControl;
+			_tabControl.SelectedIndexChanged += OnSelectedIndexChanged;
+			return _tabControl;
 		}
 
 		private Control CreateContent(Configuration configuration)
 		{
-			var stackLayout = new StackLayout {Orientation = Orientation.Vertical};
+			var stackLayout = new DynamicLayout();
+			stackLayout.BeginVertical();
+			stackLayout.Add(CreateTabControl(configuration));
+			stackLayout.EndVertical();
 
-			var item = new StackLayoutItem(CreateTabControl(configuration), VerticalAlignment.Top);
-			stackLayout.Items.Add(item);
-			var buttonBar = new StackLayout() { Orientation = Orientation.Horizontal,
-				HorizontalContentAlignment = HorizontalAlignment.Right};
-			buttonBar.Items.Add(new StackLayoutItem(new Button() { Text = "Weiter" }, HorizontalAlignment.Right));
-			buttonBar.Items.Add(new StackLayoutItem(new Button() { Text = "Zurück", Enabled = false }, HorizontalAlignment.Right, true));
-			stackLayout.Items.Add(buttonBar);
+			stackLayout.BeginVertical();
+			stackLayout.BeginHorizontal();
+			stackLayout.Add(null, true);
+			var buttonBar = new StackLayout()
+			{
+				Orientation = Orientation.Horizontal,
+			};
+			_backButton = new Button { Text = "Zurück", Enabled = false };
+			var backButtonCommand = new Command { MenuText = "Zurück" };
+			backButtonCommand.Executed += OnBackClicked;
+			_backButton.Command = backButtonCommand;
+			buttonBar.Items.Add(new StackLayoutItem(_backButton, HorizontalAlignment.Left, true));
+			_nextButton = new Button { Text = "Weiter" };
+			var nextButtonCommand = new Command { MenuText = "Weiter" };
+			nextButtonCommand.Executed += OnNextClicked;
+			_nextButton.Command = nextButtonCommand;
+			buttonBar.Items.Add(new StackLayoutItem(_nextButton, HorizontalAlignment.Left));
+			stackLayout.Add(buttonBar);
+			stackLayout.EndHorizontal();
+			stackLayout.EndVertical();
 			return stackLayout;
 		}
+
+		private void OnNextClicked(object sender, EventArgs e)
+		{
+			if (_tabControl.SelectedIndex < _tabControl.Pages.Count - 1)
+				_tabControl.SelectedIndex++;
+			else
+			{
+				OnSendClicked(sender, e);
+				new Command { MenuText = "Weiter" }.Enabled = false;
+			}
+		}
+
+		private void OnBackClicked(object sender, EventArgs e)
+		{
+			_tabControl.SelectedIndex--;
+		}
+
+		private void OnSelectedIndexChanged(object sender, EventArgs e)
+		{
+			_nextButton.Enabled = true;
+			_nextButton.Text = _tabControl.SelectedIndex < _tabControl.Pages.Count - 1 ? "Weiter" : "Abschicken";
+			_backButton.Enabled = _tabControl.SelectedIndex > 0;
+		}
+
 	}
 }

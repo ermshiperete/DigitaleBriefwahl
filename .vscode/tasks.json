@@ -22,6 +22,13 @@
 			"showOutput": "always",
 			// Use the standard MS compiler pattern to detect errors, warnings and infos
 			"problemMatcher": "$msCompile",
+		},
+		{
+			"taskName": "CompileOnly",
+			// Show the output window only if unrecognized errors occur.
+			"showOutput": "always",
+			// Use the standard MS compiler pattern to detect errors, warnings and infos
+			"problemMatcher": "$msCompile",
 			"isBuildCommand": true
 		}
 	]
