@@ -8,6 +8,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4AB0BBE8-CDBC-4B0E-B0E8-ECCA474B1FAC}"
 	ProjectSection(SolutionItems) = preProject
 		Readme.md = Readme.md
+		build\DigitaleBriefwahl.dep = build\DigitaleBriefwahl.dep
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitaleBriefwahlTests", "DigitaleBriefwahlTests\DigitaleBriefwahlTests.csproj", "{E7041C43-BE2C-4454-A140-D3465848D476}"

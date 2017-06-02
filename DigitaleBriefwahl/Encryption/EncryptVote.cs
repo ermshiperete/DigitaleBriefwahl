@@ -12,12 +12,7 @@ namespace DigitaleBriefwahl.Encryption
 {
 	public class EncryptVote
 	{
-		public EncryptVote()
-		{
-
-		}
-
-		private string FileName
+		private static string FileName
 		{
 			get
 			{
@@ -30,7 +25,11 @@ namespace DigitaleBriefwahl.Encryption
 		{
 			get
 			{
-				using (var keyFile = File.OpenRead(Configuration.Current.PublicKey))
+				var publicKeyFile = Configuration.Current.PublicKey;
+				if (!File.Exists(publicKeyFile))
+					throw new InvalidConfigurationException($"Can't find file for public key: '{publicKeyFile}'.");
+
+				using (var keyFile = File.OpenRead(publicKeyFile))
 				{
 					using (var inputStream = PgpUtilities.GetDecoderStream(keyFile))
 					{
@@ -58,16 +57,15 @@ namespace DigitaleBriefwahl.Encryption
 		{
 			using (var stream = new MemoryStream())
 			{
-				PgpCompressedDataGenerator compressedDataGenerator = new PgpCompressedDataGenerator(
-					CompressionAlgorithmTag.Zip);
+				var compressedDataGenerator = new PgpCompressedDataGenerator(CompressionAlgorithmTag.Zip);
 
 				using (var compressedStream = compressedDataGenerator.Open(stream))
 				{
-					PgpLiteralDataGenerator lData = new PgpLiteralDataGenerator();
+					var lData = new PgpLiteralDataGenerator();
 
 					// we want to Generate compressed data. This might be a user option later,
 					// in which case we would pass in bOut.
-					using (Stream pOut = lData.Open(
+					using (var pOut = lData.Open(
 						compressedStream, // the compressed output stream
 						PgpLiteralData.Binary,
 						"data", // "filename" to store

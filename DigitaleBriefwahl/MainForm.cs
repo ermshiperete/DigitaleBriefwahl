@@ -3,6 +3,8 @@
 // (https://opensource.org/licenses/GPL-3.0)
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using DigitaleBriefwahl.Model;
@@ -26,53 +28,69 @@ namespace DigitaleBriefwahl
 		public MainForm()
 		{
 			ExceptionLogging.Initialize("5012aef9a281f091c1fceea40c03003b");
-			_configuration = Configuration.Configure("wahl.ini");
-			Title = _configuration.Title;
-
-			ClientSize = new Size(400, 350);
-			// scrollable region as the main content
-			Content = new Scrollable
+			try
 			{
-				Content = CreateContent(_configuration)
-			};
+				_configuration = Configuration.Configure("wahl.ini");
+				Title = _configuration.Title;
 
-			// create a few commands that can be used for the menu and toolbar
-			var sendCommand = new Command { MenuText = "Absenden", ToolBarText = "Absenden" };
-			sendCommand.Executed += OnSendClicked;
-
-			var writeCommand = new Command { MenuText = "Wahlzettel schreiben" };
-			writeCommand.Executed += OnWriteClicked;
-
-			var quitCommand = new Command { MenuText = "Beenden", Shortcut = Application.Instance.CommonModifier | Keys.Q };
-			quitCommand.Executed += (sender, e) => Application.Instance.Quit();
-
-			var aboutCommand = new Command { MenuText = "Über..." };
-			aboutCommand.Executed += OnAboutClicked;
-
-			// create menu
-			Menu = new MenuBar
-			{
-				Items =
+				ClientSize = new Size(400, 350);
+				// scrollable region as the main content
+				Content = new Scrollable
 				{
-					// File submenu
-					new ButtonMenuItem { Text = "&File", Items = { sendCommand, writeCommand } }
-					// new ButtonMenuItem { Text = "&Edit", Items = { /* commands/items */ } },
-					// new ButtonMenuItem { Text = "&View", Items = { /* commands/items */ } },
-				},
-				//				ApplicationItems =
-				//				{
-				//					// application (OS X) or file menu (others)
-				//					new ButtonMenuItem { Text = "&Preferences..." }
-				//				},
-				QuitItem = quitCommand,
-				AboutItem = aboutCommand
-			};
-			Menu.ApplicationMenu.Text = "&Datei";
-			Menu.HelpMenu.Text = "&Hilfe";
+					Content = CreateContent(_configuration)
+				};
 
+				// create a few commands that can be used for the menu and toolbar
+				var sendCommand = new Command {MenuText = "Absenden", ToolBarText = "Absenden"};
+				sendCommand.Executed += OnSendClicked;
 
-			// create toolbar
-			ToolBar = new ToolBar { Items = { sendCommand } };
+				var writeCommand = new Command {MenuText = "Wahlzettel schreiben"};
+				writeCommand.Executed += OnWriteClicked;
+
+				var quitCommand = new Command
+				{
+					MenuText = "Beenden",
+					Shortcut = Application.Instance.CommonModifier | Keys.Q
+				};
+				quitCommand.Executed += (sender, e) => Application.Instance.Quit();
+
+				var aboutCommand = new Command {MenuText = "Über..."};
+				aboutCommand.Executed += OnAboutClicked;
+
+				// create menu
+				Menu = new MenuBar
+				{
+					Items =
+					{
+						// File submenu
+						new ButtonMenuItem {Text = "&File", Items = {sendCommand, writeCommand}}
+					},
+					QuitItem = quitCommand,
+					AboutItem = aboutCommand
+				};
+				Menu.ApplicationMenu.Text = "&Datei";
+				Menu.HelpMenu.Text = "&Hilfe";
+			}
+			catch (Exception ex)
+			{
+				HandleException(ex);
+			}
+		}
+
+		private void HandleException(Exception exception)
+		{
+			if (exception is InvalidConfigurationException)
+			{
+				MessageBox.Show($"Konfigurationsfehler: {exception.Message}", "Digitale Briefwahl");
+				Application.Instance.Quit();
+			}
+			else
+			{
+				MessageBox.Show(
+					$"Programmfehler ({exception.GetType().Name}) beim Versenden des Wahlzettels: {exception.Message}",
+					"Digitale Briefwahl");
+			}
+
 		}
 
 		private void OnAboutClicked(object sender, EventArgs e)
@@ -80,45 +98,63 @@ namespace DigitaleBriefwahl
 			var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
 			var version = versionInfo.FileVersion;
 			MessageBox.Show(
-				$"{Configuration.Current.Title}\n\nVersion {version}\n\n{versionInfo.LegalCopyright}",
+				$"Digitale Briefwahl\n\nwahl.ini: {Configuration.Current.Title}\n\nVersion {version}\n\n{versionInfo.LegalCopyright}",
 				"Digitale Briefwahl");
 		}
 
 		private void OnSendClicked(object sender, EventArgs e)
 		{
-			var vote = CollectVote();
-			if (string.IsNullOrEmpty(vote))
-				return;
+			try
+			{
+				var vote = CollectVote();
+				if (string.IsNullOrEmpty(vote))
+					return;
 
-			var filename = new Encryption.EncryptVote().WriteVote(Title, vote);
+				var filename = new Encryption.EncryptVote().WriteVote(Title, vote);
 
-			var emailProvider = EmailProviderFactory.PreferredEmailProvider();
-			var email = emailProvider.CreateMessage();
+				var emailProvider = EmailProviderFactory.PreferredEmailProvider();
+				var email = emailProvider.CreateMessage();
 
-			email.To.Add(_configuration.EmailAddress);
-			email.Subject = _configuration.Title;
-			email.Body = "Anbei mein Wahlzettel.";
-			email.AttachmentFilePath.Add(filename);
+				email.To.Add(_configuration.EmailAddress);
+				email.Subject = _configuration.Title;
+				email.Body = "Anbei mein Wahlzettel.";
+				email.AttachmentFilePath.Add(filename);
 
-			if (emailProvider.SendMessage(email))
-				Application.Instance.Quit();
-
-			MessageBox.Show($"Kann E-Mail nicht automatisch verschicken. Bitte die Datei '{filename}' als Anhang einer E-Mail an '{_configuration.EmailAddress}' schicken.");
+				if (emailProvider.SendMessage(email))
+					Application.Instance.Quit();
+				else
+				{
+					MessageBox.Show(
+						$"Kann E-Mail nicht automatisch verschicken. Bitte die Datei '{filename}' als Anhang einer E-Mail an '{_configuration.EmailAddress}' schicken.");
+				}
+			}
+			catch (Exception exception)
+			{
+				HandleException(exception);
+			}
 		}
 
 		private void OnWriteClicked(object sender, EventArgs e)
 		{
-			var vote = CollectVote();
-			if (string.IsNullOrEmpty(vote))
-				return;
+			try
+			{
+				var vote = CollectVote();
+				if (string.IsNullOrEmpty(vote))
+					return;
 
-			var fileName = new Encryption.EncryptVote().WriteVoteUnencrypted(Title, vote);
-			MessageBox.Show($"Der Wahlzettel wurde in der Datei '{fileName}' gespeichert.");
+				var fileName = new Encryption.EncryptVote().WriteVoteUnencrypted(Title, vote);
+				MessageBox.Show($"Der Wahlzettel wurde in der Datei '{fileName}' gespeichert.");
+			}
+			catch (Exception exception)
+			{
+				HandleException(exception);
+			}
 		}
 
 		private string CollectVote()
 		{
-			var tabControl = ((Scrollable)Content).Content as TabControl;
+			var dynamicLayout = ((Scrollable)Content).Content as DynamicLayout;
+			var tabControl = dynamicLayout.Children.First() as TabControl;
 			var error = false;
 			foreach (var page in tabControl.Pages)
 			{

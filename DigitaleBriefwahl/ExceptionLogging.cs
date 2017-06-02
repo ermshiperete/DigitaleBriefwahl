@@ -26,8 +26,11 @@ namespace DigitaleBriefwahl
 			Config.FilePrefixes = new[] { solutionPath };
 			Config.UserId = UserId;
 			Config.BeforeNotify(OnBeforeNotify);
+			Config.StoreOfflineErrors = true;
 
 			Config.Metadata.AddToTab("App", "runtime", Platform.IsMono ? "Mono" : ".NET");
+			if (Platform.IsMono)
+				Config.Metadata.AddToTab("App", "monoversion", Platform.MonoVersion);
 			Config.Metadata.AddToTab("Device", "desktop", Platform.DesktopEnvironment);
 			if (!string.IsNullOrEmpty(Platform.DesktopEnvironmentInfoString))
 				Config.Metadata.AddToTab("Device", "shell", Platform.DesktopEnvironmentInfoString);
