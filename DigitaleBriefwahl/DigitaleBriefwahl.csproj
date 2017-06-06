@@ -29,6 +29,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ExceptionLogging.cs" />
+    <Compile Include="Model\ElectionModelFactory.cs" />
+    <Compile Include="Model\WeightedElectionModel.cs" />
+    <Compile Include="Model\YesNoElectionModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MainForm.cs" />
     <Compile Include="Model\ElectionType.cs" />

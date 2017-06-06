@@ -37,7 +37,10 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ElectionModelFactoryTests.cs" />
     <Compile Include="ElectionModelTests.cs" />
+    <Compile Include="WeightedElectionModelTests.cs" />
+    <Compile Include="YesNoElectionModelTests.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

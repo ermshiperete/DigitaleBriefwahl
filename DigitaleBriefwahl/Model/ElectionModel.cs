@@ -7,9 +7,9 @@ using System.Collections.Generic;
 
 namespace DigitaleBriefwahl.Model
 {
-	public class ElectionModel
+	public abstract class ElectionModel
 	{
-		public ElectionModel(string name, IniData data)
+		protected ElectionModel(string name, IniData data)
 		{
 			Name = name;
 
@@ -19,12 +19,12 @@ namespace DigitaleBriefwahl.Model
 				throw new InvalidConfigurationException("Missing votes key ('Stimmen=')");
 			Votes = votes;
 
-			Type = data[name][Configuration.TypeKey] == "JN" ? ElectionType.YesNo : ElectionType.Weighted;
+			Type = data[name][Configuration.TypeKey] == "YesNo" ? ElectionType.YesNo : ElectionType.Weighted;
 
 			Nominees = new List<string>();
 			var nomineeLimitData = new List<KeyData>();
 			TextBefore = new List<string>();
-			for (int i = 0; i < votes; i++)
+			for (var i = 0; i < votes; i++)
 				TextBefore.Add(null);
 
 			foreach (var keydata in data[name])
@@ -39,8 +39,7 @@ namespace DigitaleBriefwahl.Model
 					int no;
 					if (!int.TryParse(noString, out no) || no < 1 || no > Votes)
 					{
-						throw new InvalidConfigurationException(
-							string.Format("Invalid TextBefore key:: {0}", keydata.KeyName));
+						throw new InvalidConfigurationException($"Invalid TextBefore key:: {keydata.KeyName}");
 					}
 					TextBefore[no - 1] = keydata.Value;
 				}
@@ -54,13 +53,12 @@ namespace DigitaleBriefwahl.Model
 				if (!int.TryParse(noString, out no) || no < 1 || no > Nominees.Count)
 				{
 					throw new InvalidConfigurationException(
-						string.Format("Invalid nominee limit key: {0}", keydata.KeyName));
+						$"Invalid nominee limit key: {keydata.KeyName}");
 				}
 				var limitSplit = keydata.Value.Split('-');
 				if (limitSplit.Length < 1 || limitSplit.Length > 2 || keydata.Value.Contains(","))
 				{
-					throw new InvalidConfigurationException(
-						string.Format("Invalid nominee limit value: {0}", keydata.Value));
+					throw new InvalidConfigurationException($"Invalid nominee limit value: {keydata.Value}");
 				}
 				int min;
 				int max = 0;
@@ -69,7 +67,7 @@ namespace DigitaleBriefwahl.Model
 						(!int.TryParse(limitSplit[1], out max) || max < 1 || max > votes)))
 				{
 					throw new InvalidConfigurationException(
-						string.Format("Invalid nominee limit value: {0}", keydata.Value));
+						$"Invalid nominee limit value: {keydata.Value}");
 				}
 				if (limitSplit.Length <= 1)
 					max = min;
@@ -77,23 +75,26 @@ namespace DigitaleBriefwahl.Model
 			}
 		}
 
-		public string Name { get; private set; }
+		public string Name { get; }
 
-		public string Description { get; private set; }
+		public string Description { get; }
 
-		public List<string> TextBefore { get; private set; }
+		public List<string> TextBefore { get; }
 
-		public int Votes { get; private set; }
+		public int Votes { get; }
 
-		public ElectionType Type { get; private set; }
+		public ElectionType Type { get; }
 
-		public List<string> Nominees { get; private set; }
+		public List<string> Nominees { get; }
 
-		public Dictionary<string, Tuple<int, int>> NomineeLimits { get; private set; }
+		public Dictionary<string, Tuple<int, int>> NomineeLimits { get; }
+
+		public abstract string GetResult(List<string> nominees);
 
 		public override string ToString()
 		{
-			return string.Format("[Election: Name={0}, Description={1}, Votes={2}, Type={3}, Nominees={4}]", Name, Description, Votes, Type, Nominees);
+			return
+				$"[Election: Name={Name}, Description={Description}, Votes={Votes}, Type={Type}, Nominees={Nominees}]";
 		}
 	}
 }

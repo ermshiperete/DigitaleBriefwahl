@@ -113,14 +113,13 @@ namespace DigitaleBriefwahl.Views
 
 		public override string GetResult()
 		{
-			var bldr = new StringBuilder();
-			bldr.AppendLine(Election.Name);
-
-			for (int i = 0; i < Election.Votes; i++)
+			var electedNominees = new List<string>();
+			for (var i = 0; i < Election.Votes; i++)
 			{
-				bldr.AppendFormat("{0}. {1}\n", i + 1, _ComboBoxes[i].SelectedKey);
+				electedNominees.Add(_ComboBoxes[i].SelectedKey);
 			}
-			return bldr.ToString();
+
+			return Election.GetResult(electedNominees);
 		}
 	}
 }

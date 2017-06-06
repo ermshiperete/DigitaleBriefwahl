@@ -60,7 +60,7 @@ namespace DigitaleBriefwahl.Model
 			foreach (var electionKeyData in data[ElectionsSection])
 			{
 				if (electionKeyData.KeyName.StartsWith(ElectionKey, StringComparison.InvariantCulture))
-					configuration.Elections.Add(new ElectionModel(electionKeyData.Value, data));
+					configuration.Elections.Add(ElectionModelFactory.Create(electionKeyData.Value, data));
 			}
 			return configuration;
 		}

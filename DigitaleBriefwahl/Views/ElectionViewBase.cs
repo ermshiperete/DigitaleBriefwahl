@@ -12,7 +12,7 @@ namespace DigitaleBriefwahl.Views
 	{
 		private TabPage _page;
 
-		protected ElectionModel Election { get; private set; }
+		protected ElectionModel Election { get; }
 
 		protected ElectionViewBase(ElectionModel election)
 		{

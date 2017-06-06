@@ -10,10 +10,14 @@ namespace DigitaleBriefwahl.Views
 	{
 		public static ElectionViewBase Create(ElectionModel election)
 		{
-			if (election.Type == ElectionType.YesNo)
-				return new YesNoElectionView(election);
-			if (election.Type == ElectionType.Weighted)
-				return new WeightedElectionView(election);
+			switch (election.Type)
+			{
+				case ElectionType.YesNo:
+					return new YesNoElectionView(election);
+				case ElectionType.Weighted:
+					return new WeightedElectionView(election);
+			}
+
 			return null;
 		}
 	}

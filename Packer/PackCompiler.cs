@@ -33,7 +33,7 @@ namespace Packer
 
 			foreach (var fileInfo in dirInfo.EnumerateFiles())
 			{
-				if (fileInfo.Name.StartsWith("Packer.exe") || fileInfo.Name == "SelfExtractor.cs")
+				if (fileInfo.Name.StartsWith("Packer.") || fileInfo.Name == "SelfExtractor.cs")
 					continue;
 
 				if (fileInfo.Name.Contains("Tests") || fileInfo.Name == "nunit.framework.dll")

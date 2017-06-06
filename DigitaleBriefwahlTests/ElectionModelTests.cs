@@ -14,7 +14,7 @@ namespace DigitaleBriefwahlTests
 	[TestFixture]
 	public class ElectionModelTests
 	{
-		private IniData ReadIniDataFromString(string s)
+		internal static IniData ReadIniDataFromString(string s)
 		{
 			var parser = new FileIniDataParser();
 			using (var stream = new MemoryStream())
@@ -32,10 +32,10 @@ namespace DigitaleBriefwahlTests
 		public void ValidConfiguration()
 		{
 			// Setup
-			string ini = @"[Election]
+			const string ini = @"[Election]
 Text=Some description
 ZwischentextVor2=Some text
-Typ=Punktesystem
+Typ=Weighted
 Stimmen=2
 Kandidat1=Mickey Mouse
 Kandidat2=Donald Duck
@@ -45,7 +45,7 @@ Kandidat3=Dagobert Duck
 			var data = ReadIniDataFromString(ini);
 
 			// Execute
-			var model = new ElectionModel("Election", data);
+			var model = ElectionModelFactory.Create("Election", data);
 
 			// Verify
 			Assert.That(model.Description, Is.EqualTo("Some description"));
@@ -66,28 +66,44 @@ Kandidat3=Dagobert Duck
 		public void Votes_Missing_ShouldThrow()
 		{
 			// Setup
-			string ini = @"[Election]
+			const string ini = @"[Election]
+Kandidat1=Donald Duck
+Typ=Weighted
+";
+			var data = ReadIniDataFromString(ini);
+
+			// Execute/Verify
+			Assert.That(() => ElectionModelFactory.Create("Election", data),
+				Throws.TypeOf<InvalidConfigurationException>().With.Message.StartsWith("Missing votes key ('Stimmen=')"));
+		}
+
+		[Test]
+		public void Typ_Missing_ShouldThrow()
+		{
+			// Setup
+			const string ini = @"[Election]
 Kandidat1=Donald Duck
 ";
 			var data = ReadIniDataFromString(ini);
 
 			// Execute/Verify
-			Assert.That(() => new ElectionModel("Election", data),
-				Throws.TypeOf<InvalidConfigurationException>().With.Message.StartsWith("Missing votes key ('Stimmen=')"));
+			Assert.That(() => ElectionModelFactory.Create("Election", data),
+				Throws.TypeOf<InvalidConfigurationException>().With.Message.StartsWith("Missing type key ('Typ=')"));
 		}
 
 		[Test]
 		public void Type_Missing_DefaultsToWeighted()
 		{
 			// Setup
-			string ini = @"[Election]
+			const string ini = @"[Election]
 Stimmen=1
+Typ=Weighted
 Kandidat1=Donald Duck
 ";
 			var data = ReadIniDataFromString(ini);
 
 			// Execute
-			var model = new ElectionModel("Election", data);
+			var model = ElectionModelFactory.Create("Election", data);
 
 			// Verify
 			Assert.That(model.Type, Is.EqualTo(ElectionType.Weighted));
@@ -99,15 +115,16 @@ Kandidat1=Donald Duck
 		public void NomineeLimit_InvalidNomineeNumber_ShouldThrow()
 		{
 			// Setup
-			string ini = @"[Election]
+			const string ini = @"[Election]
 Stimmen=1
+Typ=YesNo
 Kandidat1=Donald Duck
 LimitKandidatX=2
 ";
 			var data = ReadIniDataFromString(ini);
 
 			// Execute/Verify
-			Assert.That(() => new ElectionModel("Election", data),
+			Assert.That(() => ElectionModelFactory.Create("Election", data),
 				Throws.TypeOf<InvalidConfigurationException>().With.Message.StartsWith("Invalid nominee limit key:"));
 		}
 
@@ -124,15 +141,16 @@ LimitKandidatX=2
 		public void NomineeLimit_ShouldThrow(string limit)
 		{
 			// Setup
-			string ini = string.Format(@"[Election]
+			var ini = $@"[Election]
 Stimmen=1
+Typ=YesNo
 Kandidat1=Donald Duck
-LimitKandidat1={0}
-", limit);
+LimitKandidat1={limit}
+";
 			var data = ReadIniDataFromString(ini);
 
 			// Execute/Verify
-			Assert.That(() => new ElectionModel("Election", data),
+			Assert.That(() => ElectionModelFactory.Create("Election", data),
 				Throws.TypeOf<InvalidConfigurationException>().With.Message.StartsWith("Invalid nominee limit value:"));
 		}
 
@@ -140,15 +158,16 @@ LimitKandidat1={0}
 		public void NomineeLimit_Valid()
 		{
 			// Setup
-			string ini = @"[Election]
+			const string ini = @"[Election]
 Stimmen=1
+Typ=YesNo
 Kandidat1=Donald Duck
 LimitKandidat1=1-1
 ";
 			var data = ReadIniDataFromString(ini);
 
 			// Execute
-			var model = new ElectionModel("Election", data);
+			var model = ElectionModelFactory.Create("Election", data);
 
 			// Verify
 			Assert.That(model.Type, Is.EqualTo(ElectionType.Weighted));
@@ -162,16 +181,16 @@ LimitKandidat1=1-1
 		public void TextBefore_ShouldThrow(string number)
 		{
 			// Setup
-			string ini = string.Format(@"[Election]
-ZwischentextVor{0}=Some text
+			var ini = $@"[Election]
+ZwischentextVor{number}=Some text
+Typ=YesNo
 Stimmen=2
-", number);
+";
 			var data = ReadIniDataFromString(ini);
 
 			// Execute/Verify
-			Assert.That(() => new ElectionModel("Election", data),
+			Assert.That(() => ElectionModelFactory.Create("Election", data),
 				Throws.TypeOf<InvalidConfigurationException>().With.Message.StartsWith("Invalid TextBefore key:"));
 		}
 	}
 }
-

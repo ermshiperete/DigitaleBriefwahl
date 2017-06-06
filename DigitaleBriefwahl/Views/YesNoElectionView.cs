@@ -1,9 +1,8 @@
 // Copyright (c) 2016 Eberhard Beilharz
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
-using System;
+
 using System.Collections.Generic;
-using System.Text;
 using DigitaleBriefwahl.Model;
 using Eto.Drawing;
 using Eto.Forms;
@@ -28,7 +27,7 @@ namespace DigitaleBriefwahl.Views
 			foreach (var nominee in Election.Nominees)
 			{
 				var sublayout = new StackLayout { Orientation = Orientation.Horizontal };
-				sublayout.Items.Add(new Label { Text = string.Format("{0}:", nominee) });
+				sublayout.Items.Add(new Label { Text = $"{nominee}:"});
 				var radioLayout = new StackLayout { Orientation = Orientation.Vertical };
 				sublayout.Items.Add(radioLayout);
 				var radio1 = new RadioButton { Text = "Ja" };
@@ -45,39 +44,59 @@ namespace DigitaleBriefwahl.Views
 
 		public override bool VerifyOk()
 		{
-			for (int i = 0; i < Election.Nominees.Count; i++)
-			{
-				_radioButtons[i][0].TextColor = Colors.Black;
-				_radioButtons[i][1].TextColor = Colors.Black;
-				_radioButtons[i][2].TextColor = Colors.Black;
-			}
+			SetTextColorForAllRadioButtons(Colors.Black);
 
 			var allOk = true;
-			for (int i = 0; i < Election.Nominees.Count; i++)
+			var votes = 0;
+			for (var i = 0; i < Election.Nominees.Count; i++)
 			{
 				if (!_radioButtons[i][0].Checked && !_radioButtons[i][1].Checked &&
 					!_radioButtons[i][2].Checked)
 				{
-					_radioButtons[i][0].TextColor = Colors.Red;
-					_radioButtons[i][1].TextColor = Colors.Red;
-					_radioButtons[i][2].TextColor = Colors.Red;
+					SetTextColorForRadioButtonGroup(i, Colors.Red);
 					allOk = false;
 				}
+				if (_radioButtons[i][0].Checked || _radioButtons[i][2].Checked)
+					votes++;
 			}
+
+			if (votes == Election.Votes)
+				return allOk;
+
+			SetTextColorForAllRadioButtons(Colors.Red);
+			allOk = false;
 			return allOk;
+		}
+
+		private void SetTextColorForAllRadioButtons(Color color)
+		{
+			for (var i = 0; i < Election.Nominees.Count; i++)
+			{
+				SetTextColorForRadioButtonGroup(i, color);
+			}
+		}
+
+		private void SetTextColorForRadioButtonGroup(int i, Color color)
+		{
+			_radioButtons[i][0].TextColor = color;
+			_radioButtons[i][1].TextColor = color;
+			_radioButtons[i][2].TextColor = color;
 		}
 
 		public override string GetResult()
 		{
-			var bldr = new StringBuilder();
-			bldr.AppendLine(Election.Name);
-
-			for (int i = 0; i < Election.Nominees.Count; i++)
+			var votes = new List<string>();
+			for (var i = 0; i < Election.Nominees.Count; i++)
 			{
-				bldr.AppendFormat("{0}. [{1}] {2}\n", i + 1, _radioButtons[i][0].Checked ? "J" :
-					_radioButtons[i][1].Checked ? "N" : "E", Election.Nominees[i]);
+				if (_radioButtons[i][0].Checked)
+					votes.Add(YesNoElectionModel.Yes);
+				else if (_radioButtons[i][1].Checked)
+					votes.Add(YesNoElectionModel.No);
+				else
+					votes.Add(YesNoElectionModel.Abstention);
 			}
-			return bldr.ToString();
+
+			return Election.GetResult(votes);
 		}
 	}
 }
