@@ -1,5 +1,20 @@
-Configuration
-=============
+# Digitale Briefwahl
+
+This project implements a digital postal vote system based on public keys. This is suitable
+for use in a setting where there is an environment of trust between the members but who
+still want to ensure that the ballot is secret. The application encrypts the ballot with the
+public key of the election commission before it sends an email to the administration. The
+administration verifies the eligibility of the voter and saves the encrypted ballot with
+a random name to the drive. The election commission can then decrypt and count the ballots.
+
+The ballot can be encrypted manually, but that is too complicated for most users.
+This tool lowers the barrier by automating the necessary steps, requiring minimal knowledge of
+the user.
+
+However, for computer-savy people who distrust the tool it is still possible to save the ballot
+and the public key of the election commission and do the encryption for themselves.
+
+## Configuration
 
 Create a `wahl.ini` file with a section `Wahlen` that lists the different elections, giving the name
 of the section (which will also be shown in the GUI as name of the tab). The field `Email=` contains
