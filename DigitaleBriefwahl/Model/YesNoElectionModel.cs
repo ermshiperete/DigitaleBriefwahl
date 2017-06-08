@@ -66,7 +66,7 @@ namespace DigitaleBriefwahl.Model
 
 				bldr.AppendFormat("{0}. [{1}] {2}\n", i + 1, vote, Nominees[i]);
 			}
-			return bldr.ToString();
+			return NormalizeLineEndings(bldr);
 		}
 	}
 }

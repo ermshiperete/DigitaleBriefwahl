@@ -4,6 +4,7 @@
 using System;
 using IniParser.Model;
 using System.Collections.Generic;
+using System.Text;
 
 namespace DigitaleBriefwahl.Model
 {
@@ -95,6 +96,13 @@ namespace DigitaleBriefwahl.Model
 		{
 			return
 				$"[Election: Name={Name}, Description={Description}, Votes={Votes}, Type={Type}, Nominees={Nominees}]";
+		}
+
+		protected static string NormalizeLineEndings(StringBuilder bldr)
+		{
+			// Normalize line endings so that the ballot has the same length
+			// regardless of whether it's run on Windows or Linux
+			return bldr.Replace("\r\n", "\n").Replace("\r", "\n").ToString();
 		}
 	}
 }

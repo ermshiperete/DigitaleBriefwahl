@@ -40,7 +40,7 @@ namespace DigitaleBriefwahl.Model
 				}
 			}
 
-			return bldr.ToString();
+			return NormalizeLineEndings(bldr);
 		}
 	}
 }
