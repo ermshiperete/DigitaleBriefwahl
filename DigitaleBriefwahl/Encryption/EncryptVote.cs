@@ -129,5 +129,13 @@ namespace DigitaleBriefwahl.Encryption
 			File.WriteAllText(fileName, vote);
 			return fileName;
 		}
+
+		public static string WritePublicKey(string election)
+		{
+			var fileName = Path.Combine(Path.GetTempPath(),
+				$"{GetSanitizedElection(election)}_{Configuration.Current.PublicKey}");
+			File.Copy(Configuration.Current.PublicKey, fileName);
+			return fileName;
+		}
 	}
 }

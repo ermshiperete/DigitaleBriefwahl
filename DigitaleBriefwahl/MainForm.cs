@@ -20,7 +20,7 @@ namespace DigitaleBriefwahl
 	/// </summary>
 	public class MainForm : Form
 	{
-		private Configuration _configuration;
+		private readonly Configuration _configuration;
 		private TabControl _tabControl;
 		private Button _nextButton;
 		private Button _backButton;
@@ -47,6 +47,9 @@ namespace DigitaleBriefwahl
 				var writeCommand = new Command {MenuText = "Wahlzettel schreiben"};
 				writeCommand.Executed += OnWriteClicked;
 
+				var writeKeyCommand = new Command {MenuText = "Öffentlichen Schlüssel schreiben"};
+				writeKeyCommand.Executed += OnWritePublicKeyClicked;
+
 				var quitCommand = new Command
 				{
 					MenuText = "Beenden",
@@ -63,7 +66,7 @@ namespace DigitaleBriefwahl
 					Items =
 					{
 						// File submenu
-						new ButtonMenuItem {Text = "&File", Items = {sendCommand, writeCommand}}
+						new ButtonMenuItem {Text = "&File", Items = {sendCommand, writeCommand, writeKeyCommand}}
 					},
 					QuitItem = quitCommand,
 					AboutItem = aboutCommand
@@ -149,6 +152,10 @@ namespace DigitaleBriefwahl
 			{
 				HandleException(exception);
 			}
+		private void OnWritePublicKeyClicked(object sender, EventArgs e)
+		{
+			var fileName = Encryption.EncryptVote.WritePublicKey(Title);
+			MessageBox.Show($"Der öffentliche Schlüssel wurde in der Datei '{fileName}' gespeichert.");
 		}
 
 		private string CollectVote()
