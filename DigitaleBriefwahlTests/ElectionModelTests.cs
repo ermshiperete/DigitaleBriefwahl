@@ -170,7 +170,7 @@ LimitKandidat1=1-1
 			var model = ElectionModelFactory.Create("Election", data);
 
 			// Verify
-			Assert.That(model.Type, Is.EqualTo(ElectionType.Weighted));
+			Assert.That(model.Type, Is.EqualTo(ElectionType.YesNo));
 			Assert.That(model.Votes, Is.EqualTo(1));
 			Assert.That(model.Nominees, Is.EqualTo(new[] { "Donald Duck", }));
 		}

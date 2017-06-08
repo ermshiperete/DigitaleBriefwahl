@@ -11,18 +11,16 @@ namespace DigitaleBriefwahlTests
 	[TestFixture]
 	public class WeightedElectionModelTests
 	{
-		[TestCase("Dagobert Duck\nMickey Mouse", ExpectedResult = @"Election
---------
-2. Mickey Mouse
-   Donald Duck
-1. Dagobert Duck
-")]
-		[TestCase("Donald Duck\nDagobert Duck", ExpectedResult = @"Election
---------
-   Mickey Mouse
-1. Donald Duck
-2. Dagobert Duck
-")]
+		[TestCase("Dagobert Duck\nMickey Mouse", ExpectedResult = "Election\n" +
+"--------\n" +
+"2. Mickey Mouse\n" +
+"   Donald Duck\n" +
+"1. Dagobert Duck\n")]
+		[TestCase("Donald Duck\nDagobert Duck", ExpectedResult = "Election\n" +
+"--------\n" +
+"   Mickey Mouse\n" +
+"1. Donald Duck\n" +
+"2. Dagobert Duck\n")]
 		public string GetResult(string electedNominees)
 		{
 			// Setup

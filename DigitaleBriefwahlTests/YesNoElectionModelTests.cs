@@ -12,13 +12,12 @@ namespace DigitaleBriefwahlTests
 	[TestFixture]
 	public class YesNoElectionModelTests
 	{
-		[TestCase("E\nN\nJ\nN", ExpectedResult = @"Election
---------
-1. [E] Mickey Mouse
-2. [N] Donald Duck
-3. [J] Dagobert Duck
-4. [N] Daisy Duck
-")]
+		[TestCase("E\nN\nJ\nN", ExpectedResult = "Election\n" +
+"--------\n" +
+"1. [E] Mickey Mouse\n" +
+"2. [N] Donald Duck\n" +
+"3. [J] Dagobert Duck\n" +
+"4. [N] Daisy Duck\n")]
 		public string GetResult(string votes)
 		{
 			// Setup
