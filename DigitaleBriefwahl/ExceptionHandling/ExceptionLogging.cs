@@ -6,18 +6,20 @@ using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Security.Principal;
+using System.Threading.Tasks;
 using Bugsnag;
 using Bugsnag.Clients;
 using SIL.PlatformUtilities;
 
-namespace DigitaleBriefwahl
+namespace DigitaleBriefwahl.ExceptionHandling
 {
 	public class ExceptionLogging : BaseClient
 	{
-		private ExceptionLogging(string apiKey, string callerFilePath)
+		protected ExceptionLogging(string apiKey, string callerFilePath)
 			: base(apiKey)
 		{
 			Setup(callerFilePath);
+			AddAnalytics();
 		}
 
 		private void Setup(string callerFilePath)
@@ -35,6 +37,12 @@ namespace DigitaleBriefwahl
 			if (!string.IsNullOrEmpty(Platform.DesktopEnvironmentInfoString))
 				Config.Metadata.AddToTab("Device", "shell", Platform.DesktopEnvironmentInfoString);
 			AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
+			TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
+		}
+
+		private void OnUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+		{
+			Notify(e.Exception);
 		}
 
 		private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
@@ -90,6 +98,18 @@ namespace DigitaleBriefwahl
 		{
 			Client = new ExceptionLogging(apiKey, filename);
 			return Client;
+		}
+
+		public static ExceptionLogging InitializeWithUI(string apiKey, object parent = null,
+			[CallerFilePathAttribute] string filename = null)
+		{
+			Client = new ExceptionLoggingUI(apiKey, parent, filename);
+			return Client;
+		}
+
+		private void AddAnalytics()
+		{
+			Notify(new AnalyticsException(), Severity.Info);
 		}
 
 		public static ExceptionLogging Client { get; private set; }

@@ -28,7 +28,11 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ExceptionLogging.cs" />
+    <Compile Include="ExceptionHandling\AnalyticsException.cs" />
+    <Compile Include="ExceptionHandling\ErrorReport.cs" />
+    <Compile Include="ExceptionHandling\ErrorReport.eto.cs" />
+    <Compile Include="ExceptionHandling\ExceptionLogging.cs" />
+    <Compile Include="ExceptionHandling\ExceptionLoggingUI.cs" />
     <Compile Include="Model\ElectionModelFactory.cs" />
     <Compile Include="Model\WeightedElectionModel.cs" />
     <Compile Include="Model\YesNoElectionModel.cs" />

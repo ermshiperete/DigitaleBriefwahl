@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using DigitaleBriefwahl.ExceptionHandling;
 using DigitaleBriefwahl.Model;
 using DigitaleBriefwahl.Views;
 using Eto.Drawing;
@@ -27,7 +28,9 @@ namespace DigitaleBriefwahl
 
 		public MainForm()
 		{
-			ExceptionLogging.Initialize("5012aef9a281f091c1fceea40c03003b");
+			ExceptionLogging.InitializeWithUI("5012aef9a281f091c1fceea40c03003b", this);
+			Application.Instance.Name = "Digitale Briefwahl";
+
 			try
 			{
 				_configuration = Configuration.Configure("wahl.ini");
@@ -74,26 +77,11 @@ namespace DigitaleBriefwahl
 				Menu.ApplicationMenu.Text = "&Datei";
 				Menu.HelpMenu.Text = "&Hilfe";
 			}
-			catch (Exception ex)
+			catch (InvalidConfigurationException ex)
 			{
-				HandleException(ex);
-			}
-		}
-
-		private void HandleException(Exception exception)
-		{
-			if (exception is InvalidConfigurationException)
-			{
-				MessageBox.Show($"Konfigurationsfehler: {exception.Message}", "Digitale Briefwahl");
+				MessageBox.Show($"Konfigurationsfehler: {ex.Message}", "Digitale Briefwahl");
 				Application.Instance.Quit();
 			}
-			else
-			{
-				MessageBox.Show(
-					$"Programmfehler ({exception.GetType().Name}) beim Versenden des Wahlzettels: {exception.Message}",
-					"Digitale Briefwahl");
-			}
-
 		}
 
 		private void OnAboutClicked(object sender, EventArgs e)
@@ -107,51 +95,39 @@ namespace DigitaleBriefwahl
 
 		private void OnSendClicked(object sender, EventArgs e)
 		{
-			try
+			var vote = CollectVote();
+			if (string.IsNullOrEmpty(vote))
+				return;
+
+			var filename = new Encryption.EncryptVote().WriteVote(Title, vote);
+
+			var emailProvider = EmailProviderFactory.PreferredEmailProvider();
+			var email = emailProvider.CreateMessage();
+
+			email.To.Add(_configuration.EmailAddress);
+			email.Subject = _configuration.Title;
+			email.Body = "Anbei mein Wahlzettel.";
+			email.AttachmentFilePath.Add(filename);
+
+			if (emailProvider.SendMessage(email))
+				Application.Instance.Quit();
+			else
 			{
-				var vote = CollectVote();
-				if (string.IsNullOrEmpty(vote))
-					return;
-
-				var filename = new Encryption.EncryptVote().WriteVote(Title, vote);
-
-				var emailProvider = EmailProviderFactory.PreferredEmailProvider();
-				var email = emailProvider.CreateMessage();
-
-				email.To.Add(_configuration.EmailAddress);
-				email.Subject = _configuration.Title;
-				email.Body = "Anbei mein Wahlzettel.";
-				email.AttachmentFilePath.Add(filename);
-
-				if (emailProvider.SendMessage(email))
-					Application.Instance.Quit();
-				else
-				{
-					MessageBox.Show(
-						$"Kann E-Mail nicht automatisch verschicken. Bitte die Datei '{filename}' als Anhang einer E-Mail an '{_configuration.EmailAddress}' schicken.");
-				}
-			}
-			catch (Exception exception)
-			{
-				HandleException(exception);
+				MessageBox.Show(
+					$"Kann E-Mail nicht automatisch verschicken. Bitte die Datei '{filename}' als Anhang einer E-Mail an '{_configuration.EmailAddress}' schicken.");
 			}
 		}
 
 		private void OnWriteClicked(object sender, EventArgs e)
 		{
-			try
-			{
-				var vote = CollectVote();
-				if (string.IsNullOrEmpty(vote))
-					return;
+			var vote = CollectVote();
+			if (string.IsNullOrEmpty(vote))
+				return;
 
-				var fileName = new Encryption.EncryptVote().WriteVoteUnencrypted(Title, vote);
-				MessageBox.Show($"Der Wahlzettel wurde in der Datei '{fileName}' gespeichert.");
-			}
-			catch (Exception exception)
-			{
-				HandleException(exception);
-			}
+			var fileName = new Encryption.EncryptVote().WriteVoteUnencrypted(Title, vote);
+			MessageBox.Show($"Der Wahlzettel wurde in der Datei '{fileName}' gespeichert.");
+		}
+
 		private void OnWritePublicKeyClicked(object sender, EventArgs e)
 		{
 			var fileName = Encryption.EncryptVote.WritePublicKey(Title);
