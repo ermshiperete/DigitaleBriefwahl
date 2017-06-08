@@ -36,7 +36,7 @@ namespace DigitaleBriefwahl
 				_configuration = Configuration.Configure("wahl.ini");
 				Title = _configuration.Title;
 
-				ClientSize = new Size(400, 350);
+				ClientSize = new Size(700, 400);
 				// scrollable region as the main content
 				Content = new Scrollable
 				{
