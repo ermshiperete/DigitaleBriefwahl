@@ -36,9 +36,9 @@ namespace DigitaleBriefwahl.ExceptionHandling
 			_label2 = new Label { Text = "Please tell the developers about the problem." };
 			_label3 = new Label
 			{
-				Text = string.Format("{0} created an error report that you can send to help us improve {0}. " +
+				Text = string.Format("{0} created an error report that you can send to help us improve {0}.\n" +
 					"We will treat this report as confidential and anonymous.", appName),
-				Wrap = WrapMode.None
+				Wrap = WrapMode.Word
 			};
 
 			var layout = new StackLayout
