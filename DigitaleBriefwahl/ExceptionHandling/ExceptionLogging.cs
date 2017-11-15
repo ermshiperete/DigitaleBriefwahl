@@ -109,7 +109,7 @@ namespace DigitaleBriefwahl.ExceptionHandling
 
 		private void AddAnalytics()
 		{
-			Notify(new AnalyticsException(), Severity.Info);
+			NotifyAsync(new AnalyticsException(), Severity.Info);
 		}
 
 		public static ExceptionLogging Client { get; private set; }
