@@ -14,6 +14,10 @@ the user.
 However, for computer-savy people who distrust the tool it is still possible to save the ballot
 and the public key of the election commission and do the encryption for themselves.
 
+## Documentation
+
+The detailed documentation can be found in the [wiki](https://github.com/ermshiperete/DigitaleBriefwahl/wiki).
+
 ## Configuration
 
 Create a `wahl.ini` file with a section `Wahlen` that lists the different elections, giving the name
