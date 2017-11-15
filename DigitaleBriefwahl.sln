@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		build\DigitaleBriefwahl.dep = build\DigitaleBriefwahl.dep
 		Readme.md = Readme.md
+		CHANGELOG.md = CHANGELOG.md
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitaleBriefwahlTests", "DigitaleBriefwahlTests\DigitaleBriefwahlTests.csproj", "{E7041C43-BE2C-4454-A140-D3465848D476}"
