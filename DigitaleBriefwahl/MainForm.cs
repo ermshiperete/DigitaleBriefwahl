@@ -47,8 +47,11 @@ namespace DigitaleBriefwahl
 				var sendCommand = new Command {MenuText = "Absenden", ToolBarText = "Absenden"};
 				sendCommand.Executed += OnSendClicked;
 
-				var writeCommand = new Command {MenuText = "Wahlzettel schreiben"};
+				var writeCommand = new Command {MenuText = "Stimmzettel schreiben"};
 				writeCommand.Executed += OnWriteClicked;
+
+				var writeEmptyCommand = new Command {MenuText = "Leeren Stimmzettel schreiben"};
+				writeEmptyCommand.Executed += OnWriteEmptyClicked;
 
 				var writeKeyCommand = new Command {MenuText = "Öffentlichen Schlüssel schreiben"};
 				writeKeyCommand.Executed += OnWritePublicKeyClicked;
@@ -69,7 +72,8 @@ namespace DigitaleBriefwahl
 					Items =
 					{
 						// File submenu
-						new ButtonMenuItem {Text = "&File", Items = {sendCommand, writeCommand, writeKeyCommand}}
+						new ButtonMenuItem {Text = "&File",
+							Items = {sendCommand, writeCommand, writeEmptyCommand, writeKeyCommand}}
 					},
 					QuitItem = quitCommand,
 					AboutItem = aboutCommand
@@ -106,7 +110,7 @@ namespace DigitaleBriefwahl
 
 			email.To.Add(_configuration.EmailAddress);
 			email.Subject = _configuration.Title;
-			email.Body = "Anbei mein Wahlzettel.";
+			email.Body = "Anbei mein Stimmzettel.";
 			email.AttachmentFilePath.Add(filename);
 
 			if (emailProvider.SendMessage(email))
@@ -118,14 +122,24 @@ namespace DigitaleBriefwahl
 			}
 		}
 
-		private void OnWriteClicked(object sender, EventArgs e)
+		private void WriteBallot(bool verifyVote)
 		{
-			var vote = CollectVote();
+			var vote = CollectVote(verifyVote);
 			if (string.IsNullOrEmpty(vote))
 				return;
 
 			var fileName = new Encryption.EncryptVote().WriteVoteUnencrypted(Title, vote);
-			MessageBox.Show($"Der Wahlzettel wurde in der Datei '{fileName}' gespeichert.");
+			MessageBox.Show($"Der Stimmzettel wurde in der Datei '{fileName}' gespeichert.");
+		}
+
+		private void OnWriteClicked(object sender, EventArgs e)
+		{
+			WriteBallot(true);
+		}
+
+		private void OnWriteEmptyClicked(object sender, EventArgs e)
+		{
+			WriteBallot(false);
 		}
 
 		private void OnWritePublicKeyClicked(object sender, EventArgs e)
@@ -134,20 +148,23 @@ namespace DigitaleBriefwahl
 			MessageBox.Show($"Der öffentliche Schlüssel wurde in der Datei '{fileName}' gespeichert.");
 		}
 
-		private string CollectVote()
+		private string CollectVote(bool verify = true)
 		{
 			var dynamicLayout = ((Scrollable)Content).Content as DynamicLayout;
 			var tabControl = dynamicLayout.Children.First() as TabControl;
 			var error = false;
-			foreach (var page in tabControl.Pages)
+			if (verify)
 			{
-				var view = page.Tag as ElectionViewBase;
-				if (view.VerifyOk())
-					continue;
+				foreach (var page in tabControl.Pages)
+				{
+					var view = page.Tag as ElectionViewBase;
+					if (view.VerifyOk())
+						continue;
 
-				if (!error)
-					tabControl.SelectedPage = page;
-				error = true;
+					if (!error)
+						tabControl.SelectedPage = page;
+					error = true;
+				}
 			}
 
 			if (error)
