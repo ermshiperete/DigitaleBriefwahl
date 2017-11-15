@@ -44,4 +44,5 @@ Thumbs.db
 .idea/
 
 build/NuGet.exe
+build/nuget.exe
 build/DigitaleBriefwahl.files
