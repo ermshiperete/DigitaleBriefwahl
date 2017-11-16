@@ -19,7 +19,7 @@ namespace DigitaleBriefwahl.Model
 		public const string No = "N";
 		public const string Abstention = "E";
 
-		public override string GetResult(List<string> votes)
+		public override string GetResult(List<string> votes, bool writeEmptyBallot)
 		{
 			if (votes.Count != Nominees.Count)
 			{
@@ -49,19 +49,23 @@ namespace DigitaleBriefwahl.Model
 					case No:
 						break;
 					case Yes:
-					case Abstention:
 						voteCount++;
-						if (voteCount > Votes)
-						{
-							throw new ArgumentException($"Invalid number of votes. Allowed are {Votes}",
-								nameof(votes));
-						}
+						break;
+					case Abstention:
+						if (!writeEmptyBallot)
+							voteCount++;
 						break;
 					default:
 					{
 						throw new ArgumentException($"Invalid vote character '{vote}'",
 							nameof(votes));
 					}
+				}
+
+				if (voteCount > Votes)
+				{
+					throw new ArgumentException($"Invalid number of votes. Allowed are {Votes}",
+						nameof(votes));
 				}
 
 				bldr.AppendFormat("{0}. [{1}] {2}\n", i + 1, vote, Nominees[i]);

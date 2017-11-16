@@ -39,6 +39,6 @@ namespace DigitaleBriefwahl.Views
 
 		public abstract bool VerifyOk();
 
-		public abstract string GetResult();
+		public abstract string GetResult(bool writeEmptyBallot);
 	}
 }

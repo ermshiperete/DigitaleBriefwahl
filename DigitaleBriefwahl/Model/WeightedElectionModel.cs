@@ -14,12 +14,20 @@ namespace DigitaleBriefwahl.Model
 		{
 		}
 
-		public override string GetResult(List<string> electedNominees)
+		public override string GetResult(List<string> electedNominees, bool writeEmptyBallot)
 		{
 			var bldr = new StringBuilder();
 			bldr.AppendLine(Name);
 			bldr.Append('-', Name.Length);
 			bldr.AppendLine();
+
+			if (writeEmptyBallot)
+			{
+				// we assign votes to the first X nominees
+				electedNominees.Clear();
+				for (var i = 0; i < Votes; i++)
+					electedNominees.Add(Nominees[i]);
+			}
 
 			foreach (var nominee in Nominees)
 			{

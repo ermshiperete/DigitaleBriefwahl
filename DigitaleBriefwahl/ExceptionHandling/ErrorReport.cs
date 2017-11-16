@@ -3,6 +3,7 @@
 // (https://opensource.org/licenses/GPL-3.0)
 using System;
 using System.Net;
+using System.Reflection;
 using Eto.Forms;
 
 namespace DigitaleBriefwahl.ExceptionHandling
@@ -38,8 +39,21 @@ namespace DigitaleBriefwahl.ExceptionHandling
 			Close();
 		}
 
+		private static Exception GetInnerException(Exception outer)
+		{
+			if (outer == null)
+				return null;
+			while (true)
+			{
+				if (outer.InnerException == null)
+					return outer;
+				outer = outer.InnerException;
+			}
+		}
+
 		private void OnMoreInfoButtonClick(object sender, EventArgs e)
 		{
+			var ex = GetInnerException(_exception);
 			var runtime = SIL.PlatformUtilities.Platform.IsMono
 				? $"Mono\nmonoversion={SIL.PlatformUtilities.Platform.MonoVersion}" : ".NET";
 			MessageBox.Show(
@@ -48,7 +62,9 @@ namespace DigitaleBriefwahl.ExceptionHandling
 				$"shell={SIL.PlatformUtilities.Platform.DesktopEnvironmentInfoString}\n" +
 				$"processorCount={Environment.ProcessorCount}\n" +
 				$"user={ExceptionLogging.Client.Config.UserId}\n" +
-				$"runtime={runtime}\n\nStacktrace:\n{_exception?.StackTrace}",
+				$"runtime={runtime}\n\n" +
+				$"Exception: {ex?.GetType().Name}\n{ex?.Message}\n\n" +
+				$"Stacktrace:\n{_exception?.StackTrace}",
 				$"{Application.Instance.Name} Error Report Details");
 		}
 	}

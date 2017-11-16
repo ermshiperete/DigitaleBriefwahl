@@ -122,9 +122,9 @@ namespace DigitaleBriefwahl
 			}
 		}
 
-		private void WriteBallot(bool verifyVote)
+		private void WriteBallot(bool writeEmptyBallot)
 		{
-			var vote = CollectVote(verifyVote);
+			var vote = CollectVote(writeEmptyBallot);
 			if (string.IsNullOrEmpty(vote))
 				return;
 
@@ -134,12 +134,12 @@ namespace DigitaleBriefwahl
 
 		private void OnWriteClicked(object sender, EventArgs e)
 		{
-			WriteBallot(true);
+			WriteBallot(false);
 		}
 
 		private void OnWriteEmptyClicked(object sender, EventArgs e)
 		{
-			WriteBallot(false);
+			WriteBallot(true);
 		}
 
 		private void OnWritePublicKeyClicked(object sender, EventArgs e)
@@ -148,12 +148,12 @@ namespace DigitaleBriefwahl
 			MessageBox.Show($"Der öffentliche Schlüssel wurde in der Datei '{fileName}' gespeichert.");
 		}
 
-		private string CollectVote(bool verify = true)
+		private string CollectVote(bool writeEmptyBallot = false)
 		{
 			var dynamicLayout = ((Scrollable)Content).Content as DynamicLayout;
 			var tabControl = dynamicLayout.Children.First() as TabControl;
 			var error = false;
-			if (verify)
+			if (!writeEmptyBallot)
 			{
 				foreach (var page in tabControl.Pages)
 				{
@@ -177,7 +177,7 @@ namespace DigitaleBriefwahl
 			foreach (var page in tabControl.Pages)
 			{
 				var view = page.Tag as ElectionViewBase;
-				bldr.AppendLine(view.GetResult());
+				bldr.AppendLine(view.GetResult(writeEmptyBallot));
 			}
 			return bldr.ToString();
 		}

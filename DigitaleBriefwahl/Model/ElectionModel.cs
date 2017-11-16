@@ -90,7 +90,7 @@ namespace DigitaleBriefwahl.Model
 
 		public Dictionary<string, Tuple<int, int>> NomineeLimits { get; }
 
-		public abstract string GetResult(List<string> nominees);
+		public abstract string GetResult(List<string> nominees, bool writeEmptyBallot);
 
 		public override string ToString()
 		{

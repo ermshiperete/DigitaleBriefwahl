@@ -16,6 +16,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.1] - 2017-11-16
+
+### Changed
+
+- show exception details in ErrorReport
+- write votes on the first _n_ nominees in an empty ballot
+
+### Fixed
+
+- YesNo view now allows to vote _N_ if only one candidate
+
 ## [0.1.0] - 2017-11-15
 
 ### Added

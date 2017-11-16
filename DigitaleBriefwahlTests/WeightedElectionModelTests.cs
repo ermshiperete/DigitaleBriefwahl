@@ -11,17 +11,22 @@ namespace DigitaleBriefwahlTests
 	[TestFixture]
 	public class WeightedElectionModelTests
 	{
-		[TestCase("Dagobert Duck\nMickey Mouse", ExpectedResult = "Election\n" +
+		[TestCase("Dagobert Duck\nMickey Mouse", false, ExpectedResult = "Election\n" +
 "--------\n" +
 "2. Mickey Mouse\n" +
 "   Donald Duck\n" +
 "1. Dagobert Duck\n")]
-		[TestCase("Donald Duck\nDagobert Duck", ExpectedResult = "Election\n" +
+		[TestCase("Donald Duck\nDagobert Duck", false, ExpectedResult = "Election\n" +
 "--------\n" +
 "   Mickey Mouse\n" +
 "1. Donald Duck\n" +
 "2. Dagobert Duck\n")]
-		public string GetResult(string electedNominees)
+		[TestCase("", true, ExpectedResult = "Election\n" +
+"--------\n" +
+"1. Mickey Mouse\n" +
+"2. Donald Duck\n" +
+"   Dagobert Duck\n")]
+		public string GetResult(string electedNominees, bool writeEmptyBallot)
 		{
 			// Setup
 			const string ini = @"[Election]
@@ -36,7 +41,7 @@ Kandidat3=Dagobert Duck
 			var model = ElectionModelFactory.Create("Election", data) as WeightedElectionModel;
 
 			// Execute
-			return model.GetResult(electedNominees.Split('\n').ToList());
+			return model.GetResult(electedNominees.Split('\n').ToList(), writeEmptyBallot);
 		}
 	}
 }

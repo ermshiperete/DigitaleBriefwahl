@@ -111,7 +111,7 @@ namespace DigitaleBriefwahl.Views
 			return allOk;
 		}
 
-		public override string GetResult()
+		public override string GetResult(bool writeEmptyBallot)
 		{
 			var electedNominees = new List<string>();
 			for (var i = 0; i < Election.Votes; i++)
@@ -119,7 +119,7 @@ namespace DigitaleBriefwahl.Views
 				electedNominees.Add(_ComboBoxes[i].SelectedKey);
 			}
 
-			return Election.GetResult(electedNominees);
+			return Election.GetResult(electedNominees, writeEmptyBallot);
 		}
 	}
 }
