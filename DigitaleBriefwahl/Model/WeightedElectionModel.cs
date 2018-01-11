@@ -20,18 +20,13 @@ namespace DigitaleBriefwahl.Model
 			bldr.AppendLine(Name);
 			bldr.Append('-', Name.Length);
 			bldr.AppendLine();
-
-			if (writeEmptyBallot)
-			{
-				// we assign votes to the first X nominees
-				electedNominees.Clear();
-				for (var i = 0; i < Votes; i++)
-					electedNominees.Add(Nominees[i]);
-			}
+			bldr.AppendLine(Votes > 1
+				? $"({Votes} Stimmen; Wahl der Reihenfolge nach mit 1.-{Votes}. kennzeichnen)"
+				: $"({Votes} Stimme; Wahl mit 1. kennzeichnen)");
 
 			foreach (var nominee in Nominees)
 			{
-				if (electedNominees.Contains(nominee))
+				if (electedNominees.Contains(nominee) && !writeEmptyBallot)
 				{
 					for (var i = 0; i < Votes; i++)
 					{

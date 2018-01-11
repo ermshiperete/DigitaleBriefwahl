@@ -31,6 +31,7 @@ namespace DigitaleBriefwahl.Model
 			bldr.AppendLine(Name);
 			bldr.Append('-', Name.Length);
 			bldr.AppendLine();
+			bldr.AppendLine("(J=Ja, E=Enthaltung, N=Nein)");
 
 			var voteCount = 0;
 

@@ -173,6 +173,7 @@ namespace DigitaleBriefwahl
 			bldr.AppendLine(Title);
 			bldr.Append('=', Title.Length);
 			bldr.AppendLine();
+			bldr.AppendLine();
 			foreach (var page in tabControl.Pages)
 			{
 				var view = page.Tag as ElectionViewBase;
