@@ -22,6 +22,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - ballot written with Windows line endings to support editing with notepad on Windows
 - improve formatting of (empty) ballot
 
+### Fixed
+
+- Sending of emails on Windows if MAPI is not configured. If MAPI fails we now try mailto:.
+
 ## [0.1.1] - 2017-11-16
 
 ### Changed

@@ -104,7 +104,20 @@ namespace DigitaleBriefwahl
 
 			var filename = new Encryption.EncryptVote().WriteVote(Title, vote);
 
-			var emailProvider = EmailProviderFactory.PreferredEmailProvider();
+			if (SendEmail(EmailProviderFactory.PreferredEmailProvider(), filename) ||
+				SendEmail(EmailProviderFactory.AlternateEmailProvider(), filename))
+			{
+				Application.Instance.Quit();
+			}
+			else
+			{
+				MessageBox.Show(
+					$"Kann E-Mail nicht automatisch verschicken. Bitte die Datei '{filename}' als Anhang einer E-Mail an '{_configuration.EmailAddress}' schicken.");
+			}
+		}
+
+		private bool SendEmail(IEmailProvider emailProvider, string filename)
+		{
 			var email = emailProvider.CreateMessage();
 
 			email.To.Add(_configuration.EmailAddress);
@@ -112,13 +125,7 @@ namespace DigitaleBriefwahl
 			email.Body = "Anbei mein Stimmzettel.";
 			email.AttachmentFilePath.Add(filename);
 
-			if (emailProvider.SendMessage(email))
-				Application.Instance.Quit();
-			else
-			{
-				MessageBox.Show(
-					$"Kann E-Mail nicht automatisch verschicken. Bitte die Datei '{filename}' als Anhang einer E-Mail an '{_configuration.EmailAddress}' schicken.");
-			}
+			return emailProvider.SendMessage(email);
 		}
 
 		private void WriteBallot(bool writeEmptyBallot)
