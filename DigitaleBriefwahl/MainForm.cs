@@ -3,7 +3,6 @@
 // (https://opensource.org/licenses/GPL-3.0)
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -179,7 +178,7 @@ namespace DigitaleBriefwahl
 				var view = page.Tag as ElectionViewBase;
 				bldr.AppendLine(view.GetResult(writeEmptyBallot));
 			}
-			return bldr.ToString();
+			return bldr.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n").ToString();
 		}
 
 		private TabControl CreateTabControl(Configuration configuration)

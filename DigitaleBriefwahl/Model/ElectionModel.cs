@@ -101,8 +101,8 @@ namespace DigitaleBriefwahl.Model
 		protected static string NormalizeLineEndings(StringBuilder bldr)
 		{
 			// Normalize line endings so that the ballot has the same length
-			// regardless of whether it's run on Windows or Linux
-			return bldr.Replace("\r\n", "\n").Replace("\r", "\n").ToString();
+			// regardless of whether it's run on Windows or Linux. We use Windows line endings.
+			return bldr.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n").ToString();
 		}
 	}
 }

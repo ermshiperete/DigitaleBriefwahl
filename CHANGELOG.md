@@ -18,8 +18,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-- `wahl.ini` now comes with \r\n line endings to support editing with
-  notepad on Windows
+- `wahl.ini` now comes with \r\n line endings to support editing with notepad on Windows
+- ballot written with Windows line endings to support editing with notepad on Windows
 
 ## [0.1.1] - 2017-11-16
 
