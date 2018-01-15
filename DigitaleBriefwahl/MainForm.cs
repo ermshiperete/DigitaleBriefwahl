@@ -27,7 +27,7 @@ namespace DigitaleBriefwahl
 
 		public MainForm()
 		{
-			ExceptionLogging.InitializeWithUI("5012aef9a281f091c1fceea40c03003b", this);
+			ExceptionLoggingUI.Initialize("5012aef9a281f091c1fceea40c03003b", this);
 			Application.Instance.Name = "Digitale Briefwahl";
 
 			try

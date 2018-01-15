@@ -3,6 +3,7 @@
 // (https://opensource.org/licenses/GPL-3.0)
 
 using System;
+using System.Runtime.CompilerServices;
 using Bugsnag;
 using Eto.Forms;
 
@@ -34,5 +35,13 @@ namespace DigitaleBriefwahl.ExceptionHandling
 			}
 			Application.Instance.Quit();
 		}
+
+		public static ExceptionLogging Initialize(string apiKey, object parent = null,
+			[CallerFilePath] string filename = null)
+		{
+			Client = new ExceptionLoggingUI(apiKey, parent, filename);
+			return Client;
+		}
+
 	}
 }

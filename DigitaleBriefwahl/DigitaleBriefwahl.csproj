@@ -29,10 +29,8 @@
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ExceptionHandling\AnalyticsException.cs" />
     <Compile Include="ExceptionHandling\ErrorReport.cs" />
     <Compile Include="ExceptionHandling\ErrorReport.eto.cs" />
-    <Compile Include="ExceptionHandling\ExceptionLogging.cs" />
     <Compile Include="ExceptionHandling\ExceptionLoggingUI.cs" />
     <Compile Include="Model\ElectionModelFactory.cs" />
     <Compile Include="Model\WeightedElectionModel.cs" />
@@ -75,6 +73,11 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\DigitaleBriefwahl.ExceptionHandling\DigitaleBriefwahl.ExceptionHandling.csproj">
+      <Project>{2FD6B1D4-2B3E-4503-9E88-B283550B8A6E}</Project>
+      <Name>DigitaleBriefwahl.ExceptionHandling</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="..\packages\GitVersionTask.4.0.0-beta0012\build\GitVersionTask.targets" Condition="Exists('..\packages\GitVersionTask.4.0.0-beta0012\build\GitVersionTask.targets')" />
 </Project>

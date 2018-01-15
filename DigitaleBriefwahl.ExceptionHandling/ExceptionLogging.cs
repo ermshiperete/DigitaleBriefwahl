@@ -100,19 +100,12 @@ namespace DigitaleBriefwahl.ExceptionHandling
 			return Client;
 		}
 
-		public static ExceptionLogging InitializeWithUI(string apiKey, object parent = null,
-			[CallerFilePathAttribute] string filename = null)
-		{
-			Client = new ExceptionLoggingUI(apiKey, parent, filename);
-			return Client;
-		}
-
 		private void AddAnalytics()
 		{
 			NotifyAsync(new AnalyticsException(), Severity.Info);
 		}
 
-		public static ExceptionLogging Client { get; private set; }
+		public static ExceptionLogging Client { get; protected set; }
 	}
 }
 
