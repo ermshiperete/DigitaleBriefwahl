@@ -1,14 +1,20 @@
-﻿// Copyright (c) 2018 Eberhard Beilharz
+// Copyright (c) 2018 Eberhard Beilharz
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 
 using System;
+using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
-using System.Reflection;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using DigitaleBriefwahl.ExceptionHandling;
+using SIL.PlatformUtilities;
+using Squirrel;
 
-namespace DigitaleBriefwahlLauncher
+namespace DigitaleBriefwahl.Launcher
 {
 	/// <summary>
 	/// The launcher app has to be installed on the user's system. It will take the voting app
@@ -18,38 +24,127 @@ namespace DigitaleBriefwahlLauncher
 	/// </summary>
 	internal static class Program
 	{
+		[STAThread]
 		public static void Main(string[] args)
 		{
-			if (args.Length < 2 || args[0] != "--run")
-			{
-				Console.WriteLine("Missing/wrong parameters");
-				return;
-			}
-
-			if (!File.Exists(args[1]))
-			{
-				Console.WriteLine($"Can't find file {args[1]}");
-				return;
-			}
-
 			ExceptionLogging.Initialize("5012aef9a281f091c1fceea40c03003b");
-			var outputDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-			try
-			{
-				Directory.CreateDirectory(outputDir);
 
-				ZipFile.ExtractToDirectory(args[1], outputDir);
+			Logger.Log($"{SquirrelInstallerSupport.Executable} {string.Join(" ", args.Select(s => $"\"{s}\""))}");
 
-				Environment.CurrentDirectory = outputDir;
-				var assembly = Assembly.LoadFile(Path.Combine(outputDir, "DigitaleBriefwahl.Desktop.exe"));
-				var programType = assembly.GetType("DigitaleBriefwahl.Desktop.Program");
-				var mainMethod = programType.GetMethod("Main", BindingFlags.Static | BindingFlags.Public);
-				mainMethod.Invoke(null, new[] {new string[0]});
-			}
-			finally
+			Options options = null;
+			using (var writer = new StreamWriter(Logger.LogFile, true))
 			{
-				Directory.Delete(outputDir, true);
+
+				options = Options.ParseCommandLineArgs(writer, args);
+				if (options == null)
+				{
+					Console.WriteLine("Couldn't parse passed in arguments");
+					Logger.Log("Couldn't parse passed in arguments");
+					return;
+				}
 			}
+
+			if (!string.IsNullOrEmpty(options.RunApp) && !File.Exists(options.RunApp))
+			{
+				Console.WriteLine($"Can't find file {options.RunApp}");
+				Logger.Log($"Can't find file {options.RunApp}");
+				return;
+			}
+
+			if (!string.IsNullOrEmpty(options.RunDirectory) && !Directory.Exists(options.RunDirectory))
+			{
+				Console.WriteLine($"Can't find directory {options.RunDirectory}");
+				Logger.Log($"Can't find directory {options.RunDirectory}");
+				return;
+			}
+
+			var didUpdate = UpdateAndLaunchApp(options);
+
+			if (Debugger.IsAttached || didUpdate)
+				return;
+
+			Console.WriteLine("Press 'Enter' to continue");
+			Console.ReadLine();
+		}
+
+		private static bool UpdateAndLaunchApp(Options options)
+		{
+			using (var launcher = new Launcher(options.RunDirectory))
+			{
+				Console.WriteLine(options.SkipUpdateCheck || options.IsInstall ? "Lade Anwendung..." : "Überüfe auf Updates...");
+
+				var didUpdate = UpdateApp(options, launcher).GetAwaiter().GetResult();
+
+				if (string.IsNullOrEmpty(options.RunApp) &&
+					string.IsNullOrEmpty(options.RunDirectory) || didUpdate)
+				{
+					return didUpdate;
+				}
+
+				if (!string.IsNullOrEmpty(options.PackageDir))
+					SquirrelInstallerSupport.ExecuteUpdatedApp(options);
+				else
+				{
+					Console.WriteLine("Starte Anwendung...");
+					launcher.LaunchVotingApp();
+				}
+
+				return false;
+			}
+		}
+
+		[DllImport("wininet.dll")]
+		private static extern bool InternetGetConnectedState(out int description, int reservedValue);
+
+		private static async Task<bool> UpdateApp(Options options, Launcher launcher)
+		{
+			Task<bool> updateManagerTask = null;
+			bool didUpdate = false;
+
+			Task<string> unzipVotingApp = null;
+
+			if (Platform.IsWindows && !options.SkipUpdateCheck)
+			{
+				if (InternetGetConnectedState(out var flags, 0))
+				{
+					try
+					{
+						updateManagerTask = SquirrelInstallerSupport.HandleSquirrelInstallEvent(options);
+					}
+					catch (HttpRequestException e)
+					{
+						// some network problem - ignore
+						Console.WriteLine("Network problem - skipping updates");
+						Logger.Log(
+							$"Network problem - skipping updates: {e.Message} ({e.InnerException?.Message})");
+					}
+					catch (WebException we)
+					{
+						// some network problem - ignore
+						Console.WriteLine("Network problem - skipping updates");
+						Logger.Log($"Network problem - skipping updates: {we.Message}");
+					}
+				}
+				else
+				{
+					Console.WriteLine("Network not connected - skipping updates");
+					Logger.Log($"Network not connected - skipping updates (0x{flags:X2})");
+				}
+			}
+
+			if (!string.IsNullOrEmpty(options.RunApp))
+				unzipVotingApp = launcher.UnzipVotingApp(options);
+
+			if (updateManagerTask != null)
+				didUpdate = await updateManagerTask;
+
+			if (unzipVotingApp != null)
+				options.RunDirectory = await unzipVotingApp;
+
+			if (didUpdate && !string.IsNullOrEmpty(options.PackageDir))
+				SquirrelInstallerSupport.ExecuteUpdatedApp(options);
+
+			return didUpdate;
 		}
 	}
 }

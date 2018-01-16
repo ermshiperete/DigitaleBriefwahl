@@ -23,6 +23,8 @@ namespace DigitaleBriefwahl.Model
 		internal const string PublicKeyKey = "PublicKey";
 		internal const string Email = "Email";
 
+		public const string ConfigName = "wahl.ini";
+
 		private Configuration()
 		{
 			Current = this;

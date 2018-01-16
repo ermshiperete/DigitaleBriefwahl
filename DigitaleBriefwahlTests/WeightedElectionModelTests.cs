@@ -47,5 +47,24 @@ Kandidat3=Dagobert Duck
 			// Execute
 			return model.GetResult(electedNominees.Split('\n').ToList(), writeEmptyBallot);
 		}
+
+		[Test]
+		public void EmptyVotes()
+		{
+			// Setup
+			const string ini = @"[Election]
+Text=Some description
+Typ=Weighted
+Stimmen=2
+Kandidat1=Mickey Mouse
+Kandidat2=Donald Duck
+Kandidat3=Dagobert Duck
+";
+			var data = ElectionModelTests.ReadIniDataFromString(ini);
+			var model = ElectionModelFactory.Create("Election", data);
+
+			// Exercise/Verify
+			Assert.That(model.EmptyVotes, Is.EqualTo(new[] { "Mickey Mouse", "Donald Duck"}));
+		}
 	}
 }

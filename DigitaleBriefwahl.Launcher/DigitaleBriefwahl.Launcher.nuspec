@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package>
+	<metadata>
+		<id>$id$</id>
+		<version>$version$</version>
+		<authors>Eberhard Beilharz</authors>
+		<licenseUrl>https://github.com/ermshiperete/DigitaleBriefwahl/blob/master/LICENSE.md</licenseUrl>
+		<projectUrl>https://github.com/ermshiperete/DigitaleBriefwahl</projectUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<summary>Launcher for Digitale Briefwahl</summary>
+		<description>This small app is a launcher for Digitale Briefwahl (Public key and email based absentee voting tool)</description>
+		<language>en-US</language>
+	</metadata>
+</package>

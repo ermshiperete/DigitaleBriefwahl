@@ -42,7 +42,11 @@ Thumbs.db
 *.dotCover
 
 .idea/
+.vs/
 
 build/NuGet.exe
 build/nuget.exe
 build/DigitaleBriefwahl.files
+
+Releases/
+SquirrelBuild/

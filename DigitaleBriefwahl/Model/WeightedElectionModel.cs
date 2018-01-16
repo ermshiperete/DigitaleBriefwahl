@@ -45,5 +45,19 @@ namespace DigitaleBriefwahl.Model
 
 			return NormalizeLineEndings(bldr);
 		}
+
+		public override List<string> EmptyVotes
+		{
+			get
+			{
+				var votes = new List<string>();
+				for (int i = 0; i < Votes; i++)
+				{
+					votes.Add(Nominees[i]);
+				}
+
+				return votes;
+			}
+		}
 	}
 }

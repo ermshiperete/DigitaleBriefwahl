@@ -16,11 +16,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- Add launcher app. This decreases the likelyhood that the ballot will be falsely detected
+  as a virus on Windows systems.
+
 ### Changed
 
 - `wahl.ini` now comes with \r\n line endings to support editing with notepad on Windows
-- ballot written with Windows line endings to support editing with notepad on Windows
-- improve formatting of (empty) ballot
+- Ballot written with Windows line endings to support editing with notepad on Windows
+- Improve formatting of (empty) ballot
 
 ### Fixed
 

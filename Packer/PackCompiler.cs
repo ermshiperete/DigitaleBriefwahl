@@ -1,126 +1,83 @@
-// This file is based on the article "Self-Extractor" by Thomas Polaert (https://www.codeproject.com/Articles/31475/Self-Extractor)
+// Copyright (c) 2018 Eberhard Beilharz
+// This software is licensed under the GNU General Public License version 3
+// (https://opensource.org/licenses/GPL-3.0)
+
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Text;
-using Microsoft.CSharp;
-using System.CodeDom.Compiler;
-using System.Diagnostics;
-using System.Reflection;
+using DigitaleBriefwahl.Model;
 
 namespace Packer
 {
-	class PackCompiler : IDisposable
+	internal class PackCompiler
 	{
-		// Source file of standalone exe
-		private readonly string _sourceName = Path.Combine(
-			Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "SelfExtractor.cs");
+		private Configuration _configuration;
 
-		// Compressed files ready to embed as resource
-		private List<string> _filenames = new List<string>();
-
-		public void PackAllFiles()
+		public PackCompiler(string sourceDir)
 		{
-			AddAllFiles();
-			CompileArchive("Wahl.exe", null);
+			ExecutableLocation = sourceDir;
 		}
 
-		public void AddAllFiles()
+		public string PackAllFiles()
 		{
-			var dirInfo = new DirectoryInfo(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-			var filesToPack = new List<string>();
+			_configuration = Configuration.Configure(Path.Combine(ExecutableLocation, Configuration.ConfigName));
+			var targetDir = CopyAllFiles();
+			try
+			{
+				var archiveFilename = GetZipFilename();
+				CreateZipFile(targetDir, archiveFilename);
+				return archiveFilename;
+			}
+			finally
+			{
+				Directory.Delete(targetDir, true);
+			}
+		}
+
+		private string GetZipFilename()
+		{
+			return Path.Combine(ExecutableLocation, SanitizedElectionName + ".wahl");
+		}
+
+		private string SanitizedElectionName =>_configuration.Title.Replace(".", "").Replace(" ", "_");
+
+		private string CopyAllFiles()
+		{
+			var targetDir = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+			Directory.CreateDirectory(targetDir);
+			var dirInfo = new DirectoryInfo(ExecutableLocation);
 
 			foreach (var fileInfo in dirInfo.EnumerateFiles())
 			{
-				if (fileInfo.Name.StartsWith("Packer.") || fileInfo.Name == "SelfExtractor.cs")
-					continue;
-
-				if (fileInfo.Name.Contains("Tests") || fileInfo.Name == "nunit.framework.dll")
-					continue;
-
-				if (fileInfo.Name.StartsWith("Wahl"))
-					continue;
-
-				filesToPack.Add(fileInfo.Name);
-			}
-
-			foreach (var file in filesToPack)
-				AddFile(file);
-		}
-
-		public void AddFile(string filename)
-		{
-			// Compress input file using System.IO.Compression
-			using (Stream file = File.OpenRead(filename))
-			{
-				byte[] buffer = new byte[file.Length];
-
-				if (file.Length != file.Read(buffer, 0, buffer.Length))
-					throw new IOException("Unable to read " + filename);
-
-				using (Stream gzFile = File.Create(filename + ".gz"))
+				if (fileInfo.Name.StartsWith("Packer.") ||
+					fileInfo.Name.Contains("Tests") || fileInfo.Name.StartsWith("nunit.framework") ||
+					fileInfo.Name.StartsWith("Wahl") ||
+					fileInfo.Name.StartsWith(SanitizedElectionName) ||
+					fileInfo.Name.StartsWith("ManuelleVerschluesselung") ||
+					Path.GetExtension(fileInfo.Name) == ".wahl")
 				{
-					using (Stream gzip = new GZipStream(gzFile, CompressionMode.Compress))
-					{
-						gzip.Write(buffer, 0, buffer.Length);
-					}
+					continue;
 				}
+
+				if (fileInfo.Name.StartsWith("DigitaleBriefwahl.Desktop.exe"))
+				{
+					File.Copy(fileInfo.Name, Path.Combine(targetDir, fileInfo.Name.Replace("exe", "dll")));
+					continue;
+				}
+
+				File.Copy(fileInfo.Name, Path.Combine(targetDir, fileInfo.Name));
 			}
-			// Store filename so we can embed it on CompileArchive() call
-			_filenames.Add(filename + ".gz");
+
+			return targetDir;
 		}
 
-		public void CompileArchive(string archiveFilename, string iconFilename)
+		private string ExecutableLocation { get; }
+
+		private void CreateZipFile(string directory, string archiveFilename)
 		{
-			var csc = new CSharpCodeProvider();
-			var cp = new CompilerParameters
-			{
-				GenerateExecutable = true,
-				OutputAssembly = archiveFilename,
-				CompilerOptions = "/target:winexe"
-			};
-
-			if (!string.IsNullOrEmpty(iconFilename))
-			{
-				cp.CompilerOptions += " /win32icon:" + iconFilename;
-			}
-			cp.ReferencedAssemblies.Add("System.dll");
-
-			// Add compressed files as resource
-			cp.EmbeddedResources.AddRange(_filenames.ToArray());
-
-			// Compile standalone executable with input files embedded as resource
-			var cr = csc.CompileAssemblyFromFile(cp, _sourceName);
-
-			// yell if compilation error
-			if (cr.Errors.Count <= 0)
-			{
-				Console.WriteLine("Successfully built 'Wahl.exe'");
-				return;
-			}
-
-			Console.WriteLine("Errors building {0}", cr.PathToAssembly);
-
-			foreach (CompilerError ce in cr.Errors)
-			{
-				Console.WriteLine("{0}", ce);
-			}
+			if (File.Exists(archiveFilename))
+				File.Delete(archiveFilename);
+			ZipFile.CreateFromDirectory(directory, archiveFilename);
 		}
-
-		#region IDisposable Members
-
-		public void Dispose()
-		{
-			foreach (string path in _filenames)
-			{
-				File.Delete(path);
-			}
-			_filenames.Clear();
-
-			GC.SuppressFinalize(this);
-		}
-
-		#endregion
 	}
 }

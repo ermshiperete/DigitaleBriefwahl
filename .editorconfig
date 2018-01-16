@@ -22,6 +22,10 @@ tab_width = 4
 indent_style = space
 indent_size = 2
 
+[packages.config]
+indent_style = space
+indent_size = 2
+
 # Generated file
 [*.sln]
 end_of_line = crlf

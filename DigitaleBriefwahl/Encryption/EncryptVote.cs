@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2016 Eberhard Beilharz
+// Copyright (c) 2016 Eberhard Beilharz
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 using System;
@@ -134,7 +134,7 @@ namespace DigitaleBriefwahl.Encryption
 		{
 			var fileName = Path.Combine(Path.GetTempPath(),
 				$"{GetSanitizedElection(election)}_{Configuration.Current.PublicKey}");
-			File.Copy(Configuration.Current.PublicKey, fileName);
+			File.Copy(Configuration.Current.PublicKey, fileName, true);
 			return fileName;
 		}
 	}

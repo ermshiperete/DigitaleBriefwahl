@@ -100,7 +100,7 @@ namespace DigitaleBriefwahl.ExceptionHandling
 			return Client;
 		}
 
-		private void AddAnalytics()
+		public void AddAnalytics()
 		{
 			NotifyAsync(new AnalyticsException(), Severity.Info);
 		}
