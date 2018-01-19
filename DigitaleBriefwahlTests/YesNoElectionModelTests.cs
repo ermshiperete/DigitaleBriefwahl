@@ -12,18 +12,20 @@ namespace DigitaleBriefwahlTests
 	[TestFixture]
 	public class YesNoElectionModelTests
 	{
-		[TestCase("E\nN\nJ\nN", false, ExpectedResult = "Election\n" +
-"--------\n" +
-"1. [E] Mickey Mouse\n" +
-"2. [N] Donald Duck\n" +
-"3. [J] Dagobert Duck\n" +
-"4. [N] Daisy Duck\n")]
-		[TestCase("E\nE\nE\nE", true, ExpectedResult = "Election\n" +
-"--------\n" +
-"1. [E] Mickey Mouse\n" +
-"2. [E] Donald Duck\n" +
-"3. [E] Dagobert Duck\n" +
-"4. [E] Daisy Duck\n")]
+		[TestCase("E\nN\nJ\nN", false, ExpectedResult = "Election\r\n" +
+"--------\r\n" +
+"(J=Ja, E=Enthaltung, N=Nein)\r\n" +
+"1. [E] Mickey Mouse\r\n" +
+"2. [N] Donald Duck\r\n" +
+"3. [J] Dagobert Duck\r\n" +
+"4. [N] Daisy Duck\r\n")]
+		[TestCase("E\nE\nE\nE", true, ExpectedResult = "Election\r\n" +
+"--------\r\n" +
+"(J=Ja, E=Enthaltung, N=Nein)\r\n" +
+"1. [E] Mickey Mouse\r\n" +
+"2. [E] Donald Duck\r\n" +
+"3. [E] Dagobert Duck\r\n" +
+"4. [E] Daisy Duck\r\n")]
 		public string GetResult_TwoVotes(string votes, bool writeEmptyBallot)
 		{
 			// Setup
@@ -37,21 +39,24 @@ Kandidat3=Dagobert Duck
 Kandidat4=Daisy Duck
 ";
 			var data = ElectionModelTests.ReadIniDataFromString(ini);
-			var model = ElectionModelFactory.Create("Election", data) as YesNoElectionModel;
+			var model = ElectionModelFactory.Create("Election", data);
 
 			// Execute
 			return model.GetResult(votes.Split('\n').ToList(), writeEmptyBallot);
 		}
 
-		[TestCase("J", ExpectedResult = "Election\n" +
-"--------\n" +
-"1. [J] Mickey Mouse\n")]
-		[TestCase("E", ExpectedResult = "Election\n" +
-"--------\n" +
-"1. [E] Mickey Mouse\n")]
-		[TestCase("N", ExpectedResult = "Election\n" +
-"--------\n" +
-"1. [N] Mickey Mouse\n")]
+		[TestCase("J", ExpectedResult = "Election\r\n" +
+"--------\r\n" +
+"(J=Ja, E=Enthaltung, N=Nein)\r\n" +
+"1. [J] Mickey Mouse\r\n")]
+		[TestCase("E", ExpectedResult = "Election\r\n" +
+"--------\r\n" +
+"(J=Ja, E=Enthaltung, N=Nein)\r\n" +
+"1. [E] Mickey Mouse\r\n")]
+		[TestCase("N", ExpectedResult = "Election\r\n" +
+"--------\r\n" +
+"(J=Ja, E=Enthaltung, N=Nein)\r\n" +
+"1. [N] Mickey Mouse\r\n")]
 		public string GetResult_OneVote(string votes)
 		{
 			// Setup
@@ -62,7 +67,7 @@ Stimmen=1
 Kandidat1=Mickey Mouse
 ";
 			var data = ElectionModelTests.ReadIniDataFromString(ini);
-			var model = ElectionModelFactory.Create("Election", data) as YesNoElectionModel;
+			var model = ElectionModelFactory.Create("Election", data);
 
 			// Execute
 			return model.GetResult(votes.Split('\n').ToList(), false);
@@ -87,7 +92,7 @@ Kandidat3=Dagobert Duck
 Kandidat4=Daisy Duck
 ";
 			var data = ElectionModelTests.ReadIniDataFromString(ini);
-			var model = ElectionModelFactory.Create("Election", data) as YesNoElectionModel;
+			var model = ElectionModelFactory.Create("Election", data);
 
 			// Execute
 			Assert.That(() => model.GetResult(votes.Split('\n').ToList(), false),
