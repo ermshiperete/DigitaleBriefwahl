@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Abort on any kind of error
+set -e -o pipefail
+
+# Returns true if repo has uncommitted changes
+__isDirty()
+{
+	# see http://stackoverflow.com/a/2659808
+	! git diff-index --quiet HEAD
+}
+
+if __isDirty ; then
+	echo "There are uncommited changes. Please commit them first."
+	exit 1
+fi
+
+# Obtain the package name and version
+NAME=$(dpkg-parsechangelog --show-field=Source)
+VERSION=$(dpkg-parsechangelog --show-field=Version)
+
+git clean -dxf
+
+xbuild /t:Build /p:Configuration=Release build/DigitaleBriefwahl.proj
+
+rm -rf packages
+rm -rf output
+rm -rf lib
+
+mv DigitaleBriefwahl.Launcher/bin/Release LauncherBin
+
+# Create the source package
+debuild $DEBUILD_ADDITIONAL_OPTS -S -sa -Zbzip2 -i'.*' -I.vscode -I.idea -I.git

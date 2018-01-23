@@ -1,0 +1,33 @@
+# the sourcing script should cd/pushd to the directory containing this script
+BASE="$(pwd)"
+if [ -f /opt/mono5-sil/bin/mono ]; then
+	MONO_PREFIX=/opt/mono5-sil
+elif [ -f /opt/mono4-sil/bin/mono ]; then
+	MONO_PREFIX=/opt/mono4-sil
+else
+	MONO_PREFIX=/usr
+fi
+
+################################################################################################
+
+# Add the installation directory to the library paths
+LD_LIBRARY_PATH="${BASE}:${LD_LIBRARY_PATH}"
+MONO_PATH="${BASE}:${MONO_PATH}"
+
+################################################################################################
+
+PATH="${MONO_PREFIX}/bin:${PATH}"
+LD_LIBRARY_PATH="${MONO_PREFIX}/lib:${LD_LIBRARY_PATH}"
+PKG_CONFIG_PATH="${MONO_PREFIX}/lib/pkgconfig:${PKG_CONFIG_PATH}:/usr/local/lib/pkgconfig:/lib/pkgconfig:/usr/lib/pkgconfig"
+MONO_GAC_PREFIX="${MONO_PREFIX}:/usr"
+
+################################################################################################
+
+MONO_TRACE_LISTENER="Console.Out"
+
+export \
+	PATH LD_LIBRARY_PATH PKG_CONFIG_PATH LD_PRELOAD \
+	MONO_PATH \
+	MONO_RUNTIME MONO_PREFIX MONO_GAC_PREFIX \
+	MONO_TRACE_LISTENER MONO_IOMAP MONO_MWF_SCALING \
+	MONO_DEBUG MONO_ENV_OPTIONS

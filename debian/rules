@@ -1,0 +1,81 @@
+#!/usr/bin/make -f
+# See debhelper(7) (uncomment to enable)
+# output every command that modifies files on the build system.
+#export DH_VERBOSE = 1
+
+
+#export MONO_PREFIX = /opt/mono5-sil
+export BUILD = Release
+
+PACKAGE = digitale-briefwahl
+DESTDIR = debian/$(PACKAGE)
+LIB     = usr/lib/$(PACKAGE)
+SHARE   = usr/share/$(PACKAGE)
+
+%:
+	dh $@ --with=cli --parallel
+
+override_dh_auto_configure:
+
+override_dh_auto_build:
+	#. ./environ && \
+	#xbuild /p:Configuration=$(BUILD) build/DigitaleBriefwahl.proj /t:CompileOnly
+
+override_dh_auto_test:
+
+override_dh_auto_clean:
+	#. ./environ && \
+	#xbuild /p:Configuration=$(BUILD) build/DigitaleBriefwahl.proj /t:Clean
+	dh_clean
+
+override_dh_auto_install:
+	# Install library files
+	install -d $(DESTDIR)/$(LIB)
+	install -m 644 LauncherBin/*.* $(DESTDIR)/$(LIB)
+	install -d $(DESTDIR)/$(SHARE)
+	install -m 644 environ $(DESTDIR)/$(SHARE)
+	# Install wrapper script
+	install -d $(DESTDIR)/usr/bin
+	install -m 755 debian/digitale-briefwahl.sh $(DESTDIR)/usr/bin/digitale-briefwahl
+	# Add to Applications menu
+	install -d $(DESTDIR)/usr/share/pixmaps
+	install -m 644 Resources/DigitaleBriefwahl.png $(DESTDIR)/usr/share/pixmaps/digitale-briefwahl.png
+	install -m 644 Resources/DigitaleBriefwahl.svg $(DESTDIR)/usr/share/pixmaps/digitale-briefwahl.svg
+	install -d $(DESTDIR)/usr/share/applications
+	desktop-file-install --dir $(DESTDIR)/usr/share/applications debian/digitale-briefwahl.desktop
+	# Install icon for our mime type so that it shows up as icon for a file with extension .wahl
+	# NOTE: mime type installation is handled by dh_installmime
+	install -d $(DESTDIR)/usr/share/icons/hicolor/48x48/mimetypes/
+	install -m 644 Resources/DigitaleBriefwahl.png $(DESTDIR)/usr/share/icons/hicolor/48x48/mimetypes/application-wahl.png
+	install -d $(DESTDIR)/usr/share/icons/hicolor/scalable/mimetypes/
+	install -m 644 Resources/DigitaleBriefwahl.svg $(DESTDIR)/usr/share/icons/hicolor/scalable/mimetypes/application-wahl.svg
+
+# Don't export any assemblies to other packages
+override_dh_makeclilibs:
+
+# Include mono5-sil in shlib dirs searched
+#override_dh_shlibdeps:
+#	dh_shlibdeps -l$(MONO_PREFIX)/lib
+
+# Include mono5-sil in cli dirs searched
+override_dh_clideps:
+	#mkdir -p debian/tmp/usr && ln -s $(MONO_PREFIX)/* debian/tmp/usr/ && \
+	#PATH=$(MONO_PREFIX)/bin:$(PATH) \
+	#dh_clideps internal-mono -l$(MONO_PREFIX)/lib
+	dh_clideps \
+		--exclude-moduleref=security.dll \
+		--exclude-moduleref=Crypt32.dll --exclude-moduleref=libdconf.dll \
+		--exclude-moduleref=libhunspell --exclude-moduleref=Autofac \
+		--exclude-moduleref=CommandLine --exclude-moduleref=NDesk.DBus \
+		--exclude-moduleref=INIFileParser --exclude-moduleref=Newtonsoft.Json \
+		--exclude-moduleref=MAPI32.DLL --exclude-moduleref=__Internal \
+		--exclude-moduleref=ole32.dll --exclude-moduleref=version.dll \
+		--exclude-moduleref=psapi.dll --exclude-moduleref=msdelta.dll \
+		--exclude-moduleref=wininet.dll --exclude-moduleref=NTDLL.DLL \
+		--exclude-moduleref=mspatcha.dll --exclude-moduleref=mspatchc.dll
+	# rm -rf debian/tmp/usr
+
+# Don't strip debug symbols -- we want them for informative crash stack traces
+override_dh_strip:
+
+override_dh_clistrip:

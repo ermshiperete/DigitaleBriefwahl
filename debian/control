@@ -1,0 +1,19 @@
+Source: digitale-briefwahl
+Section: misc
+Priority: optional
+Maintainer: Eberhard Beilharz <eb1@sil.org>
+Standards-Version: 3.9.7
+Homepage: https://github.com/ermshiperete/DigitaleBriefwahl
+Vcs-Git: git://github.com/ermshiperete/DigitaleBriefwahl.git
+Vcs-Browser: https://github.com/ermshiperete/DigitaleBriefwahl
+Build-Depends: debhelper (>=9), cli-common-dev (>= 0.8),
+ desktop-file-utils
+
+Package: digitale-briefwahl
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends},
+ mono-complete (>= 5) | mono4-sil | mono5-sil,
+ libgdiplus | libgdiplus4-sil | libgdiplus5-sil,
+ gtk-sharp2 | gtk-sharp4-sil | gtk-sharp5-sil
+Description: Public key and email based absentee voting tool
+ This package contains the launcher for a digital absentee vote system based on public keys.
