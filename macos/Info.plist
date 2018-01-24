@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>CFBundleIdentifier</key>
+		<string>digitale.briefwahl.launcher</string>
+		<key>CFBundleInfoDictionaryVersion</key>
+		<string>6.0</string>
+		<key>CFBundleDevelopmentRegion</key>
+		<string>en</string>
+		<key>CFBundleExecutable</key>
+		<string>digitale-briefwahl</string>
+		<key>CFBundleIconFile</key>
+		<string>icons.icns</string>
+		<key>CFBundleDocumentTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleTypeName</key>
+				<string>Digitale Briefwahl Stimmzettel</string>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleTypeIconFile</key>
+				<string>icons.icns</string>
+				<key>CFBundleTypeExtensions</key>
+				<array>
+					<string>wahl</string>
+				</array>
+				<key>LSItemContentTypes</key>
+				<array>
+					<string>digitale.briefwahl.wahl</string>
+				</array>
+				<key>LSHandlerRank</key>
+				<string>Owner</string>
+			</dict>
+		</array>
+		<key>UTExportedTypeDeclarations</key>
+		<array>
+			<dict>
+				<key>UTTypeIdentifier</key>
+				<string>digitale.briefwahl.wahl</string>
+				<key>UTTypeDescription</key>
+				<string>Digitale Briefwahl Stimmzettel</string>
+				<key>UTTypeConformsTo</key>
+				<array>
+					<string>public.data</string>
+				</array>
+				<key>UTTypeTagSpecification</key>
+				<dict>
+					<key>public.filename-extension</key>
+					<array>
+						<string>wahl</string>
+					</array>
+					<key>public.mime-type</key>
+					<string>application/wahl</string>
+				</dict>
+			</dict>
+		</array>
+	</dict>
+</plist>

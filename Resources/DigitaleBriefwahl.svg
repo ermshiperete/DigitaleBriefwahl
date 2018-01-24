@@ -15,7 +15,10 @@
    id="svg4136"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="DigitaleBriefwahl.svg">
+   sodipodi:docname="DigitaleBriefwahl.svg"
+   inkscape:export-filename="/home/eberhard/Develop/DigitaleBriefwahl/Resources/icon_16x16.png"
+   inkscape:export-xdpi="29.77"
+   inkscape:export-ydpi="29.77">
   <defs
      id="defs4138" />
   <sodipodi:namedview
@@ -26,8 +29,8 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="9.7989532"
-     inkscape:cx="63.008597"
-     inkscape:cy="23.784918"
+     inkscape:cx="49.591726"
+     inkscape:cy="11.979084"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -45,7 +48,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -58,7 +61,7 @@
        style="opacity:1;fill:#0052ba;fill-opacity:1;stroke:none;stroke-width:2.5;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="rect4688"
        width="48.372513"
-       height="49.086876"
+       height="48.372517"
        x="0"
        y="1004.1938" />
     <text
