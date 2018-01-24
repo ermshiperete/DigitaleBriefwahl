@@ -19,7 +19,7 @@ namespace Packer
 
 		public static void Main(string[] args)
 		{
-			ExceptionLogging.Initialize("5012aef9a281f091c1fceea40c03003b");
+			ExceptionLogging.Initialize("5012aef9a281f091c1fceea40c03003b", "Packer");
 			Config = Configuration.Configure(Path.Combine(ExecutableLocation, Configuration.ConfigName));
 			var zipFile = new PackCompiler(ExecutableLocation).PackAllFiles();
 			var ballotFile = WriteBallot();
@@ -29,11 +29,11 @@ namespace Packer
 			Console.WriteLine($"\t{Path.GetFileName(ballotFile)}");
 			Console.WriteLine($"\t{Path.GetFileName(publicKeyFile)}");
 
-			if (!Debugger.IsAttached)
-			{
-				Console.WriteLine("Press 'Enter' to continue");
-				Console.ReadLine();
-			}
+			if (Debugger.IsAttached)
+				return;
+
+			Console.WriteLine("Press 'Enter' to continue");
+			Console.ReadLine();
 		}
 
 		private static string MoveToExeLocation(string fileName)

@@ -24,11 +24,13 @@ namespace DigitaleBriefwahl
 		private TabControl _tabControl;
 		private Button _nextButton;
 		private Button _backButton;
+		private string _launcherVersion;
 
-		public MainForm()
+		public MainForm(string launcherVersion = null)
 		{
-			ExceptionLoggingUI.Initialize("5012aef9a281f091c1fceea40c03003b", this);
+			ExceptionLoggingUI.Initialize("5012aef9a281f091c1fceea40c03003b", "DigitaleBriefwahl", launcherVersion, this);
 			Application.Instance.Name = "Digitale Briefwahl";
+			_launcherVersion = launcherVersion;
 
 			try
 			{
@@ -92,7 +94,8 @@ namespace DigitaleBriefwahl
 			var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
 			var version = versionInfo.FileVersion;
 			MessageBox.Show(
-				$"Digitale Briefwahl\n\nwahl.ini: {Configuration.Current.Title}\n\nVersion {version}\n\n{versionInfo.LegalCopyright}",
+				$"Digitale Briefwahl\n\nwahl.ini: {Configuration.Current.Title}\n\n" +
+				$"Version {version}\n(Launcher {_launcherVersion})\n\n{versionInfo.LegalCopyright}",
 				"Digitale Briefwahl");
 		}
 

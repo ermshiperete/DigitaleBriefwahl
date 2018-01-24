@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2017 Eberhard Beilharz
+// Copyright (c) 2017 Eberhard Beilharz
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 using System;
@@ -15,14 +15,15 @@ namespace DigitaleBriefwahl.ExceptionHandling
 {
 	public class ExceptionLogging : BaseClient
 	{
-		protected ExceptionLogging(string apiKey, string callerFilePath)
+		protected ExceptionLogging(string apiKey, string appName, string launcherVersion,
+			string callerFilePath)
 			: base(apiKey)
 		{
-			Setup(callerFilePath);
+			Setup(launcherVersion, appName, callerFilePath);
 			AddAnalytics();
 		}
 
-		private void Setup(string callerFilePath)
+		private void Setup(string launcherVersion, string appName, string callerFilePath)
 		{
 			var solutionPath = Path.GetFullPath(Path.Combine(callerFilePath, "../../"));
 			Config.FilePrefixes = new[] { solutionPath };
@@ -33,6 +34,8 @@ namespace DigitaleBriefwahl.ExceptionHandling
 			Config.Metadata.AddToTab("App", "runtime", Platform.IsMono ? "Mono" : ".NET");
 			if (Platform.IsMono)
 				Config.Metadata.AddToTab("App", "monoversion", Platform.MonoVersion);
+			Config.Metadata.AddToTab("App", "launcher", launcherVersion);
+			Config.Metadata.AddToTab("App", "app", appName);
 			Config.Metadata.AddToTab("Device", "desktop", Platform.DesktopEnvironment);
 			if (!string.IsNullOrEmpty(Platform.DesktopEnvironmentInfoString))
 				Config.Metadata.AddToTab("Device", "shell", Platform.DesktopEnvironmentInfoString);
@@ -93,10 +96,11 @@ namespace DigitaleBriefwahl.ExceptionHandling
 			return true;
 		}
 
-		public static ExceptionLogging Initialize(string apiKey,
-			[CallerFilePathAttribute] string filename = null)
+		public static ExceptionLogging Initialize(string apiKey, string appName,
+			string launcherVersion = null,
+			[CallerFilePath] string filename = null)
 		{
-			Client = new ExceptionLogging(apiKey, filename);
+			Client = new ExceptionLogging(apiKey, appName, launcherVersion, filename);
 			return Client;
 		}
 

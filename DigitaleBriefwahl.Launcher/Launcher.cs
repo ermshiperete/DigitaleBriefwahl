@@ -2,8 +2,10 @@
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace DigitaleBriefwahl.Launcher
@@ -63,9 +65,11 @@ namespace DigitaleBriefwahl.Launcher
 		{
 			var setup = new AppDomainSetup { ApplicationBase = OutputDir };
 
+			var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
 			Environment.CurrentDirectory = OutputDir;
 			VotingAppDomain = AppDomain.CreateDomain("VotingApp", null, setup);
-			VotingAppDomain.ExecuteAssembly("DigitaleBriefwahl.Desktop.dll");
+			VotingAppDomain.ExecuteAssembly("DigitaleBriefwahl.Desktop.dll",
+				new [] { versionInfo.FileVersion });
 		}
 	}
 }

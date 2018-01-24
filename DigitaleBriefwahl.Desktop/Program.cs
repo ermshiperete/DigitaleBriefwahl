@@ -12,7 +12,8 @@ namespace DigitaleBriefwahl.Desktop
 		[STAThread]
 		public static void Main(string[] args)
 		{
-			new Application(Platform.Detect).Run(new MainForm());
+			var launcherVersion = args.Length > 0 ? args[0] : null;
+			new Application(Platform.Detect).Run(new MainForm(launcherVersion));
 		}
 	}
 }
