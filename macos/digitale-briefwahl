@@ -46,9 +46,9 @@ else
 fi
 
 #create log file directory if it doesn't exist
-export TMPDIR="$HOME/Library/Logs/$APPNAME"
-LOG_FILE="$TMPDIR/$APPNAME.log"
-mkdir -p "$TMPDIR"
+export LOG_DIR="$HOME/Library/Logs/$APPNAME"
+LOG_FILE="$LOG_DIR/$APPNAME.log"
+mkdir -p "$LOG_DIR"
 
 #run app using mono
 $MONO_EXEC --debug $MONO_OPTIONS "$EXE_PATH" $* 2>&1 1> "$LOG_FILE"

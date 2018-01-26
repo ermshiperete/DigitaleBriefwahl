@@ -21,7 +21,21 @@ namespace Packer
 		{
 			ExceptionLogging.Initialize("5012aef9a281f091c1fceea40c03003b", "Packer");
 			Config = Configuration.Configure(Path.Combine(ExecutableLocation, Configuration.ConfigName));
-			var zipFile = new PackCompiler(ExecutableLocation).PackAllFiles();
+			var packCompiler = new PackCompiler(ExecutableLocation);
+			if (!File.Exists(packCompiler.ConfigFilename))
+			{
+				Console.WriteLine();
+				Console.WriteLine($"The configuration file {packCompiler.ConfigFilename} is missing. Exiting.");
+				return;
+			}
+
+			if (!File.Exists(packCompiler.Config.PublicKey))
+			{
+				Console.WriteLine();
+				Console.WriteLine($"The public key file '{packCompiler.Config.PublicKey}' specified in {packCompiler.ConfigFilename} is missing. Exiting.");
+				return;
+			}
+			var zipFile = packCompiler.PackAllFiles();
 			var ballotFile = WriteBallot();
 			var publicKeyFile = WritePublicKey();
 			Console.WriteLine($"The following files were created in {Path.GetDirectoryName(zipFile)}:");

@@ -1,11 +1,14 @@
 INSTALLERDIR=$(PWD)/../Releases
 TARGETDIR=$(PWD)/../output/macos
-APPDIR=root/Applications/DigitaleBriefwahl.Launcher.app/Contents
+APPDIR=root/Applications/DigitaleBriefwahl.Launcher.Mac.app/Contents
 VERSION=$(shell cat ../DigitaleBriefwahl.Launcher/bin/Version.txt)
 NUMFILES=$(shell find $(TARGETDIR)/root | wc -l)
 SIZE=$(shell du -BK -s $(TARGETDIR)/root | cut -f1 -d'K')
 
 all: installer
+
+compile:
+	xbuild /t:Build ../build/DigitaleBriefwahl.proj
 
 prepare:
 	mkdir -p $(INSTALLERDIR)
@@ -13,29 +16,23 @@ prepare:
 	mkdir -p $(TARGETDIR)/Resources/en.lproj
 	mkdir -p $(TARGETDIR)/root/Applications
 
-prepare-app:
-	mkdir -p $(TARGETDIR)/$(APPDIR)/MacOS/app
-	mkdir -p $(TARGETDIR)/$(APPDIR)/Resources
-
-app: prepare-app
-	cp Info.plist $(TARGETDIR)/$(APPDIR)/
-	cp digitale-briefwahl $(TARGETDIR)/$(APPDIR)/MacOS/
-	cp ../Resources/icons.icns $(TARGETDIR)/$(APPDIR)/Resources/
-	cp -r ../DigitaleBriefwahl.Launcher/bin/Release/*.* $(TARGETDIR)/$(APPDIR)/MacOS/app/
+app: prepare
+	cp -r ../DigitaleBriefwahl.Launcher.Mac/bin/Release/DigitaleBriefwahl.Launcher.Mac.app $(TARGETDIR)/root/Applications/
+	rm -rf $(TARGETDIR)/root/Applications/DigitaleBriefwahl.Launcher.Mac.app/MacAppTemplate.app
 
 .ONESHELL:
 
 installer: prepare app create-base-pkg create-flat
-	( cd $(TARGETDIR)/flat && xar --compression none -cf "$(INSTALLERDIR)/DigitaleBriefwahl.Launcher.pkg" * )
+	( cd $(TARGETDIR)/flat && xar --compression none -cf "$(INSTALLERDIR)/DigitaleBriefwahl.Launcher.Mac.pkg" * )
 
 create-base-pkg: prepare app
 	cd $(TARGETDIR)
 	( cd root && find . | cpio -o --format odc --owner 0:80 | gzip -c ) > flat/base.pkg/Payload
 	cat > flat/base.pkg/PackageInfo <<-EOF
-	<pkg-info format-version="2" identifier="DigitaleBriefwahl.Launcher.base.pkg" version="$(VERSION)" install-location="/" auth="root">
+	<pkg-info format-version="2" identifier="DigitaleBriefwahl.Launcher.Mac.base.pkg" version="$(VERSION)" install-location="/" auth="root">
 		<payload installKBytes="$(SIZE)" numberOfFiles="$(NUMFILES)"/>
 		<bundle-version>
-			<bundle id="DigitaleBriefwahl.Launcher" CFBundleIdentifier="DigitaleBriefwahl.Launcher" path="./Applications/DigitaleBriefwahl.Launcher.app" CFBundleVersion="$(VERSION)"/>
+			<bundle id="DigitaleBriefwahl.Launcher.Mac" CFBundleIdentifier="DigitaleBriefwahl.Launcher.Mac" path="./Applications/DigitaleBriefwahl.Launcher.Mac.app" CFBundleVersion="$(VERSION)"/>
 		</bundle-version>
 	</pkg-info>
 	EOF
@@ -46,7 +43,7 @@ create-flat: create-base-pkg
 	cat > flat/Distribution <<-EOF
 	<?xml version="1.0" encoding="utf-8"?>
 	<installer-script minSpecVersion="1.000000" authoringTool="com.apple.PackageMaker" authoringToolVersion="3.0.3" authoringToolBuild="174">
-		<title>Digitale Briefwahl</title>
+		<title>Digitale Briefwahl $(VERSION)</title>
 		<options customize="never" allow-external-scripts="no"/>
 		<domains enable_anywhere="true"/>
 		<installation-check script="pm_install_check();"/>
@@ -64,8 +61,8 @@ create-flat: create-base-pkg
 			<line choice="choice1"/>
 		</choices-outline>
 		<choice id="choice1" title="base">
-			<pkg-ref id="DigitaleBriefwahl.Launcher.base.pkg"/>
+			<pkg-ref id="DigitaleBriefwahl.Launcher.Mac.base.pkg"/>
 		</choice>
-		<pkg-ref id="DigitaleBriefwahl.Launcher.base.pkg" installKBytes="$(SIZE)" version="$(VERSION)" auth="Root">#base.pkg</pkg-ref>
+		<pkg-ref id="DigitaleBriefwahl.Launcher.Mac.base.pkg" installKBytes="$(SIZE)" version="$(VERSION)" auth="Root">#base.pkg</pkg-ref>
 	</installer-script>
 	EOF

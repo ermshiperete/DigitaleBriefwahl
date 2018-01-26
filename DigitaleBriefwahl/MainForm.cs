@@ -24,11 +24,12 @@ namespace DigitaleBriefwahl
 		private TabControl _tabControl;
 		private Button _nextButton;
 		private Button _backButton;
-		private string _launcherVersion;
+		private readonly string _launcherVersion;
 
 		public MainForm(string launcherVersion = null)
 		{
 			ExceptionLoggingUI.Initialize("5012aef9a281f091c1fceea40c03003b", "DigitaleBriefwahl", launcherVersion, this);
+			Logger.Log("MainForm starting");
 			Application.Instance.Name = "Digitale Briefwahl";
 			_launcherVersion = launcherVersion;
 
@@ -107,8 +108,14 @@ namespace DigitaleBriefwahl
 
 			var filename = new Encryption.EncryptVote().WriteVote(Title, vote);
 
-			if (SendEmail(EmailProviderFactory.PreferredEmailProvider(), filename) ||
-				SendEmail(EmailProviderFactory.AlternateEmailProvider(), filename))
+			var mailSent = SendEmail(EmailProviderFactory.PreferredEmailProvider(), filename);
+			Logger.Log($"Sending email through preferred email provider successful: {mailSent}");
+			if (!mailSent)
+			{
+				mailSent = SendEmail(EmailProviderFactory.AlternateEmailProvider(), filename);
+				Logger.Log($"Sending email through alternate email provider successful: {mailSent}");
+			}
+			if (mailSent)
 			{
 				Application.Instance.Quit();
 			}
@@ -121,6 +128,10 @@ namespace DigitaleBriefwahl
 
 		private bool SendEmail(IEmailProvider emailProvider, string filename)
 		{
+			if (emailProvider == null)
+				return false;
+
+			Logger.Log($"Sending email through {emailProvider.GetType().Name}");
 			var email = emailProvider.CreateMessage();
 
 			email.To.Add(_configuration.EmailAddress);

@@ -12,7 +12,6 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using DigitaleBriefwahl.ExceptionHandling;
 using SIL.PlatformUtilities;
-using Squirrel;
 
 namespace DigitaleBriefwahl.Launcher
 {
@@ -31,7 +30,7 @@ namespace DigitaleBriefwahl.Launcher
 
 			Logger.Log($"{SquirrelInstallerSupport.Executable} {string.Join(" ", args.Select(s => $"\"{s}\""))}");
 
-			Options options = null;
+			Options options;
 			using (var writer = new StreamWriter(Logger.LogFile, true))
 			{
 
@@ -133,7 +132,7 @@ namespace DigitaleBriefwahl.Launcher
 			}
 
 			if (!string.IsNullOrEmpty(options.RunApp))
-				unzipVotingApp = launcher.UnzipVotingApp(options);
+				unzipVotingApp = launcher.UnzipVotingAppAsync(options.RunApp);
 
 			if (updateManagerTask != null)
 				didUpdate = await updateManagerTask;

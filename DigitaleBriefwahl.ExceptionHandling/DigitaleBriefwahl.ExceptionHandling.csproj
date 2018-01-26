@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="AnalyticsException.cs" />
     <Compile Include="ExceptionLogging.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

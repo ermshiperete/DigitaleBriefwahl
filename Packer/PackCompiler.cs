@@ -11,16 +11,16 @@ namespace Packer
 {
 	internal class PackCompiler
 	{
-		private Configuration _configuration;
+		public Configuration Config { get; }
 
 		public PackCompiler(string sourceDir)
 		{
 			ExecutableLocation = sourceDir;
+			Config = Configuration.Configure(ConfigFilename);
 		}
 
 		public string PackAllFiles()
 		{
-			_configuration = Configuration.Configure(Path.Combine(ExecutableLocation, Configuration.ConfigName));
 			var targetDir = CopyAllFiles();
 			try
 			{
@@ -34,12 +34,14 @@ namespace Packer
 			}
 		}
 
+		public string ConfigFilename => Path.Combine(ExecutableLocation, Configuration.ConfigName);
+
 		private string GetZipFilename()
 		{
 			return Path.Combine(ExecutableLocation, SanitizedElectionName + ".wahl");
 		}
 
-		private string SanitizedElectionName =>_configuration.Title.Replace(".", "").Replace(" ", "_");
+		private string SanitizedElectionName =>Config.Title.Replace(".", "").Replace(" ", "_");
 
 		private string CopyAllFiles()
 		{

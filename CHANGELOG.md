@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Add launcher app. This decreases the likelyhood that the ballot will be falsely detected
   as a virus on Windows systems.
+- Add launcher for Mac OS X (while it was supported previously it required starting from the
+  command line which seemed to be too complicated for Mac users).
 
 ### Changed
 
