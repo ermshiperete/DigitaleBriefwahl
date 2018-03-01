@@ -3,10 +3,13 @@
 // (https://opensource.org/licenses/GPL-3.0)
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Text;
+using DigitaleBriefwahl;
+using DigitaleBriefwahl.Encryption;
 using DigitaleBriefwahl.ExceptionHandling;
 using DigitaleBriefwahl.Model;
 
@@ -59,23 +62,20 @@ namespace Packer
 
 		private static string WriteBallot()
 		{
-			var bldr = new StringBuilder();
-			bldr.AppendLine(Config.Title);
-			bldr.Append('=', Config.Title.Length);
-			bldr.AppendLine();
-			bldr.AppendLine();
+			var results = new List<string>();
 			foreach (var election in Config.Elections)
 			{
-				bldr.AppendLine(election.GetResult(election.EmptyVotes, true));
+				results.Add(election.GetResult(election.EmptyVotes, true));
 			}
-			var ballot = bldr.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n").ToString();
+
+			var ballot = BallotHelper.GetBallot(Config.Title, results);
 			return MoveToExeLocation(
-				new DigitaleBriefwahl.Encryption.EncryptVote().WriteVoteUnencrypted(Config.Title, ballot));
+				new EncryptVote(Config.Title).WriteVoteUnencrypted(ballot));
 		}
 
 		private static string WritePublicKey()
 		{
-			return MoveToExeLocation(DigitaleBriefwahl.Encryption.EncryptVote.WritePublicKey(Config.Title));
+			return MoveToExeLocation(new EncryptVote(Config.Title).WritePublicKey());
 		}
 	}
 }

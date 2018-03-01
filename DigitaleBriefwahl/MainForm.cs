@@ -2,16 +2,23 @@
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using DigitaleBriefwahl.Encryption;
 using DigitaleBriefwahl.ExceptionHandling;
 using DigitaleBriefwahl.Model;
 using DigitaleBriefwahl.Views;
 using Eto.Drawing;
 using Eto.Forms;
+using Eto.Threading;
+using Microsoft.Win32;
 using SIL.Email;
+using SIL.IO;
+using Thread = System.Threading.Thread;
 
 namespace DigitaleBriefwahl
 {
@@ -100,29 +107,101 @@ namespace DigitaleBriefwahl
 				"Digitale Briefwahl");
 		}
 
+		private static string GetDefaultValue(string path)
+		{
+			using (var key = Registry.CurrentUser.OpenSubKey(path))
+			{
+				return key?.GetValue("") as string;
+			}
+		}
+
+		private static bool CanUsePreferredEmailProvider
+		{
+			get
+			{
+				if (!SIL.PlatformUtilities.Platform.IsWindows)
+					return true;
+
+				var retVal = !string.IsNullOrEmpty(GetDefaultValue(@"Software\Clients\Mail"));
+				Logger.Log($"Can use perferred email provider: {retVal}");
+				return retVal;
+			}
+		}
+
 		private void OnSendClicked(object sender, EventArgs e)
 		{
 			var vote = CollectVote();
 			if (string.IsNullOrEmpty(vote))
 				return;
 
-			var filename = new Encryption.EncryptVote().WriteVote(Title, vote);
+			var filename = new EncryptVote(Title).WriteVote(vote);
 
-			var mailSent = SendEmail(EmailProviderFactory.PreferredEmailProvider(), filename);
-			Logger.Log($"Sending email through preferred email provider successful: {mailSent}");
+			var mailSent = false;
+			string newFileName = null;
+			if (CanUsePreferredEmailProvider)
+			{
+				mailSent = SendEmail(EmailProviderFactory.PreferredEmailProvider(), filename);
+				Logger.Log($"Sending email through preferred email provider successful: {mailSent}");
+			}
+
 			if (!mailSent)
 			{
+				newFileName = SaveBallot(
+					"Bitte Verzeichnis wählen, in dem der Stimmzettel gespeichert wird!",
+					filename);
+				var bldr = new StringBuilder();
+				bldr.AppendLine("ACHTUNG: Bei der E-Mail, die sich nun öffnet, kann der Stimmzettel unter Umständen " +
+					"nicht automatisch angehängt werden.");
+				bldr.AppendLine($"Falls das der Fall ist, bitte die Datei '{newFileName}' an die E-Mail anhängen.");
+
+				MessageBox.Show(bldr.ToString(), "Stimmzettel kann u.U. angehängt werden");
+
 				mailSent = SendEmail(EmailProviderFactory.AlternateEmailProvider(), filename);
 				Logger.Log($"Sending email through alternate email provider successful: {mailSent}");
 			}
 			if (mailSent)
 			{
+				Thread.Sleep(100);
 				Application.Instance.Quit();
 			}
 			else
 			{
-				MessageBox.Show(
-					$"Kann E-Mail nicht automatisch verschicken. Bitte die Datei '{filename}' als Anhang einer E-Mail an '{_configuration.EmailAddress}' schicken.");
+				if (newFileName == null)
+				{
+					newFileName = SaveBallot(
+						"Kann E-Mail nicht automatisch verschicken. Bitte Verzeichnis wählen, in dem der Stimmzettel gespeichert wird!",
+						filename);
+				}
+
+				if (string.IsNullOrEmpty(newFileName))
+					return;
+
+				MessageBox.Show($"Konnte E-Mail nicht automatisch verschicken. Bitte die Datei " +
+					$"'{newFileName}' als Anhang einer E-Mail an '{_configuration.EmailAddress}' senden.",
+					"Automatischer E-Mail-Versand nicht möglich");
+			}
+		}
+
+		private string SaveBallot(string title, string filename)
+		{
+			using (var dialog = new SelectFolderDialog() {
+				Title = title,
+				Directory = Path.GetDirectoryName(filename)
+			})
+			{
+				var result = dialog.ShowDialog(this);
+				if (result != DialogResult.Ok)
+					return null;
+
+				var newFilename =
+					Path.Combine(dialog.Directory, Path.GetFileName(filename));
+				if (filename == newFilename)
+					return newFilename;
+
+				File.Copy(filename, newFilename, true);
+				File.Delete(filename);
+
+				return newFilename;
 			}
 		}
 
@@ -148,8 +227,22 @@ namespace DigitaleBriefwahl
 			if (string.IsNullOrEmpty(vote))
 				return;
 
-			var fileName = new Encryption.EncryptVote().WriteVoteUnencrypted(Title, vote);
-			MessageBox.Show($"Der Stimmzettel wurde in der Datei '{fileName}' gespeichert.");
+			var encryptVote = new EncryptVote(Title);
+			using (var dialog = new SelectFolderDialog() {
+				Title = "Bitte Verzeichnis wählen, in dem der Stimmzettel gespeichert wird",
+				Directory = Path.GetDirectoryName(encryptVote.BallotFilePath)
+			})
+			{
+				var result = dialog.ShowDialog(this);
+				if (result != DialogResult.Ok)
+					return;
+
+				var fileName = encryptVote.WriteVoteUnencrypted(vote,
+					Path.Combine(dialog.Directory, Path.GetFileName(encryptVote.BallotFilePath)));
+				var emptyBallotString = writeEmptyBallot ? "leere " : "";
+				MessageBox.Show($"Der {emptyBallotString}Stimmzettel wurde in der Datei '{fileName}' gespeichert.",
+					"Stimmzettel gespeichert");
+			}
 		}
 
 		private void OnWriteClicked(object sender, EventArgs e)
@@ -164,8 +257,21 @@ namespace DigitaleBriefwahl
 
 		private void OnWritePublicKeyClicked(object sender, EventArgs e)
 		{
-			var fileName = Encryption.EncryptVote.WritePublicKey(Title);
-			MessageBox.Show($"Der öffentliche Schlüssel wurde in der Datei '{fileName}' gespeichert.");
+			var encryptVote = new EncryptVote(Title);
+			using (var dialog = new SelectFolderDialog() {
+				Title = "Bitte Verzeichnis wählen, in dem der öffentliche Schlüssel gespeichert wird",
+				Directory = Path.GetDirectoryName(encryptVote.PublicKeyFilePath)
+			})
+			{
+				var result = dialog.ShowDialog(this);
+				if (result != DialogResult.Ok)
+					return;
+
+				var fileName = encryptVote.WritePublicKey(Path.Combine(dialog.Directory,
+					Path.GetFileName(encryptVote.PublicKeyFilePath)));
+				MessageBox.Show($"Der öffentliche Schlüssel wurde in der Datei '{fileName}' gespeichert.",
+					"Öffentlicher Schlüssel gespeichert");
+			}
 		}
 
 		private string CollectVote(bool writeEmptyBallot = false)
@@ -190,17 +296,14 @@ namespace DigitaleBriefwahl
 			if (error)
 				return null;
 
-			var bldr = new StringBuilder();
-			bldr.AppendLine(Title);
-			bldr.Append('=', Title.Length);
-			bldr.AppendLine();
-			bldr.AppendLine();
+			var results = new List<string>();
 			foreach (var page in tabControl.Pages)
 			{
 				var view = page.Tag as ElectionViewBase;
-				bldr.AppendLine(view.GetResult(writeEmptyBallot));
+				results.Add(view.GetResult(writeEmptyBallot));
 			}
-			return bldr.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n").ToString();
+
+			return BallotHelper.GetBallot(Title, results);
 		}
 
 		private TabControl CreateTabControl(Configuration configuration)

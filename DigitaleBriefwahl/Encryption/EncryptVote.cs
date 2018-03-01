@@ -3,6 +3,7 @@
 // (https://opensource.org/licenses/GPL-3.0)
 using System;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using DigitaleBriefwahl.Model;
 using Org.BouncyCastle.Bcpg;
@@ -12,20 +13,41 @@ namespace DigitaleBriefwahl.Encryption
 {
 	public class EncryptVote
 	{
-		private static string FileName
+		private string _FileName;
+		private readonly string _Election;
+
+		public EncryptVote(string election)
+		{
+			_Election = election;
+		}
+
+		private string FileName
 		{
 			get
 			{
+				if (!string.IsNullOrEmpty(_FileName))
+					return _FileName;
+
 				var guid = Guid.NewGuid().ToString();
-				return guid.Replace("-", "");
+				_FileName = $"{GetSanitizedElection(_Election)}_{guid.Replace("-", "")}.txt";
+
+				return _FileName;
 			}
 		}
+
+		public string BallotFilePath => Path.Combine(Path.GetTempPath(), FileName);
+
+		private string PublicKeyFileName =>
+			$"{GetSanitizedElection(_Election)}_{Configuration.Current.PublicKey}";
+
+		public string PublicKeyFilePath => Path.Combine(Path.GetTempPath(), PublicKeyFileName);
 
 		private static PgpPublicKey PublicKey
 		{
 			get
 			{
-				var publicKeyFile = Configuration.Current.PublicKey;
+				var publicKeyFile = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+					Configuration.Current.PublicKey);
 				if (!File.Exists(publicKeyFile))
 					throw new InvalidConfigurationException($"Can't find file for public key: '{publicKeyFile}'.");
 
@@ -108,10 +130,9 @@ namespace DigitaleBriefwahl.Encryption
 			return election.Replace(' ', '_').Replace('.', '_');
 		}
 
-		public string WriteVote(string election, string vote)
+		public string WriteVote(string vote)
 		{
-			var outputFileName = Path.Combine(Path.GetTempPath(),
-				$"{GetSanitizedElection(election)}_{FileName}.pgp");
+			var outputFileName = Path.ChangeExtension(BallotFilePath, ".gpg");
 			var voteBytes = Encoding.UTF8.GetBytes(vote);
 
 			using (var outputStream = new FileStream(outputFileName, FileMode.Create))
@@ -122,20 +143,24 @@ namespace DigitaleBriefwahl.Encryption
 			return outputFileName;
 		}
 
-		public string WriteVoteUnencrypted(string election, string vote)
+		public string WriteVoteUnencrypted(string vote, string filePath = null)
 		{
-			var fileName = Path.Combine(Path.GetTempPath(),
-				$"{GetSanitizedElection(election)}_{FileName}.txt");
-			File.WriteAllText(fileName, vote);
-			return fileName;
+			if (string.IsNullOrEmpty(filePath))
+				filePath = BallotFilePath;
+			if (Path.GetFileName(filePath) != FileName)
+				filePath = Path.Combine(Path.GetDirectoryName(filePath), FileName);
+			File.WriteAllText(filePath, vote);
+			return filePath;
 		}
 
-		public static string WritePublicKey(string election)
+		public string WritePublicKey(string filePath = null)
 		{
-			var fileName = Path.Combine(Path.GetTempPath(),
-				$"{GetSanitizedElection(election)}_{Configuration.Current.PublicKey}");
-			File.Copy(Configuration.Current.PublicKey, fileName, true);
-			return fileName;
+			if (string.IsNullOrEmpty(filePath))
+				filePath = PublicKeyFilePath;
+			File.Copy(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+				Configuration.Current.PublicKey), filePath, true);
+			return filePath;
 		}
+
 	}
 }

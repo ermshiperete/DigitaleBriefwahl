@@ -25,9 +25,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Changed
 
-- `wahl.ini` now comes with \r\n line endings to support editing with notepad on Windows
-- Ballot written with Windows line endings to support editing with notepad on Windows
-- Improve formatting of (empty) ballot
+- `wahl.ini` now comes with \r\n line endings to support editing with notepad on Windows.
+- Ballot written with Windows line endings to support editing with notepad on Windows.
+- Improve formatting of (empty) ballot.
+- Add random number to ballot so that two otherwise identical ballots encrypt differently.
+- Allow to select directory when writing files.
+- Allow abstention.
 
 ### Fixed
 
