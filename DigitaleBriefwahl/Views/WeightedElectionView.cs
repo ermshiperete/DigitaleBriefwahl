@@ -26,7 +26,7 @@ namespace DigitaleBriefwahl.Views
 
 			var layout = page.Content as StackLayout;
 			_ComboBoxes = new List<ComboBox>(Election.Votes);
-			for (int i = 0; i < Election.Votes; i++)
+			for (var i = 0; i < Election.Votes; i++)
 			{
 				if (Election.TextBefore[i] != null)
 				{
@@ -41,7 +41,7 @@ namespace DigitaleBriefwahl.Views
 					Spacing = 10,
 					Items =
 					{
-						new Label { Text = string.Format("{0}.", i + 1) }
+						new Label { Text = $"{i + 1}." }
 					}
 				};
 				var combo = new ComboBox();
@@ -52,6 +52,7 @@ namespace DigitaleBriefwahl.Views
 						continue;
 					combo.Items.Add(new ListItem { Text = nominee });
 				}
+				combo.Items.Add(new ListItem { Text = Abstention });
 				voteLine.Items.Add(combo);
 				layout.Items.Add(new StackLayoutItem(voteLine));
 			}
@@ -62,22 +63,21 @@ namespace DigitaleBriefwahl.Views
 
 		private bool SkipNominee(string name, int iVote)
 		{
-			int vote = iVote + 1;
-			if (Election.NomineeLimits.ContainsKey(name))
-			{
-				var limit = Election.NomineeLimits[name];
-				return vote < limit.Item1 || vote > limit.Item2;
-			}
-			return false;
+			var vote = iVote + 1;
+			if (!Election.NomineeLimits.ContainsKey(name))
+				return false;
+
+			var limit = Election.NomineeLimits[name];
+			return vote < limit.Item1 || vote > limit.Item2;
 		}
 
 		public override bool VerifyOk()
 		{
 			var allOk = true;
-			for (int i = 0; i < Election.Votes; i++)
+			for (var i = 0; i < Election.Votes; i++)
 				_ComboBoxes[i].TextColor = _defaultTextColor;
 
-			for (int i = 0; i < Election.Votes; i++)
+			for (var i = 0; i < Election.Votes; i++)
 			{
 				if (string.IsNullOrEmpty(_ComboBoxes[i].SelectedKey))
 				{
@@ -88,25 +88,28 @@ namespace DigitaleBriefwahl.Views
 					continue;
 				}
 
-				for (int j = i + 1; j < Election.Votes; j++)
+				for (var j = i + 1; j < Election.Votes; j++)
 				{
-					if (_ComboBoxes[i].SelectedKey == _ComboBoxes[j].SelectedKey)
+					if (_ComboBoxes[i].SelectedKey != _ComboBoxes[j].SelectedKey ||
+						_ComboBoxes[i].SelectedKey == Abstention)
 					{
-						_ComboBoxes[i].TextColor = Colors.Red;
-						_ComboBoxes[j].TextColor = Colors.Red;
-						if (allOk)
-							_ComboBoxes[i].Focus();
-						allOk = false;
+						continue;
 					}
-				}
 
-				if (SkipNominee(_ComboBoxes[i].SelectedKey, i))
-				{
 					_ComboBoxes[i].TextColor = Colors.Red;
+					_ComboBoxes[j].TextColor = Colors.Red;
 					if (allOk)
 						_ComboBoxes[i].Focus();
 					allOk = false;
 				}
+
+				if (!SkipNominee(_ComboBoxes[i].SelectedKey, i))
+					continue;
+
+				_ComboBoxes[i].TextColor = Colors.Red;
+				if (allOk)
+					_ComboBoxes[i].Focus();
+				allOk = false;
 			}
 			return allOk;
 		}
