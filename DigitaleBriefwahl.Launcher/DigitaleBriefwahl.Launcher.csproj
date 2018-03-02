@@ -147,6 +147,6 @@
     <Exec Command="$(SquirrelCommand) --releasify $(NuGetBuildFolder)/DigitaleBriefwahl.Launcher.$(GitVersion_NuGetVersion).nupkg" WorkingDirectory="$(RootDir)" Condition="'$(OS)' == 'Windows_NT'" />
     <Message Importance="High" Text="Created squirrel installer for version $(GitVersion_NuGetVersion)" />
     <Delete Files="$(RootDir)/Releases/Setup.msi"/>
-    <Move SourceFiles="$(RootDir)/Releases/Setup.exe" DestinationFiles="$(RootDir)/Releases/DigitaleBriefwahl.Launcher.$(GitVersion_NuGetVersion)-Setup.exe"/>
+    <Move SourceFiles="$(RootDir)/Releases/Setup.exe" DestinationFiles="$(RootDir)/Releases/DigitaleBriefwahl.Launcher-$(GitVersion_NuGetVersion)-Setup.exe"/>
   </Target>
 </Project>

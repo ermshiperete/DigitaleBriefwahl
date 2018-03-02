@@ -94,4 +94,8 @@
 			OutputXmlFile="$(RootDir)/output/$(Configuration)/TestResults.xml"/>
 	</Target>
 
+	<Target Name="Sign">
+		<Exec Command='sign "$(RootDir)\Releases\DigitaleBriefwahl.Launcher-*-Setup.exe"'/>
+		<Message Text="Signed squirrel installer at $(RootDir)\Releases\DigitaleBriefwahl.Launcher-*-Setup.exe" Importance="high"/>
+	</Target>
 </Project>
