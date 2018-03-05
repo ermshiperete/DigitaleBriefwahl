@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.1] - 2018-03-05
+
+### Fixed
+
+- Fix crash on Windows when checking for updates
+
 ## [0.2.0] - 2018-03-05
 
 ### Added

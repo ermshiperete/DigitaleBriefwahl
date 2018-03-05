@@ -26,7 +26,7 @@ namespace DigitaleBriefwahl.Launcher
 
 		internal static async Task<bool> HandleSquirrelInstallEvent(Options options)
 		{
-			using (var mgr = await UpdateManager.GitHubUpdateManager(UpdateUrl))
+			using (var mgr = await UpdateManager.GitHubUpdateManager(UpdateUrl, prerelease: true))
 			{
 				// WARNING, in most of these scenarios, the app exits at the end of HandleEvents;
 				// thus, the method call does not return and nothing can be done after it!
