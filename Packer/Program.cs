@@ -12,6 +12,8 @@ using DigitaleBriefwahl;
 using DigitaleBriefwahl.Encryption;
 using DigitaleBriefwahl.ExceptionHandling;
 using DigitaleBriefwahl.Model;
+using Microsoft.Win32;
+using SIL.Email;
 
 namespace Packer
 {
@@ -46,6 +48,9 @@ namespace Packer
 			Console.WriteLine($"\t{Path.GetFileName(ballotFile)}");
 			Console.WriteLine($"\t{Path.GetFileName(publicKeyFile)}");
 
+			if (CanUsePreferredEmailProvider)
+				SendEmail(EmailProviderFactory.PreferredEmailProvider(), zipFile, ballotFile, publicKeyFile);
+
 			if (Debugger.IsAttached)
 				return;
 
@@ -76,6 +81,43 @@ namespace Packer
 		private static string WritePublicKey()
 		{
 			return MoveToExeLocation(new EncryptVote(Config.Title).WritePublicKey());
+		}
+
+		private static string GetDefaultValue(string path)
+		{
+			using (var key = Registry.CurrentUser.OpenSubKey(path))
+			{
+				return key?.GetValue("") as string;
+			}
+		}
+
+		private static bool CanUsePreferredEmailProvider
+		{
+			get
+			{
+				if (!SIL.PlatformUtilities.Platform.IsWindows)
+					return true;
+
+				var retVal = !string.IsNullOrEmpty(GetDefaultValue(@"Software\Clients\Mail"));
+				Logger.Log($"Can use perferred email provider: {retVal}");
+				return retVal;
+			}
+		}
+
+		private static bool SendEmail(IEmailProvider emailProvider, string zipFile, string ballotFile,
+			string publicKeyFile)
+		{
+			if (emailProvider == null)
+				return false;
+
+			var email = emailProvider.CreateMessage();
+
+			email.Subject = Config.Title;
+			email.AttachmentFilePath.Add(zipFile);
+			email.AttachmentFilePath.Add(ballotFile);
+			email.AttachmentFilePath.Add(publicKeyFile);
+
+			return emailProvider.SendMessage(email);
 		}
 	}
 }
