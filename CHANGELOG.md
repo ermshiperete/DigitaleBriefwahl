@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2018-03-05
+
 ### Added
 
 - Add launcher app. This decreases the likelyhood that the ballot will be falsely detected

@@ -1,35 +1,74 @@
 {
 	// See https://go.microsoft.com/fwlink/?LinkId=733558
 	// for the documentation about the tasks.json format
-	"version": "0.1.0",
-	"windows": {
-		"command": "msbuild"
+	"version": "2.0.0",
+	"type": "shell",
+	"presentation": {
+		"echo": true,
+		"reveal": "always",
+		"focus": false,
+		"panel": "shared"
 	},
-	"linux": {
-		"command": "xbuild"
-	},
-	"args": [
-		// Ask msbuild to generate full paths for file names.
-		"/property:GenerateFullPaths=true",
-		"build/DigitaleBriefwahl.proj"
-	],
-	"taskSelector": "/t:",
-	"showOutput": "silent",
 	"tasks": [
 		{
-			"taskName": "build",
-			// Show the output window only if unrecognized errors occur.
-			"showOutput": "always",
+			"label": "build",
+			"windows": {
+				"command": "msbuild"
+			},
+			"linux": {
+				"command": "xbuild"
+			},
+			"args": [
+				// Ask msbuild to generate full paths for file names.
+				"/property:GenerateFullPaths=true",
+				"/t:build",
+				"build/DigitaleBriefwahl.proj"
+			],
 			// Use the standard MS compiler pattern to detect errors, warnings and infos
 			"problemMatcher": "$msCompile",
+			"group": "build"
 		},
 		{
-			"taskName": "CompileOnly",
-			// Show the output window only if unrecognized errors occur.
-			"showOutput": "always",
+			"label": "CompileOnly",
+			"windows": {
+				"command": "msbuild"
+			},
+			"linux": {
+				"command": "xbuild"
+			},
+			"args": [
+				// Ask msbuild to generate full paths for file names.
+				"/property:GenerateFullPaths=true",
+				"/t:CompileOnly",
+				"build/DigitaleBriefwahl.proj"
+			],
 			// Use the standard MS compiler pattern to detect errors, warnings and infos
 			"problemMatcher": "$msCompile",
-			"isBuildCommand": true
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"label": "Test",
+			"windows": {
+				"command": "msbuild"
+			},
+			"linux": {
+				"command": "xbuild"
+			},
+			"args": [
+				// Ask msbuild to generate full paths for file names.
+				"/property:GenerateFullPaths=true",
+				"/t:Test",
+				"build/DigitaleBriefwahl.proj"
+			],
+			// Use the standard MS compiler pattern to detect errors, warnings and infos
+			"problemMatcher": "$msCompile",
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			}
 		}
 	]
 }
