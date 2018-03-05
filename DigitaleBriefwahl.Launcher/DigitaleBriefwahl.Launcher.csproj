@@ -39,6 +39,17 @@
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU'">
+    <OutputPath>bin\ReleaseMac\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <LangVersion>7.1</LangVersion>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="BugsnagMono, Version=1.4.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\packages\BugsnagMonoImproved.1.4.0.0\lib\Net45\BugsnagMono.dll</HintPath>
@@ -146,8 +157,7 @@
     <Message Importance="High" Text="Created nuget package version $(GitVersion_NuGetVersion) ($(GitVersion_FullSemVer))" />
     <Exec Command="$(SquirrelCommand) --releasify $(NuGetBuildFolder)/DigitaleBriefwahl.Launcher.$(GitVersion_NuGetVersion).nupkg" WorkingDirectory="$(RootDir)" Condition="'$(OS)' == 'Windows_NT'" />
     <Message Importance="High" Text="Created squirrel installer for version $(GitVersion_NuGetVersion)" />
-    <Delete Files="$(RootDir)/Releases/Setup.msi"/>
-    <Move Condition=" '$(OS)' == 'Windows_NT'"
-      SourceFiles="$(RootDir)/Releases/Setup.exe" DestinationFiles="$(RootDir)/Releases/DigitaleBriefwahl.Launcher-$(GitVersion_NuGetVersion)-Setup.exe"/>
+    <Delete Files="$(RootDir)/Releases/Setup.msi" />
+    <Move Condition=" '$(OS)' == 'Windows_NT'" SourceFiles="$(RootDir)/Releases/Setup.exe" DestinationFiles="$(RootDir)/Releases/DigitaleBriefwahl.Launcher-$(GitVersion_NuGetVersion)-Setup.exe" />
   </Target>
 </Project>

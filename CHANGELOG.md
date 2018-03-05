@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Fix crash on Windows when checking for updates
+- Fix build for Mac OS X
 
 ## [0.2.0] - 2018-03-05
 
