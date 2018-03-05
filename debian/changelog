@@ -1,3 +1,9 @@
+digitale-briefwahl (0.2.1) xenial; urgency=medium
+
+  * No changes for Linux.
+
+ -- Eberhard Beilharz <eb1@sil.org>  Mon, 05 Mar 2018 18:18:35 +0100
+
 digitale-briefwahl (0.2.0) xenial; urgency=medium
 
   * Add launcher app. This decreases the likelyhood that the ballot will be falsely detected
