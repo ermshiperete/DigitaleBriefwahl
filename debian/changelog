@@ -1,3 +1,19 @@
+digitale-briefwahl (0.2.0) xenial; urgency=medium
+
+  * Add launcher app. This decreases the likelyhood that the ballot will be falsely detected
+    as a virus on Windows systems.
+  * Add launcher for Mac OS X (while it was supported previously it required starting from the
+    command line which seemed to be too complicated for Mac users).
+  * `wahl.ini` now comes with \r\n line endings to support editing with notepad on Windows.
+  * Ballot written with Windows line endings to support editing with notepad on Windows.
+  * Improve formatting of (empty) ballot.
+  * Add random number to ballot so that two otherwise identical ballots encrypt differently.
+  * Allow to select directory when writing files.
+  * Allow abstention.
+  * Sending of emails on Windows if MAPI is not configured. If MAPI fails we now try mailto:.
+
+ -- Eberhard Beilharz <eb1@sil.org>  Mon, 05 Mar 2018 15:20:44 +0100
+
 digitale-briefwahl (0.1.1) xenial; urgency=medium
 
   * Initial Release.
