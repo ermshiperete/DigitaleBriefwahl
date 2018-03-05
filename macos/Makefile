@@ -8,7 +8,7 @@ SIZE=$(shell du -BK -s $(TARGETDIR)/root | cut -f1 -d'K')
 all: installer
 
 compile:
-	xbuild /t:Build ../build/DigitaleBriefwahl.proj
+	xbuild /t:Build /p:Configuration=ReleaseMac ../build/DigitaleBriefwahl.proj
 
 prepare:
 	mkdir -p $(INSTALLERDIR)
@@ -16,14 +16,14 @@ prepare:
 	mkdir -p $(TARGETDIR)/Resources/en.lproj
 	mkdir -p $(TARGETDIR)/root/Applications
 
-app: prepare
-	cp -r ../DigitaleBriefwahl.Launcher.Mac/bin/Release/DigitaleBriefwahl.Launcher.Mac.app $(TARGETDIR)/root/Applications/
+app: prepare compile
+	cp -r ../DigitaleBriefwahl.Launcher.Mac/bin/ReleaseMac/DigitaleBriefwahl.Launcher.Mac.app $(TARGETDIR)/root/Applications/
 	rm -rf $(TARGETDIR)/root/Applications/DigitaleBriefwahl.Launcher.Mac.app/MacAppTemplate.app
 
 .ONESHELL:
 
 installer: prepare app create-base-pkg create-flat
-	( cd $(TARGETDIR)/flat && xar --compression none -cf "$(INSTALLERDIR)/DigitaleBriefwahl.Launcher.Mac.pkg" * )
+	( cd $(TARGETDIR)/flat && xar --compression none -cf "$(INSTALLERDIR)/DigitaleBriefwahl.Launcher.Mac-$(VERSION).pkg" * )
 
 create-base-pkg: prepare app
 	cd $(TARGETDIR)

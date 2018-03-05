@@ -10,10 +10,6 @@ on a Linux machine.
 
 ## Build installer
 
-- Compile binaries:
-
-		xbuild /t:Build build/DigitaleBriefwahl.proj
-
 - `make`
 
 The makefile adjusts the number of files, size and version. However, if the minimum required OS X
