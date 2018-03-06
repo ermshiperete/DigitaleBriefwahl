@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.2] - 2018-03-07
+
+- Fix Mac OS X installer
+
 ## [0.2.1] - 2018-03-05
 
 ### Fixed

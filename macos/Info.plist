@@ -9,9 +9,29 @@
 		<key>CFBundleDevelopmentRegion</key>
 		<string>en</string>
 		<key>CFBundleExecutable</key>
-		<string>digitale-briefwahl</string>
+		<string>Launcher.exec</string>
 		<key>CFBundleIconFile</key>
 		<string>icons.icns</string>
+		<key>MonoBundleExecutable</key>
+		<string>DigitaleBriefwahl.Launcher.Mac.exe</string>
+		<key>CFBundleName</key>
+		<string>MacAppTemplate</string>
+		<key>CFBundleShortVersionString</key>
+		<string>1.0</string>
+		<key>NSHumanReadableCopyright</key>
+		<string>Copyright © 2018 Eberhard Beilharz</string>
+		<key>BuildMachineOSBuild</key>
+		<string>12A269</string>
+		<key>CFBundlePackageType</key>
+		<string>APPL</string>
+		<key>CFBundleResourceSpecification</key>
+		<string>ResourceRules.plist</string>
+		<key>CFBundleSignature</key>
+		<string>????</string>
+		<key>LSMinimumSystemVersion</key>
+		<string>10.7</string>
+		<key>NSPrincipalClass</key>
+		<string>NSApplication</string>
 		<key>CFBundleDocumentTypes</key>
 		<array>
 			<dict>

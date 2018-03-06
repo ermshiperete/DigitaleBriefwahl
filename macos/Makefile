@@ -18,7 +18,9 @@ prepare:
 
 app: prepare compile
 	cp -r ../DigitaleBriefwahl.Launcher.Mac/bin/ReleaseMac/DigitaleBriefwahl.Launcher.Mac.app $(TARGETDIR)/root/Applications/
-	rm -rf $(TARGETDIR)/root/Applications/DigitaleBriefwahl.Launcher.Mac.app/MacAppTemplate.app
+	cp Info.plist $(TARGETDIR)/root/Applications/DigitaleBriefwahl.Launcher.Mac.app/Contents/
+	mkdir -p $(TARGETDIR)/root/Applications/DigitaleBriefwahl.Launcher.Mac.app/Contents/Resources/
+	cp ../Resources/icons.icns $(TARGETDIR)/root/Applications/DigitaleBriefwahl.Launcher.Mac.app/Contents/Resources/
 
 .ONESHELL:
 
