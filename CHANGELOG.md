@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Packer.exe: Wait for keypress if we get an error, not just in success case.
+
 ## [0.2.2] - 2018-03-07
 
 ### Fixed

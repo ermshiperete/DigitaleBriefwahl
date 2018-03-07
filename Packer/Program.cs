@@ -25,21 +25,34 @@ namespace Packer
 		public static void Main(string[] args)
 		{
 			ExceptionLogging.Initialize("5012aef9a281f091c1fceea40c03003b", "Packer");
+			CreateBundle();
+
+			if (Debugger.IsAttached)
+				return;
+
+			Console.WriteLine("Press 'Enter' to continue");
+			Console.ReadLine();
+		}
+
+		private static bool CreateBundle()
+		{
 			Config = Configuration.Configure(Path.Combine(ExecutableLocation, Configuration.ConfigName));
 			var packCompiler = new PackCompiler(ExecutableLocation);
 			if (!File.Exists(packCompiler.ConfigFilename))
 			{
 				Console.WriteLine();
 				Console.WriteLine($"The configuration file {packCompiler.ConfigFilename} is missing. Exiting.");
-				return;
+				return false;
 			}
 
 			if (!File.Exists(packCompiler.Config.PublicKey))
 			{
 				Console.WriteLine();
-				Console.WriteLine($"The public key file '{packCompiler.Config.PublicKey}' specified in {packCompiler.ConfigFilename} is missing. Exiting.");
-				return;
+				Console.WriteLine(
+					$"The public key file '{packCompiler.Config.PublicKey}' specified in {packCompiler.ConfigFilename} is missing. Exiting.");
+				return false;
 			}
+
 			var zipFile = packCompiler.PackAllFiles();
 			var ballotFile = WriteBallot();
 			var publicKeyFile = WritePublicKey();
@@ -50,12 +63,7 @@ namespace Packer
 
 			if (CanUsePreferredEmailProvider)
 				SendEmail(EmailProviderFactory.PreferredEmailProvider(), zipFile, ballotFile, publicKeyFile);
-
-			if (Debugger.IsAttached)
-				return;
-
-			Console.WriteLine("Press 'Enter' to continue");
-			Console.ReadLine();
+			return true;
 		}
 
 		private static string MoveToExeLocation(string fileName)
