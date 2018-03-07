@@ -176,7 +176,7 @@ namespace DigitaleBriefwahl
 				if (string.IsNullOrEmpty(newFileName))
 					return;
 
-				MessageBox.Show($"Konnte E-Mail nicht automatisch verschicken. Bitte die Datei " +
+				MessageBox.Show("Konnte E-Mail nicht automatisch verschicken. Bitte die Datei " +
 					$"'{newFileName}' als Anhang einer E-Mail an '{_configuration.EmailAddress}' senden.",
 					"Automatischer E-Mail-Versand nicht möglich");
 			}
