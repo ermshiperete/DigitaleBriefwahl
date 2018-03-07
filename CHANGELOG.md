@@ -18,7 +18,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [0.2.2] - 2018-03-07
 
+### Fixed
+
 - Fix Mac OS X installer
+
+### Changed
+
+- Use real random number instead of GUID on ballot and for filenames. GUIDs include the
+  network MAC address and so theoretically can be traced back.
 
 ## [0.2.1] - 2018-03-05
 

@@ -1,8 +1,9 @@
 digitale-briefwahl (0.2.2) xenial; urgency=medium
 
-  * No changes for Linux.
+  * Use real random number instead of GUID on ballot. GUIDs include the MAC number and
+    so theoretically can be traced back.
 
- -- Eberhard Beilharz <eb1@sil.org>  Wed, 07 Mar 2018 10:18:35 +0100
+ -- Eberhard Beilharz <eb1@sil.org>  Wed, 07 Mar 2018 11:18:35 +0100
 
 digitale-briefwahl (0.2.1) xenial; urgency=medium
 

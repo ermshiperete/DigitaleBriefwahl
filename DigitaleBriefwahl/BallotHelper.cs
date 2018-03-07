@@ -25,7 +25,8 @@ namespace DigitaleBriefwahl
 
 			// append random number so that two otherwise identical ballots show up differently
 			// when encrypted
-			bldr.AppendLine(Guid.NewGuid().ToString());
+			var random = new Random();
+			bldr.AppendLine($"{random.Next():X4}-{random.Next():X4}-{random.Next():X4}-{random.Next():X4}");
 
 			return bldr.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n").ToString();
 		}
