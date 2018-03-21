@@ -36,6 +36,7 @@ namespace Packer
 
 		private static bool CreateBundle()
 		{
+			PackCompiler.ConvertToUtf8(Configuration.ConfigName);
 			Config = Configuration.Configure(Path.Combine(ExecutableLocation, Configuration.ConfigName));
 			var packCompiler = new PackCompiler(ExecutableLocation);
 			if (!File.Exists(packCompiler.ConfigFilename))

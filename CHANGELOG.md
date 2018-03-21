@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Packer.exe: Detect encoding of `wahl.ini` and rewrite with UTF-8 encoding to prevent crash and
+  display special chars correctly
+
 ### Changed
 
 - Packer.exe: Wait for keypress if we get an error, not just in success case.

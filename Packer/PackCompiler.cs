@@ -5,6 +5,7 @@
 using System;
 using System.IO;
 using System.IO.Compression;
+using System.Text;
 using DigitaleBriefwahl.Model;
 
 namespace Packer
@@ -56,6 +57,7 @@ namespace Packer
 					fileInfo.Name.StartsWith("Wahl") ||
 					fileInfo.Name.StartsWith(SanitizedElectionName) ||
 					fileInfo.Name.StartsWith("ManuelleVerschluesselung") ||
+					fileInfo.Name.StartsWith("Ude") ||
 					Path.GetExtension(fileInfo.Name) == ".wahl")
 				{
 					continue;
@@ -80,6 +82,45 @@ namespace Packer
 			if (File.Exists(archiveFilename))
 				File.Delete(archiveFilename);
 			ZipFile.CreateFromDirectory(directory, archiveFilename);
+		}
+
+		public static void ConvertToUtf8(string configFileName)
+		{
+			var encoding = Encoding.UTF8;
+			char[] chars;
+			int charsUsed;
+			byte[] buffer;
+			int bufferLength;
+			int bytesUsed;
+			bool completed;
+			using (var fileStream = File.OpenRead(configFileName))
+			{
+				var charsetDetector = new Ude.CharsetDetector();
+				charsetDetector.Feed(fileStream);
+				charsetDetector.DataEnd();
+				if (charsetDetector.Charset != null)
+				{
+					encoding = Encoding.GetEncoding(charsetDetector.Charset);
+				}
+
+				if (encoding == Encoding.UTF8)
+					return;
+
+				fileStream.Seek(0, SeekOrigin.Begin);
+				bufferLength = (int)fileStream.Length;
+				buffer = new byte[bufferLength];
+				fileStream.Read(buffer, 0, bufferLength);
+
+				chars = new char[bufferLength * 2];
+				encoding.GetDecoder().Convert(buffer, 0, bufferLength, chars, 0, bufferLength * 2,
+					true, out bytesUsed, out charsUsed, out completed);
+			}
+
+			Encoding.UTF8.GetEncoder().Convert(chars, 0, charsUsed, buffer, 0, bufferLength, true,
+				out charsUsed, out bytesUsed, out completed);
+			var sizedBuffer = new byte[bytesUsed];
+			Array.Copy(buffer, sizedBuffer, bytesUsed);
+			File.WriteAllBytes(configFileName, sizedBuffer);
 		}
 	}
 }
