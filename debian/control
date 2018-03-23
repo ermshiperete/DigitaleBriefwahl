@@ -12,8 +12,8 @@ Build-Depends: debhelper (>=9), cli-common-dev (>= 0.8),
 Package: digitale-briefwahl
 Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends},
- mono-complete (>= 5) | mono4-sil | mono5-sil,
- libgdiplus | libgdiplus4-sil | libgdiplus5-sil,
- gtk-sharp2 | gtk-sharp4-sil | gtk-sharp5-sil
+ mono-complete (>= 5) | mono5-sil,
+ libgdiplus | libgdiplus5-sil,
+ gtk-sharp2 | gtk-sharp5-sil
 Description: Public key and email based absentee voting tool
  This package contains the launcher for a digital absentee vote system based on public keys.

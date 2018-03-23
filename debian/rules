@@ -48,8 +48,10 @@ override_dh_auto_install:
 	# NOTE: mime type installation is handled by dh_installmime
 	install -d $(DESTDIR)/usr/share/icons/hicolor/48x48/mimetypes/
 	install -m 644 Resources/DigitaleBriefwahl.png $(DESTDIR)/usr/share/icons/hicolor/48x48/mimetypes/application-wahl.png
+	install -m 644 Resources/DigitaleBriefwahl.png $(DESTDIR)/usr/share/icons/hicolor/48x48/mimetypes/application-wahlurl.png
 	install -d $(DESTDIR)/usr/share/icons/hicolor/scalable/mimetypes/
 	install -m 644 Resources/DigitaleBriefwahl.svg $(DESTDIR)/usr/share/icons/hicolor/scalable/mimetypes/application-wahl.svg
+	install -m 644 Resources/DigitaleBriefwahl.svg $(DESTDIR)/usr/share/icons/hicolor/scalable/mimetypes/application-wahlurl.svg
 
 # Don't export any assemblies to other packages
 override_dh_makeclilibs:

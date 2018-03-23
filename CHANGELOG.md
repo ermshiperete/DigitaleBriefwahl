@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.2] - 2018-03-23
+
+### Fixed
+
+- bugfix on Linux. Now requires Mono >= 5.
+
 ## [0.3.1] - 2018-03-23
 
 ### Fixed

@@ -1,3 +1,9 @@
+digitale-briefwahl (0.3.2) xenial; urgency=medium
+
+  * Fix dependencies - now need Mono >= 5
+
+ -- Eberhard Beilharz <eb1@sil.org>  Fri, 23 Mar 2018 18:53:02 +0100
+
 digitale-briefwahl (0.3.1) xenial; urgency=medium
 
   * Add support for `.wahlurl` file that contains the URL that the launcher uses to download the
