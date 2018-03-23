@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.1] - 2018-03-23
+
+### Fixed
+
+- small bugfix for Windows
+
 ## [0.3.0] - 2018-03-23
 
 ### Added

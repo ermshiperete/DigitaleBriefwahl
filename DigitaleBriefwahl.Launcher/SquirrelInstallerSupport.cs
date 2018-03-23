@@ -176,16 +176,16 @@ namespace DigitaleBriefwahl.Launcher
 			EnsureRegistryValue(@"DigitaleBriefwahl.WahlFile\shell\open\command", $"\"{Executable}\" --run \"%1\"");
 			EnsureRegistryValue(@"DigitaleBriefwahl.Launcher\shell\open\command", $"\"{Executable}\" --run \"%1\"");
 
-			EnsureRegistryValue(".wahlurl", "DigitaleBriefwahl.WahlUrl");
+			EnsureRegistryValue(".wahlurl", "DigitaleBriefwahl.WahlUrlFile");
 			EnsureRegistryValue(@".wahlurl\DefaultIcon", icon);
-			EnsureRegistryValue(".WahlUrl", "Digitale Briefwahl Download URL");
-			EnsureRegistryValue(".WahlUrl", "application/wahlurl", "Content Type");
-			EnsureRegistryValue(@".WahlUrl\DefaultIcon", icon + ", 0");
+			EnsureRegistryValue(".WahlUrlFile", "Digitale Briefwahl Download URL");
+			EnsureRegistryValue(".WahlUrlFile", "application/wahlurl", "Content Type");
+			EnsureRegistryValue(@".WahlUrlFile\DefaultIcon", icon + ", 0");
 			EnsureRegistryValue("DigitaleBriefwahl.wahlurl", "Digitale Briefwahl Download URL", "FriendlyTypeName");
-			EnsureRegistryValue("DigitaleBriefwahl.WahlUrl", "Digitale Briefwahl Download URL");
-			EnsureRegistryValue(@"DigitaleBriefwahl.WahlUrl\DefaultIcon", icon + ", 0");
-			EnsureRegistryValue(@"DigitaleBriefwahl.WahlUrl\shell\open", "Open");
-			EnsureRegistryValue(@"DigitaleBriefwahl.WahlUrl\shell\open\command", $"\"{Executable}\" --url \"%1\"");
+			EnsureRegistryValue("DigitaleBriefwahl.WahlUrlFile", "Digitale Briefwahl Download URL");
+			EnsureRegistryValue(@"DigitaleBriefwahl.WahlUrlFile\DefaultIcon", icon + ", 0");
+			EnsureRegistryValue(@"DigitaleBriefwahl.WahlUrlFile\shell\open", "Open");
+			EnsureRegistryValue(@"DigitaleBriefwahl.WahlUrlFile\shell\open\command", $"\"{Executable}\" --url \"%1\"");
 		}
 
 		private static void RemoveRegistryEntries()
@@ -196,9 +196,9 @@ namespace DigitaleBriefwahl.Launcher
 			RemoveRegistryKey(null, "DigitaleBriefwahl.WahlFile");
 			RemoveRegistryKey(null, "DigitaleBriefwahl.Launcher");
 			RemoveRegistryKey(null, ".wahlurl");
-			RemoveRegistryKey(null, ".WahlUrl");
+			RemoveRegistryKey(null, ".WahlUrlFile");
 			RemoveRegistryKey(null, "DigitaleBriefwahl.wahlurl");
-			RemoveRegistryKey(null, "DigitaleBriefwahl.WahlUrl");
+			RemoveRegistryKey(null, "DigitaleBriefwahl.WahlUrlFile");
 		}
 
 		internal static void ExecuteUpdatedApp(Options options)
