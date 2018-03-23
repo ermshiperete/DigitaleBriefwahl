@@ -1,3 +1,15 @@
+digitale-briefwahl (0.3.0) xenial; urgency=medium
+
+  * Add support for `.wahlurl` file that contains the URL that the launcher uses to download the
+    `.wahl` file.
+  * Packer.exe: Allow to enter download URL, generate `.wahlurl` file and convert Google Drive
+    URL to directly downloadable link.
+  * Packer.exe: Detect encoding of `wahl.ini` and rewrite with UTF-8 encoding to prevent crash and
+    display special chars correctly
+  * Packer.exe: Wait for keypress if we get an error, not just in success case.
+
+ -- Eberhard Beilharz <eb1@sil.org>  Fri, 23 Mar 2018 17:24:49 +0100
+
 digitale-briefwahl (0.2.2) xenial; urgency=medium
 
   * Use real random number instead of GUID on ballot and for filenames. GUIDs include the
