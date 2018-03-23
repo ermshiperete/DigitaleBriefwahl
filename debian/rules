@@ -73,7 +73,9 @@ override_dh_clideps:
 		--exclude-moduleref=ole32.dll --exclude-moduleref=version.dll \
 		--exclude-moduleref=psapi.dll --exclude-moduleref=msdelta.dll \
 		--exclude-moduleref=wininet.dll --exclude-moduleref=NTDLL.DLL \
-		--exclude-moduleref=mspatcha.dll --exclude-moduleref=mspatchc.dll
+		--exclude-moduleref=mspatcha.dll --exclude-moduleref=mspatchc.dll \
+		--exclude-moduleref=ntdll.dll --exclude-moduleref=api-ms-win-core-sysinfo-l1-2-0.dll \
+		--exclude-moduleref=api-ms-win-core-sysinfo-l1-1-0.dll
 	# rm -rf debian/tmp/usr
 
 # Don't strip debug symbols -- we want them for informative crash stack traces
