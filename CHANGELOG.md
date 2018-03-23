@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Add support for `.wahlurl` file that contains the URL that the launcher uses to download the
   `.wahl` file.
+- Packer.exe: Allow to enter download URL, generate `.wahlurl` file and convert Google Drive
+  URL to directly downloadable link.
 
 ### Fixed
 

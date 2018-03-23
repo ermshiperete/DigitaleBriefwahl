@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using System.Text;
+using System.Text.RegularExpressions;
 using DigitaleBriefwahl;
 using DigitaleBriefwahl.Encryption;
 using DigitaleBriefwahl.ExceptionHandling;
@@ -57,13 +57,44 @@ namespace Packer
 			var zipFile = packCompiler.PackAllFiles();
 			var ballotFile = WriteBallot();
 			var publicKeyFile = WritePublicKey();
+			Console.WriteLine();
+			Console.WriteLine("Files packed successfully.");
+			Console.WriteLine($"Now upload the file '{Path.GetFileName(zipFile)}' in directory");
+			Console.WriteLine($"'{Path.GetDirectoryName(zipFile)}'");
+			Console.WriteLine("to a suitable website.");
+			Console.WriteLine("Then enter the full Download URL for that file:");
+			Uri url = null;
+			for (var urlOk = false; !urlOk;)
+			{
+				Console.Write("> ");
+				var urlString = Console.ReadLine();
+				try
+				{
+					if (urlString.StartsWith("https://drive.google.com/file"))
+					{
+						var regex = new Regex("https://drive.google.com/file/d/([^/]+)/");
+						if (regex.IsMatch(urlString))
+							urlString = $"https://drive.google.com/uc?export=download&id={regex.Match(urlString).Groups[1]}";
+					}
+					url = new Uri(urlString);
+					urlOk = true;
+				}
+				catch (UriFormatException)
+				{
+					Console.WriteLine("Invalid URL. Please enter a valid download URL:");
+				}
+			}
+
+			var urlFile = Path.ChangeExtension(zipFile, "wahlurl");
+			File.WriteAllText(urlFile, url.ToString());
+
 			Console.WriteLine($"The following files were created in {Path.GetDirectoryName(zipFile)}:");
-			Console.WriteLine($"\t{Path.GetFileName(zipFile)}");
+			Console.WriteLine($"\t{Path.GetFileName(urlFile)}");
 			Console.WriteLine($"\t{Path.GetFileName(ballotFile)}");
 			Console.WriteLine($"\t{Path.GetFileName(publicKeyFile)}");
 
 			if (CanUsePreferredEmailProvider)
-				SendEmail(EmailProviderFactory.PreferredEmailProvider(), zipFile, ballotFile, publicKeyFile);
+				SendEmail(EmailProviderFactory.PreferredEmailProvider(), urlFile, ballotFile, publicKeyFile);
 			return true;
 		}
 
