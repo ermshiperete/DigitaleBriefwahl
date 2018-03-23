@@ -1,10 +1,10 @@
 [Desktop Entry]
 Version=1.0
-Name=Digitale Briefwahl
-Exec=digitale-briefwahl --run %u
+Name=Digitale Briefwahl Downloader
+Exec=digitale-briefwahl --url %u
 Icon=digitale-briefwahl
 Terminal=false
 Type=Application
 Categories=Education;
 X-Desktop-File-Install-Version=0.21
-MimeType=application/wahl;x-scheme-handler/wahl
+MimeType=application/wahlurl;x-scheme-handler/wahlurl

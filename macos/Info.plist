@@ -44,10 +44,12 @@
 				<key>CFBundleTypeExtensions</key>
 				<array>
 					<string>wahl</string>
+					<string>wahlurl</string>
 				</array>
 				<key>LSItemContentTypes</key>
 				<array>
 					<string>digitale.briefwahl.wahl</string>
+					<string>digitale.briefwahl.wahlurl</string>
 				</array>
 				<key>LSHandlerRank</key>
 				<string>Owner</string>
@@ -72,6 +74,25 @@
 					</array>
 					<key>public.mime-type</key>
 					<string>application/wahl</string>
+				</dict>
+			</dict>
+			<dict>
+				<key>UTTypeIdentifier</key>
+				<string>digitale.briefwahl.wahlurl</string>
+				<key>UTTypeDescription</key>
+				<string>Digitale Briefwahl Download URL</string>
+				<key>UTTypeConformsTo</key>
+				<array>
+					<string>public.data</string>
+				</array>
+				<key>UTTypeTagSpecification</key>
+				<dict>
+					<key>public.filename-extension</key>
+					<array>
+						<string>wahlurl</string>
+					</array>
+					<key>public.mime-type</key>
+					<string>application/wahlurl</string>
 				</dict>
 			</dict>
 		</array>

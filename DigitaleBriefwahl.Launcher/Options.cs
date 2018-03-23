@@ -16,6 +16,9 @@ namespace DigitaleBriefwahl.Launcher
 		[Option("rundir", MutuallyExclusiveSet = "run")]
 		public string RunDirectory { get; set; }
 
+		[Option("url", MutuallyExclusiveSet = "run")]
+		public string UrlFile { get; set; }
+
 		[Option("no-check")]
 		public bool SkipUpdateCheck { get; set; }
 

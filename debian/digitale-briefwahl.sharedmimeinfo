@@ -6,4 +6,8 @@
 		<sub-class-of type="application/zip"/>
 		<glob pattern="*.wahl"/>
 	</mime-type>
+	<mime-type type="application/wahlurl">
+		<comment>Digitale Briefwahl Download URL</comment>
+		<glob pattern="*.wahlurl"/>
+	</mime-type>
 </mime-info>

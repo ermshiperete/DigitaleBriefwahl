@@ -33,7 +33,6 @@ namespace DigitaleBriefwahl.Launcher
 			Options options;
 			using (var writer = new StreamWriter(Logger.LogFile, true))
 			{
-
 				options = Options.ParseCommandLineArgs(writer, args);
 				if (options == null)
 				{
@@ -54,6 +53,13 @@ namespace DigitaleBriefwahl.Launcher
 			{
 				Console.WriteLine($"Can't find directory {options.RunDirectory}");
 				Logger.Log($"Can't find directory {options.RunDirectory}");
+				return;
+			}
+
+			if (!string.IsNullOrEmpty(options.UrlFile) && !File.Exists(options.UrlFile))
+			{
+				Console.WriteLine($"Can't find URL file {options.UrlFile}");
+				Logger.Log($"Can't find URL file {options.UrlFile}");
 				return;
 			}
 
@@ -101,6 +107,7 @@ namespace DigitaleBriefwahl.Launcher
 			bool didUpdate = false;
 
 			Task<string> unzipVotingApp = null;
+			Task<string> downloadVotingApp = null;
 
 			if (Platform.IsWindows && !options.SkipUpdateCheck)
 			{
@@ -131,11 +138,21 @@ namespace DigitaleBriefwahl.Launcher
 				}
 			}
 
+			if (!string.IsNullOrEmpty(options.UrlFile))
+				downloadVotingApp = DownloadVotingAppFromUrlFile(options.UrlFile);
+
 			if (!string.IsNullOrEmpty(options.RunApp))
 				unzipVotingApp = launcher.UnzipVotingAppAsync(options.RunApp);
 
 			if (updateManagerTask != null)
 				didUpdate = await updateManagerTask;
+
+			if (downloadVotingApp != null)
+			{
+				options.RunApp = await downloadVotingApp;
+				if (!string.IsNullOrEmpty(options.RunApp))
+					unzipVotingApp = launcher.UnzipVotingAppAsync(options.RunApp);
+			}
 
 			if (unzipVotingApp != null)
 				options.RunDirectory = await unzipVotingApp;
@@ -144,6 +161,26 @@ namespace DigitaleBriefwahl.Launcher
 				SquirrelInstallerSupport.ExecuteUpdatedApp(options);
 
 			return didUpdate;
+		}
+
+		private static async Task<string> DownloadVotingAppFromUrlFile(string urlFile)
+		{
+			var url = File.ReadAllText(urlFile);
+			url.Replace("wahlurl://", "https://");
+			var uri = new Uri(url);
+			var ballotFile = Path.GetFileNameWithoutExtension(urlFile) + ".wahl";
+			return await DownloadVotingApp(uri, ballotFile);
+		}
+
+		private static async Task<string> DownloadVotingApp(Uri uri, string ballotFile)
+		{
+			var targetFile = Path.Combine(Path.GetTempPath(), ballotFile);
+			using (var client = new WebClient())
+			{
+				client.DownloadFile(uri, targetFile);
+			}
+
+			return targetFile;
 		}
 	}
 }

@@ -16,6 +16,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [0.3.0] - 2018-03-23
+
+### Added
+
+- Add support for `.wahlurl` file that contains the URL that the launcher uses to download the
+  `.wahl` file.
+
 ### Fixed
 
 - Packer.exe: Detect encoding of `wahl.ini` and rewrite with UTF-8 encoding to prevent crash and

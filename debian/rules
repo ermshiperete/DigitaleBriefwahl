@@ -43,7 +43,8 @@ override_dh_auto_install:
 	install -m 644 Resources/DigitaleBriefwahl.svg $(DESTDIR)/usr/share/pixmaps/digitale-briefwahl.svg
 	install -d $(DESTDIR)/usr/share/applications
 	desktop-file-install --dir $(DESTDIR)/usr/share/applications debian/digitale-briefwahl.desktop
-	# Install icon for our mime type so that it shows up as icon for a file with extension .wahl
+	desktop-file-install --dir $(DESTDIR)/usr/share/applications debian/digitale-briefwahl-download.desktop
+	# Install icon for our mime type so that it shows up as icon for a file with extension .wahl or .wahlurl
 	# NOTE: mime type installation is handled by dh_installmime
 	install -d $(DESTDIR)/usr/share/icons/hicolor/48x48/mimetypes/
 	install -m 644 Resources/DigitaleBriefwahl.png $(DESTDIR)/usr/share/icons/hicolor/48x48/mimetypes/application-wahl.png
