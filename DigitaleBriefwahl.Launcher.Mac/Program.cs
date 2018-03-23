@@ -3,9 +3,10 @@
 // (https://opensource.org/licenses/GPL-3.0)
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using DigitaleBriefwahl.ExceptionHandling;
 using Eto;
@@ -60,6 +61,10 @@ namespace DigitaleBriefwahl.Launcher.Mac
 
 		private static void LaunchApp()
 		{
+			if (Path.GetExtension(RunApp) == ".wahlurl")
+			{
+				RunApp = DownloadVotingAppFromUrlFile(RunApp);
+			}
 			using (var launcher = new Launcher(null))
 			{
 				Logger.Log($"Launching {RunApp}");
@@ -69,6 +74,28 @@ namespace DigitaleBriefwahl.Launcher.Mac
 				Logger.Log("Returned from launching; quitting app.");
 				Application.Instance.Quit();
 			}
+		}
+
+		private static string DownloadVotingAppFromUrlFile(string urlFile)
+		{
+			Logger.Log($"Reading URL from {urlFile}");
+			var url = File.ReadAllText(urlFile);
+			url.Replace("wahlurl://", "https://");
+			Logger.Log($"Downloading app from {url}");
+			var uri = new Uri(url);
+			var ballotFile = Path.GetFileNameWithoutExtension(urlFile) + ".wahl";
+			return DownloadVotingApp(uri, ballotFile);
+		}
+
+		private static string DownloadVotingApp(Uri uri, string ballotFile)
+		{
+			var targetFile = Path.Combine(Path.GetTempPath(), ballotFile);
+			using (var client = new WebClient())
+			{
+				client.DownloadFile(uri, targetFile);
+			}
+
+			return targetFile;
 		}
 	}
 }
