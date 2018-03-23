@@ -39,23 +39,7 @@
 		<Delete Files="build/LfMerge.files" />
 	</Target>
 
-	<ItemGroup>
-		<AllBuildDependencyTasksFiles Include="$(RootDir)/packages/BuildDependencyTasks*/**"/>
-		<AllBuildDependencyTasksDirs Include="@(AllBuildDependencyTasksFiles->'%(RootDir)%(Directory)')"/>
-	</ItemGroup>
-
-	<Target Name="RemoveOldBuildDependencyTaskPackages">
-		<!-- Delete BuildDependencyTasks.* package directories so that we end up with having only the desired version -->
-		<!-- NOTE: because of limited functionality of msbuild on Linux we always delete the directories even when we have only one. -->
-		<RemoveDir Directories="@(AllBuildDependencyTasksDirs)" />
-	</Target>
-
-	<Target Name="DownloadDependencies" DependsOnTargets="RemoveOldBuildDependencyTaskPackages;RestorePackages">
-		<MSBuild
-			Projects="DigitaleBriefwahl-DownloadDeps.xml"
-			Targets="DownloadDependenciesTarget"
-			Properties="Configuration=$(Configuration);RootDir=$(RootDir);SolutionDir=$(SolutionDir)" />
-	</Target>
+	<Target Name="DownloadDependencies" DependsOnTargets="RestorePackages"/>
 
 	<Target Name="PrepareSource" DependsOnTargets="DownloadDependencies;RestorePackages">
 		<!-- This target gets called before building the source package -->

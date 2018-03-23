@@ -51,9 +51,11 @@
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
       <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="SIL.Core, Version=4.1.0.0, Culture=neutral, PublicKeyToken=cab3c8c5232dfcf2, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\SIL.Core.dll</HintPath>
+    <Reference Include="SIL.Core, Version=4.1.0.0, Culture=neutral, PublicKeyToken=cab3c8c5232dfcf2">
+      <HintPath>..\packages\SIL.Core.4.1.0\lib\net461\SIL.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
     </Reference>
     <Reference Include="Ude, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\packages\UDE.CSharp.1.1.0\lib\Ude.dll</HintPath>
