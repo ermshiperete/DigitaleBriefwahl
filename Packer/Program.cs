@@ -25,7 +25,7 @@ namespace Packer
 
 		public static void Main(string[] args)
 		{
-			ExceptionLogging.Initialize("5012aef9a281f091c1fceea40c03003b", "Packer");
+			ExceptionLogging.Initialize("5012aef9a281f091c1fceea40c03003b", "Packer", args);
 			CreateBundle();
 
 			if (Debugger.IsAttached)

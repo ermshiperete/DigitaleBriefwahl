@@ -13,9 +13,9 @@ namespace DigitaleBriefwahl.ExceptionHandling
 	{
 		private Control Parent { get; }
 
-		internal ExceptionLoggingUI(string apiKey, string appName, string launcherVersion,
-			object parent, string callerFilePath)
-			: base(apiKey, appName, launcherVersion, callerFilePath)
+		internal ExceptionLoggingUI(string apiKey, string appName, string[] args,
+			string launcherVersion, object parent, string callerFilePath)
+			: base(apiKey, appName, args, launcherVersion, callerFilePath)
 		{
 			Parent = parent as Control;
 			Application.Instance.UnhandledException += OnUnhandledInstanceException;
@@ -38,10 +38,10 @@ namespace DigitaleBriefwahl.ExceptionHandling
 		}
 
 		public static ExceptionLogging Initialize(string apiKey, string appName,
-			string launcherVersion = null, object parent = null,
+			string[] args = null, string launcherVersion = null, object parent = null,
 			[CallerFilePath] string filename = null)
 		{
-			Client = new ExceptionLoggingUI(apiKey, appName, launcherVersion, parent, filename);
+			Client = new ExceptionLoggingUI(apiKey, appName, args, launcherVersion, parent, filename);
 			return Client;
 		}
 

@@ -38,7 +38,7 @@ namespace DigitaleBriefwahl.Launcher.Mac
 		[STAThread]
 		public static void Main(string[] args)
 		{
-			ExceptionLogging.Initialize("5012aef9a281f091c1fceea40c03003b", "MacLauncher");
+			ExceptionLogging.Initialize("5012aef9a281f091c1fceea40c03003b", "MacLauncher", args);
 
 			var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
 			Logger.Log($"{Executable} {string.Join(" ", args.Select(s => $"\"{s}\""))} ({versionInfo.FileVersion})");

@@ -26,7 +26,7 @@ namespace DigitaleBriefwahl.Launcher
 		[STAThread]
 		public static void Main(string[] args)
 		{
-			ExceptionLogging.Initialize("5012aef9a281f091c1fceea40c03003b", "Launcher");
+			ExceptionLogging.Initialize("5012aef9a281f091c1fceea40c03003b", "Launcher", args);
 
 			Logger.Log($"{SquirrelInstallerSupport.Executable} {string.Join(" ", args.Select(s => $"\"{s}\""))}");
 

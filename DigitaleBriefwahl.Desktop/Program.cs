@@ -15,7 +15,7 @@ namespace DigitaleBriefwahl.Desktop
 		{
 			var launcherVersion = args.Length > 0 ? args[0] : null;
 			Logger.Log("DigitaleBriefwahl.Desktop Main starting");
-			new Application(Platform.Detect).Run(new MainForm(launcherVersion));
+			new Application(Platform.Detect).Run(new MainForm(args, launcherVersion));
 		}
 	}
 }

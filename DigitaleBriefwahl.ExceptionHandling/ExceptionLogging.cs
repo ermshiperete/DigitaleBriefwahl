@@ -4,6 +4,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Principal;
 using System.Threading.Tasks;
@@ -15,15 +16,15 @@ namespace DigitaleBriefwahl.ExceptionHandling
 {
 	public class ExceptionLogging : BaseClient
 	{
-		protected ExceptionLogging(string apiKey, string appName, string launcherVersion,
-			string callerFilePath)
+		protected ExceptionLogging(string apiKey, string appName, string[] args,
+			string launcherVersion, string callerFilePath)
 			: base(apiKey)
 		{
-			Setup(launcherVersion, appName, callerFilePath);
+			Setup(launcherVersion, appName, args, callerFilePath);
 			AddAnalytics();
 		}
 
-		private void Setup(string launcherVersion, string appName, string callerFilePath)
+		private void Setup(string launcherVersion, string appName, string[] args, string callerFilePath)
 		{
 			var solutionPath = Path.GetFullPath(Path.Combine(callerFilePath, "../../"));
 			Config.FilePrefixes = new[] { solutionPath };
@@ -36,6 +37,7 @@ namespace DigitaleBriefwahl.ExceptionHandling
 				Config.Metadata.AddToTab("App", "monoversion", Platform.MonoVersion);
 			Config.Metadata.AddToTab("App", "launcher", launcherVersion);
 			Config.Metadata.AddToTab("App", "app", appName);
+			Config.Metadata.AddToTab("App", "args", string.Join(", ", args));
 			Config.Metadata.AddToTab("Device", "desktop", Platform.DesktopEnvironment);
 			if (!string.IsNullOrEmpty(Platform.DesktopEnvironmentInfoString))
 				Config.Metadata.AddToTab("Device", "shell", Platform.DesktopEnvironmentInfoString);
@@ -97,10 +99,10 @@ namespace DigitaleBriefwahl.ExceptionHandling
 		}
 
 		public static ExceptionLogging Initialize(string apiKey, string appName,
-			string launcherVersion = null,
+			string[] args = null, string launcherVersion = null,
 			[CallerFilePath] string filename = null)
 		{
-			Client = new ExceptionLogging(apiKey, appName, launcherVersion, filename);
+			Client = new ExceptionLogging(apiKey, appName, args, launcherVersion, filename);
 			return Client;
 		}
 

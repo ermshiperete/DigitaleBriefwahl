@@ -33,9 +33,11 @@ namespace DigitaleBriefwahl
 		private Button _backButton;
 		private readonly string _launcherVersion;
 
-		public MainForm(string launcherVersion = null)
+		public MainForm(string[] args, string launcherVersion = null)
 		{
-			ExceptionLoggingUI.Initialize("5012aef9a281f091c1fceea40c03003b", "DigitaleBriefwahl", launcherVersion, this);
+			ExceptionLoggingUI.Initialize("5012aef9a281f091c1fceea40c03003b", "DigitaleBriefwahl",
+				args, launcherVersion, this);
+
 			Logger.Log("MainForm starting");
 			Application.Instance.Name = "Digitale Briefwahl";
 			_launcherVersion = launcherVersion;
