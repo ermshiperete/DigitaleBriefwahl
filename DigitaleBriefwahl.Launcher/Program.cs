@@ -179,6 +179,16 @@ namespace DigitaleBriefwahl.Launcher
 			url.Replace("wahlurl://", "https://");
 			var uri = new Uri(url);
 			var ballotFile = Path.GetFileNameWithoutExtension(urlFile) + ".wahl";
+
+			if (!InternetGetConnectedState(out var flags, 0))
+			{
+				Logger.Log($"Network not connected - skipping download from URL (0x{flags:X2})");
+				Console.WriteLine("Netzwerk nicht verbunden - kann Stimmzettel nicht automatisch herunterladen.");
+				Console.WriteLine($"Bitte Stimmzettel von {url} herunterladen und als '{ballotFile}' abspeichern.");
+				Console.WriteLine("Diese Datei kann dann aufgerufen werden.");
+				return null;
+			}
+
 			Console.WriteLine("Die Wahlunterlagen werden heruntergeladen...");
 			Logger.Log($"Downloading from {uri}...");
 			var targetFile = await DownloadVotingApp(uri, ballotFile);

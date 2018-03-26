@@ -61,30 +61,47 @@ namespace DigitaleBriefwahl.Launcher.Mac
 
 		private static void LaunchApp()
 		{
-			if (Path.GetExtension(RunApp) == ".wahlurl")
+			try
 			{
-				RunApp = DownloadVotingAppFromUrlFile(RunApp);
+				if (Path.GetExtension(RunApp) == ".wahlurl")
+				{
+					RunApp = DownloadVotingAppFromUrlFile(RunApp);
+					if (string.IsNullOrEmpty(RunApp))
+						return;
+				}
+
+				using (var launcher = new Launcher(null))
+				{
+					Logger.Log($"Launching {RunApp}");
+					var dir = launcher.UnzipVotingApp(RunApp);
+					Logger.Log($"Unzipped app to {dir}");
+					launcher.LaunchVotingApp();
+					Logger.Log("Returned from launching; quitting app.");
+				}
 			}
-			using (var launcher = new Launcher(null))
+			finally
 			{
-				Logger.Log($"Launching {RunApp}");
-				var dir = launcher.UnzipVotingApp(RunApp);
-				Logger.Log($"Unzipped app to {dir}");
-				launcher.LaunchVotingApp();
-				Logger.Log("Returned from launching; quitting app.");
 				Application.Instance.Quit();
 			}
 		}
 
 		private static string DownloadVotingAppFromUrlFile(string urlFile)
 		{
-			Logger.Log($"Reading URL from {urlFile}");
-			var url = File.ReadAllText(urlFile);
-			url.Replace("wahlurl://", "https://");
-			Logger.Log($"Downloading app from {url}");
-			var uri = new Uri(url);
-			var ballotFile = Path.GetFileNameWithoutExtension(urlFile) + ".wahl";
-			return DownloadVotingApp(uri, ballotFile);
+			try
+			{
+				Logger.Log($"Reading URL from {urlFile}");
+				var url = File.ReadAllText(urlFile);
+				url.Replace("wahlurl://", "https://");
+				Logger.Log($"Downloading app from {url}");
+				var uri = new Uri(url);
+				var ballotFile = Path.GetFileNameWithoutExtension(urlFile) + ".wahl";
+				return DownloadVotingApp(uri, ballotFile);
+			}
+			catch (Exception e)
+			{
+				Logger.Log($"Got {e.GetType()} exception trying to download URL: {e.Message}");
+				return null;
+			}
 		}
 
 		private static string DownloadVotingApp(Uri uri, string ballotFile)

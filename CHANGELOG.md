@@ -22,6 +22,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Packer.exe: Improve handling of Google Drive URLs.
 - Packer.exe: Check download URL when packing.
 
+### Fixed
+
+- [launcher] Fix crash trying to download if offline.
+
 ## [0.3.2] - 2018-03-23
 
 ### Fixed
