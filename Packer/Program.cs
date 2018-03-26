@@ -36,13 +36,20 @@ namespace Packer
 
 		private static bool CreateBundle()
 		{
+			if (!File.Exists(Configuration.ConfigName))
+			{
+				Console.WriteLine();
+				Console.WriteLine($"The configuration file '{Configuration.ConfigName}' is missing. Exiting.");
+				return false;
+			}
+
 			PackCompiler.ConvertToUtf8(Configuration.ConfigName);
 			Config = Configuration.Configure(Path.Combine(ExecutableLocation, Configuration.ConfigName));
 			var packCompiler = new PackCompiler(ExecutableLocation);
 			if (!File.Exists(packCompiler.ConfigFilename))
 			{
 				Console.WriteLine();
-				Console.WriteLine($"The configuration file {packCompiler.ConfigFilename} is missing. Exiting.");
+				Console.WriteLine($"The configuration file '{packCompiler.ConfigFilename}' is missing. Exiting.");
 				return false;
 			}
 
