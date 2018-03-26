@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using DigitaleBriefwahl;
@@ -79,7 +80,7 @@ namespace Packer
 				{
 					urlString = AdjustUrlIfGoogleDrive(urlString);
 					url = new Uri(urlString);
-					urlOk = true;
+					urlOk = TryDownload(url);
 				}
 				catch (UriFormatException)
 				{
@@ -90,6 +91,7 @@ namespace Packer
 			var urlFile = Path.ChangeExtension(zipFile, "wahlurl");
 			File.WriteAllText(urlFile, url.ToString());
 
+			Console.WriteLine();
 			Console.WriteLine($"The following files were created in {Path.GetDirectoryName(zipFile)}:");
 			Console.WriteLine($"\t{Path.GetFileName(urlFile)}");
 			Console.WriteLine($"\t{Path.GetFileName(ballotFile)}");
@@ -98,6 +100,38 @@ namespace Packer
 			if (CanUsePreferredEmailProvider)
 				SendEmail(EmailProviderFactory.PreferredEmailProvider(), urlFile, ballotFile, publicKeyFile);
 			return true;
+		}
+
+		private static bool TryDownload(Uri uri)
+		{
+			var targetFile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+			try
+			{
+				using (var client = new WebClient())
+				{
+					client.DownloadFile(uri, targetFile);
+				}
+
+				Console.WriteLine("Download URL is valid.");
+				return true;
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine();
+				Console.WriteLine($"Error trying to download file: {e.Message}");
+				Console.WriteLine("Please enter a valid download URL:");
+				return false;
+			}
+			finally
+			{
+				try
+				{
+					File.Delete(targetFile);
+				}
+				catch
+				{
+				}
+			}
 		}
 
 		private static string AdjustUrlIfGoogleDrive(string urlString)
