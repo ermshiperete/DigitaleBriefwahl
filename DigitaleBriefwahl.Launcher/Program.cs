@@ -16,10 +16,10 @@ using SIL.PlatformUtilities;
 namespace DigitaleBriefwahl.Launcher
 {
 	/// <summary>
-	/// The launcher app has to be installed on the user's system. It will take the voting app
-	/// distributed as a zip file, extract and launch it. We expect that the launcher has to be
-	/// installed once and can then be used for several years while the voting app can be updated
-	/// every year.
+	/// The launcher app has to be installed on the user's system. It will take the URL file,
+	/// download the voting app distributed as a zip file, extract and launch it. We expect that
+	/// the launcher has to be installed once and can then be used for several years while the
+	/// voting app can be updated every year.
 	/// </summary>
 	internal static class Program
 	{
@@ -36,7 +36,7 @@ namespace DigitaleBriefwahl.Launcher
 				options = Options.ParseCommandLineArgs(writer, args);
 				if (options == null)
 				{
-					Console.WriteLine("Couldn't parse passed in arguments");
+					Console.WriteLine("Kann übergebene Parameter nicht interpretieren.");
 					Logger.Log("Couldn't parse passed in arguments");
 					return;
 				}
@@ -44,21 +44,21 @@ namespace DigitaleBriefwahl.Launcher
 
 			if (!string.IsNullOrEmpty(options.RunApp) && !File.Exists(options.RunApp))
 			{
-				Console.WriteLine($"Can't find file {options.RunApp}");
+				Console.WriteLine($"Datei '{options.RunApp}' nicht gefunden.");
 				Logger.Log($"Can't find file {options.RunApp}");
 				return;
 			}
 
 			if (!string.IsNullOrEmpty(options.RunDirectory) && !Directory.Exists(options.RunDirectory))
 			{
-				Console.WriteLine($"Can't find directory {options.RunDirectory}");
+				Console.WriteLine($"Verzeichnis '{options.RunDirectory}' nicht gefunden.");
 				Logger.Log($"Can't find directory {options.RunDirectory}");
 				return;
 			}
 
 			if (!string.IsNullOrEmpty(options.UrlFile) && !File.Exists(options.UrlFile))
 			{
-				Console.WriteLine($"Can't find URL file {options.UrlFile}");
+				Console.WriteLine($"URL-Datei '{options.UrlFile}' nicht gefunden.");
 				Logger.Log($"Can't find URL file {options.UrlFile}");
 				return;
 			}
@@ -68,7 +68,10 @@ namespace DigitaleBriefwahl.Launcher
 			if (Debugger.IsAttached || didUpdate)
 				return;
 
-			Console.WriteLine("Press 'Enter' to continue");
+			if (options.IsInstall)
+				Console.WriteLine("Installation erfolgreich.");
+
+			Console.WriteLine("Zum Fortsetzen 'Enter'-Taste drücken");
 			Console.ReadLine();
 		}
 
@@ -109,34 +112,41 @@ namespace DigitaleBriefwahl.Launcher
 			Task<string> unzipVotingApp = null;
 			Task<string> downloadVotingApp = null;
 
-			if (Platform.IsWindows && !options.SkipUpdateCheck)
+			if (Platform.IsWindows)
 			{
-				if (InternetGetConnectedState(out var flags, 0))
-				{
-					try
-					{
-						updateManagerTask = SquirrelInstallerSupport.HandleSquirrelInstallEvent(options);
-					}
-					catch (HttpRequestException e)
-					{
-						// some network problem - ignore
-						Console.WriteLine("Network problem - skipping updates");
-						Logger.Log(
-							$"Network problem - skipping updates: {e.Message} ({e.InnerException?.Message})");
-					}
-					catch (WebException we)
-					{
-						// some network problem - ignore
-						Console.WriteLine("Network problem - skipping updates");
-						Logger.Log($"Network problem - skipping updates: {we.Message}");
-					}
-				}
+				if (options.SkipUpdateCheck)
+					Console.WriteLine("Ignoriere eventuell vorhandene Updates.");
 				else
 				{
-					Console.WriteLine("Network not connected - skipping updates");
-					Logger.Log($"Network not connected - skipping updates (0x{flags:X2})");
+					if (InternetGetConnectedState(out var flags, 0))
+					{
+						try
+						{
+							updateManagerTask = SquirrelInstallerSupport.HandleSquirrelInstallEvent(options);
+						}
+						catch (HttpRequestException e)
+						{
+							// some network problem - ignore
+							Console.WriteLine("Netzwerkproblem - Überprüfung auf Updates wird übersprungen.");
+							Logger.Log(
+								$"Network problem - skipping updates: {e.Message} ({e.InnerException?.Message})");
+						}
+						catch (WebException we)
+						{
+							// some network problem - ignore
+							Console.WriteLine("Netzwerkproblem - Überprüfung auf Updates wird übersprungen.");
+							Logger.Log($"Network problem - skipping updates: {we.Message}");
+						}
+					}
+					else
+					{
+						Console.WriteLine("Netzwerk nicht verbunden - Überprüfung auf Updates wird übersprungen.");
+						Logger.Log($"Network not connected - skipping updates (0x{flags:X2})");
+					}
 				}
 			}
+			else
+				Console.WriteLine("Keine Updates vorhanden.");
 
 			if (!string.IsNullOrEmpty(options.UrlFile))
 				downloadVotingApp = DownloadVotingAppFromUrlFile(options.UrlFile);
@@ -169,7 +179,12 @@ namespace DigitaleBriefwahl.Launcher
 			url.Replace("wahlurl://", "https://");
 			var uri = new Uri(url);
 			var ballotFile = Path.GetFileNameWithoutExtension(urlFile) + ".wahl";
-			return await DownloadVotingApp(uri, ballotFile);
+			Console.WriteLine("Die Wahlunterlagen werden heruntergeladen...");
+			Logger.Log($"Downloading from {uri}...");
+			var targetFile = await DownloadVotingApp(uri, ballotFile);
+			Console.WriteLine("Download abgeschlossen.");
+			Logger.Log($"Download of {targetFile} finished.");
+			return targetFile;
 		}
 
 		private static async Task<string> DownloadVotingApp(Uri uri, string ballotFile)

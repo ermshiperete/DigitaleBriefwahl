@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Improve console messages.
+
 ## [0.3.2] - 2018-03-23
 
 ### Fixed

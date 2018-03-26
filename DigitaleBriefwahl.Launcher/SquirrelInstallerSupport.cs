@@ -40,7 +40,7 @@ namespace DigitaleBriefwahl.Launcher
 							$"future version '{updateInfo.FutureReleaseEntry?.Version}'.");
 						if (updateInfo.ReleasesToApply?.Count > 0)
 						{
-							Console.WriteLine($"Applying update to '{updateInfo.FutureReleaseEntry?.Version}'.");
+							Console.WriteLine($"Update auf Version '{updateInfo.FutureReleaseEntry?.Version}'.");
 							Logger.Log($"Found new update. Applying {updateInfo.ReleasesToApply?.Count} releases. " +
 								$"bootstrapping: {updateInfo.IsBootstrapping}, package dir: {updateInfo.PackageDirectory}");
 							await mgr.UpdateApp();
@@ -50,7 +50,7 @@ namespace DigitaleBriefwahl.Launcher
 							return true;
 						}
 						Logger.Log("No updates");
-						Console.WriteLine("No updates.");
+						Console.WriteLine("Keine Updates vorhanden. Neueste Version wird bereits ausgeführt.");
 					}
 					catch (Exception e)
 					{
