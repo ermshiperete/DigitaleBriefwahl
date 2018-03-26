@@ -56,7 +56,8 @@ namespace DigitaleBriefwahl.Launcher
 				return;
 			}
 
-			if (!string.IsNullOrEmpty(options.UrlFile) && !File.Exists(options.UrlFile))
+			if (!string.IsNullOrEmpty(options.UrlFile) && !options.UrlFile.StartsWith("wahlurl://")
+				&& !File.Exists(options.UrlFile))
 			{
 				Console.WriteLine($"URL-Datei '{options.UrlFile}' nicht gefunden.");
 				Logger.Log($"Can't find URL file {options.UrlFile}");
