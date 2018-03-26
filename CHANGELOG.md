@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - [launcher] Fix crash trying to download if offline.
+- Catch exception when sending email fails.
 
 ## [0.3.2] - 2018-03-23
 

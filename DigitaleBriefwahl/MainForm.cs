@@ -213,14 +213,22 @@ namespace DigitaleBriefwahl
 				return false;
 
 			Logger.Log($"Sending email through {emailProvider.GetType().Name}");
-			var email = emailProvider.CreateMessage();
+			try
+			{
+				var email = emailProvider.CreateMessage();
 
-			email.To.Add(_configuration.EmailAddress);
-			email.Subject = _configuration.Title;
-			email.Body = "Anbei mein Stimmzettel.";
-			email.AttachmentFilePath.Add(filename);
+				email.To.Add(_configuration.EmailAddress);
+				email.Subject = _configuration.Title;
+				email.Body = "Anbei mein Stimmzettel.";
+				email.AttachmentFilePath.Add(filename);
 
-			return emailProvider.SendMessage(email);
+				return emailProvider.SendMessage(email);
+			}
+			catch (Exception e)
+			{
+				Logger.Log($"Got {e.GetType()} exception trying to send email through {emailProvider.GetType().Name}: {e.Message}");
+				return false;
+			}
 		}
 
 		private void WriteBallot(bool writeEmptyBallot)
