@@ -77,12 +77,7 @@ namespace Packer
 				var urlString = Console.ReadLine();
 				try
 				{
-					if (urlString.StartsWith("https://drive.google.com/file"))
-					{
-						var regex = new Regex("https://drive.google.com/file/d/([^/]+)/");
-						if (regex.IsMatch(urlString))
-							urlString = $"https://drive.google.com/uc?export=download&id={regex.Match(urlString).Groups[1]}";
-					}
+					urlString = AdjustUrlIfGoogleDrive(urlString);
 					url = new Uri(urlString);
 					urlOk = true;
 				}
@@ -103,6 +98,21 @@ namespace Packer
 			if (CanUsePreferredEmailProvider)
 				SendEmail(EmailProviderFactory.PreferredEmailProvider(), urlFile, ballotFile, publicKeyFile);
 			return true;
+		}
+
+		private static string AdjustUrlIfGoogleDrive(string urlString)
+		{
+			if (!urlString.StartsWith("https://drive.google.com"))
+				return urlString;
+
+			Regex regex = null;
+			if (urlString.StartsWith("https://drive.google.com/file"))
+				regex = new Regex("https://drive.google.com/file/d/([^/]+)/");
+			else if (urlString.StartsWith("https://drive.google.com/open"))
+				regex = new Regex("https://drive.google.com/open?id=/([^/]+)/");
+			return regex.IsMatch(urlString)
+				? $"https://drive.google.com/uc?export=download&id={regex.Match(urlString).Groups[1]}"
+				: urlString;
 		}
 
 		private static string MoveToExeLocation(string fileName)
