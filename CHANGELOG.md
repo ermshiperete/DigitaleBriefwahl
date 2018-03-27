@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - [launcher] Fix crash trying to download if offline.
 - Catch exception when sending email fails.
+- Fix email handling if no default email client is set in registry but Thunderbird is installed.
 
 ## [0.3.2] - 2018-03-23
 

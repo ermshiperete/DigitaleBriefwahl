@@ -1,6 +1,7 @@
 // Copyright (c) 2018 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
+using System.IO;
 using DigitaleBriefwahl.ExceptionHandling;
 using Microsoft.Win32;
 using SIL.PlatformUtilities;
@@ -16,15 +17,26 @@ namespace DigitaleBriefwahl.Mail
 				if (!Platform.IsWindows)
 					return false;
 
+				bool retVal;
 				using (var key = Registry.CurrentUser.OpenSubKey(@"Software\Clients\Mail"))
 				{
 					var client = key?.GetValue("") as string;
-					var retVal = !string.IsNullOrEmpty(client) && client == "Mozilla Thunderbird";
-					Logger.Log($"Thunderbird is installed on Windows: {retVal}");
-					return retVal;
+					retVal = !string.IsNullOrEmpty(client) && client == "Mozilla Thunderbird";
 				}
+
+				if (!retVal)
+				{
+					retVal = File.Exists(WindowsThunderbirdPath);
+				}
+
+				Logger.Log($"Thunderbird is installed on Windows: {retVal}");
+				return retVal;
 			}
 		}
+
+		public static string WindowsThunderbirdPath => Path.Combine(
+			Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+			"Mozilla Thunderbird", "thunderbird.exe");
 
 		public static bool CanUsePreferredEmailProvider
 		{

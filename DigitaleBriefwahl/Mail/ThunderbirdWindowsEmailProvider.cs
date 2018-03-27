@@ -3,6 +3,8 @@
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Win32;
@@ -46,10 +48,10 @@ namespace DigitaleBriefwahl.Mail
 				{
 					var value = key?.GetValue("") as string;
 					var regex = new Regex(@"^""([^""]+)""");
-					if (value == null || !regex.IsMatch(value))
-						return null;
+					if (value != null && regex.IsMatch(value))
+						return regex.Match(value).Groups[1].Value;
 
-					return regex.Match(value).Groups[1].Value;
+					return File.Exists(MailUtils.WindowsThunderbirdPath) ? MailUtils.WindowsThunderbirdPath : null;
 				}
 			}
 		}

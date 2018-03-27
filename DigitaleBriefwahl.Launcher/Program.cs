@@ -72,7 +72,7 @@ namespace DigitaleBriefwahl.Launcher
 			if (options.IsInstall)
 				Console.WriteLine("Installation erfolgreich.");
 
-			Console.WriteLine("Zum Fortsetzen 'Enter'-Taste drücken");
+			Console.WriteLine("Zum Beenden 'Enter'-Taste drücken");
 			Console.ReadLine();
 		}
 
@@ -108,7 +108,7 @@ namespace DigitaleBriefwahl.Launcher
 		private static async Task<bool> UpdateApp(Options options, Launcher launcher)
 		{
 			Task<bool> updateManagerTask = null;
-			bool didUpdate = false;
+			var didUpdate = false;
 
 			Task<string> unzipVotingApp = null;
 			Task<string> downloadVotingApp = null;
