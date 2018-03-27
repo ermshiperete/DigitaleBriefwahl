@@ -50,7 +50,10 @@ namespace DigitaleBriefwahl.Launcher
 							return true;
 						}
 						Logger.Log("No updates");
-						Console.WriteLine("Keine Updates vorhanden. Neueste Version wird bereits ausgeführt.");
+						if (options.IsInstall || options.FirstRun)
+							Console.WriteLine("Keine neuere Version vorhanden.");
+						else
+							Console.WriteLine("Keine Updates vorhanden. Neueste Version wird bereits ausgeführt.");
 					}
 					catch (Exception e)
 					{

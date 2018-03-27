@@ -64,12 +64,15 @@ namespace DigitaleBriefwahl.Launcher
 				return;
 			}
 
+			if (options.IsInstall || options.FirstRun)
+				Console.WriteLine("Installiere Anwendung...");
+
 			var didUpdate = UpdateAndLaunchApp(options);
 
 			if (Debugger.IsAttached || didUpdate)
 				return;
 
-			if (options.IsInstall)
+			if (options.IsInstall || options.FirstRun)
 				Console.WriteLine("Installation erfolgreich.");
 
 			Console.WriteLine("Zum Beenden 'Enter'-Taste drücken");
