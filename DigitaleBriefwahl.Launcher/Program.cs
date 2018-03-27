@@ -80,7 +80,7 @@ namespace DigitaleBriefwahl.Launcher
 		{
 			using (var launcher = new Launcher(options.RunDirectory))
 			{
-				Console.WriteLine(options.SkipUpdateCheck || options.IsInstall ? "Lade Anwendung..." : "Überüfe auf Updates...");
+				Console.WriteLine(options.SkipUpdateCheck || options.IsInstall ? "Lade Anwendung..." : "Überprüfe auf Updates...");
 
 				var didUpdate = UpdateApp(options, launcher).GetAwaiter().GetResult();
 
