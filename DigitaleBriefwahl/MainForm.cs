@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Text;
 using DigitaleBriefwahl.Encryption;
 using DigitaleBriefwahl.ExceptionHandling;
+using DigitaleBriefwahl.Mail;
 using DigitaleBriefwahl.Model;
 using DigitaleBriefwahl.Views;
 using Eto.Drawing;
@@ -109,27 +110,6 @@ namespace DigitaleBriefwahl
 				"Digitale Briefwahl");
 		}
 
-		private static string GetDefaultValue(string path)
-		{
-			using (var key = Registry.CurrentUser.OpenSubKey(path))
-			{
-				return key?.GetValue("") as string;
-			}
-		}
-
-		private static bool CanUsePreferredEmailProvider
-		{
-			get
-			{
-				if (!SIL.PlatformUtilities.Platform.IsWindows)
-					return true;
-
-				var retVal = !string.IsNullOrEmpty(GetDefaultValue(@"Software\Clients\Mail"));
-				Logger.Log($"Can use perferred email provider: {retVal}");
-				return retVal;
-			}
-		}
-
 		private void OnSendClicked(object sender, EventArgs e)
 		{
 			var vote = CollectVote();
@@ -140,10 +120,16 @@ namespace DigitaleBriefwahl
 
 			var mailSent = false;
 			string newFileName = null;
-			if (CanUsePreferredEmailProvider)
+			if (MailUtils.CanUsePreferredEmailProvider)
 			{
 				mailSent = SendEmail(EmailProviderFactory.PreferredEmailProvider(), filename);
 				Logger.Log($"Sending email through preferred email provider successful: {mailSent}");
+			}
+
+			if (!mailSent && MailUtils.IsWindowsThunderbirdInstalled)
+			{
+				mailSent = SendEmail(new ThunderbirdWindowsEmailProvider(), filename);
+				Logger.Log($"Sending email through Thunderbird on Windows successful: {mailSent}");
 			}
 
 			if (!mailSent)

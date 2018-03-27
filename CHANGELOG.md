@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - Packer.exe: Improve handling of Google Drive URLs.
 - Packer.exe: Check download URL when packing.
 - Support wahlurl:// URLs.
+- Improve handling of emails. Improve detecting Outlook and Thunderbird on Windows.
 
 ### Fixed
 
