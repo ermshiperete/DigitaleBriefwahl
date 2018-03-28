@@ -184,7 +184,7 @@ namespace DigitaleBriefwahl.Launcher
 			var uri = new Uri(url);
 			var ballotFile = Path.GetFileNameWithoutExtension(urlFile) + ".wahl";
 
-			if (!InternetGetConnectedState(out var flags, 0))
+			if (Platform.IsWindows && !InternetGetConnectedState(out var flags, 0))
 			{
 				Logger.Log($"Network not connected - skipping download from URL (0x{flags:X2})");
 				Console.WriteLine("Netzwerk nicht verbunden - kann Stimmzettel nicht automatisch herunterladen.");
@@ -204,12 +204,142 @@ namespace DigitaleBriefwahl.Launcher
 		private static async Task<string> DownloadVotingApp(Uri uri, string ballotFile)
 		{
 			var targetFile = Path.Combine(Path.GetTempPath(), ballotFile);
-			using (var client = new WebClient())
-			{
-				client.DownloadFile(uri, targetFile);
-			}
+			// Assign values to these objects here so that they can
+			// be referenced in the finally block
+			Stream remoteStream = null;
+			Stream localStream = null;
+			HttpWebResponse response = null;
 
-			return targetFile;
+			// Use a try/catch/finally block as both the WebRequest and Stream
+			// classes throw exceptions upon error
+			try
+			{
+				var tmpTargetFile = targetFile + ".~tmp";
+
+				// Create a request for the specified remote file name
+				var request = WebRequest.Create(uri) as HttpWebRequest;
+
+				// REVIEW: would it be better to use ETag in the HTTP header instead of relying
+				// on the timestamp for caching and continuing incomplete downloads?
+
+				var appendFile = false;
+				long tmpFileLength = 0;
+				if (File.Exists(tmpTargetFile))
+				{
+					// Interrupted download
+					Logger.Log($"Found incomplete download file, continuing download of {targetFile}...");
+
+					var fi = new FileInfo(tmpTargetFile);
+					request.Headers.Add("If-Unmodified-Since", fi.LastWriteTimeUtc.ToString("r"));
+					tmpFileLength = fi.Length;
+					request.AddRange(tmpFileLength);
+					appendFile = true;
+				}
+				else if (File.Exists(targetFile))
+				{
+					Logger.Log($"Checking {targetFile}, downloading if newer...");
+
+					var fi = new FileInfo(targetFile);
+					request.IfModifiedSince = fi.LastWriteTimeUtc;
+				}
+				else
+					Logger.Log($"Downloading {targetFile}...");
+
+				// Send the request to the server and retrieve the
+				// WebResponse object
+				response = (HttpWebResponse) await Task.Factory.FromAsync(
+					request.BeginGetResponse, request.EndGetResponse, null);
+
+				if (File.Exists(tmpTargetFile) && (response.StatusCode == HttpStatusCode.PreconditionFailed ||
+					response.LastModified > new FileInfo(tmpTargetFile).LastWriteTimeUtc))
+				{
+					// file got changed on the server since we downloaded the incomplete file
+					Logger.Log($"File {targetFile} changed on server since start of incomplete download; initiating complete download");
+					File.Delete(tmpTargetFile);
+					response.Close();
+					return await DownloadVotingApp(uri, ballotFile);
+				}
+
+				// Once the WebResponse object has been retrieved,
+				// get the stream object associated with the response's data
+				remoteStream = response.GetResponseStream();
+
+				// Create the local file
+				Directory.CreateDirectory(Path.GetDirectoryName(targetFile));
+				localStream = File.OpenWrite(tmpTargetFile);
+				if (appendFile && tmpFileLength < response.ContentLength)
+					localStream.Position = localStream.Length;
+
+				// Allocate a 10k buffer
+				var buffer = new byte[10240];
+				int bytesRead;
+
+				// Simple do/while loop to read from stream until
+				// no bytes are returned
+				do
+				{
+					// Read data (up to 1k) from the stream
+					bytesRead = remoteStream.Read(buffer, 0, buffer.Length);
+
+					// Write the data to the local file
+					localStream.Write(buffer, 0, bytesRead);
+				} while (bytesRead > 0);
+
+				var localStreamLength = localStream.Length;
+				localStream.Close();
+
+				if (localStreamLength < response.ContentLength + tmpFileLength)
+				{
+					Logger.Log($"WARNING: couldn't download complete file {targetFile}, continuing next time");
+					Logger.Log($"{targetFile}: Expected file length: {response.ContentLength + tmpFileLength}, but received {localStreamLength} bytes");
+					return null;
+				}
+
+				File.Delete(targetFile);
+				File.Move(tmpTargetFile, targetFile);
+				return targetFile;
+			}
+			catch (WebException wex)
+			{
+				if (wex.Status == WebExceptionStatus.ProtocolError)
+				{
+					var resp = wex.Response as HttpWebResponse;
+					if (resp.StatusCode == HttpStatusCode.NotModified)
+					{
+						Logger.Log($"File {targetFile} not modified.");
+						return targetFile;
+					}
+				}
+				else if (wex.Status == WebExceptionStatus.ConnectFailure || wex.Status == WebExceptionStatus.NameResolutionFailure)
+				{
+					// We probably don't have a network connection (despite the check in the caller).
+					Logger.Log(File.Exists(targetFile)
+						? $"Could not retrieve latest {targetFile}. No network connection. Keeping existing file."
+						: $"Could not retrieve latest {targetFile}. No network connection.");
+					return null;
+				}
+				if (wex.Response != null)
+				{
+					string html;
+					using (var sr = new StreamReader(wex.Response.GetResponseStream()))
+						html = sr.ReadToEnd();
+					Logger.Log($"Could not download from {uri}: {wex.Message} Server responds '{html}'. Status {wex.Status}.");
+				}
+				else
+				{
+					Logger.Log($"Could not download from {uri}. Exception: {wex.Message} No server response. Status {wex.Status}.");
+				}
+				return null;
+			}
+			finally
+			{
+				// Close the response and streams objects here
+				// to make sure they're closed even if an exception
+				// is thrown at some point
+				response?.Close();
+				remoteStream?.Close();
+				localStream?.Close();
+			}
 		}
 	}
 }

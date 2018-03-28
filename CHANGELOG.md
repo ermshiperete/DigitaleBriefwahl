@@ -20,6 +20,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 - Add Outlook email handler for cases where MAPI isn't set up.
 
+### Fixed
+
+- Download on Linux.
+
 ## [0.3.3] - 2018-03-28
 
 ### Changed
