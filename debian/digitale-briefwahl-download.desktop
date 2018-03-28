@@ -2,7 +2,7 @@
 Version=1.0
 Name=Digitale Briefwahl Downloader
 Exec=digitale-briefwahl --url %u
-Icon=digitale-briefwahl
+Icon=digitale-briefwahl-url
 Terminal=false
 Type=Application
 Categories=Education;

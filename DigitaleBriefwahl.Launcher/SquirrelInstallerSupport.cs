@@ -166,6 +166,7 @@ namespace DigitaleBriefwahl.Launcher
 				return;
 
 			var icon = Path.Combine(LocationOfExecutable, "DigitaleBriefwahl.ico");
+			var urlIcon = Path.Combine(LocationOfExecutable, "DigitaleBriefwahlUrl.ico");
 
 			EnsureRegistryValue(".Wahl", "DigitaleBriefwahl.WahlFile");
 			EnsureRegistryValue(@".Wahl\DefaultIcon", icon);
@@ -180,13 +181,13 @@ namespace DigitaleBriefwahl.Launcher
 			EnsureRegistryValue(@"DigitaleBriefwahl.Launcher\shell\open\command", $"\"{Executable}\" --run \"%1\"");
 
 			EnsureRegistryValue(".wahlurl", "DigitaleBriefwahl.WahlUrlFile");
-			EnsureRegistryValue(@".wahlurl\DefaultIcon", icon);
+			EnsureRegistryValue(@".wahlurl\DefaultIcon", urlIcon);
 			EnsureRegistryValue(".WahlUrlFile", "Digitale Briefwahl Download URL");
 			EnsureRegistryValue(".WahlUrlFile", "application/wahlurl", "Content Type");
-			EnsureRegistryValue(@".WahlUrlFile\DefaultIcon", icon + ", 0");
+			EnsureRegistryValue(@".WahlUrlFile\DefaultIcon", urlIcon + ", 0");
 			EnsureRegistryValue("DigitaleBriefwahl.wahlurl", "Digitale Briefwahl Download URL", "FriendlyTypeName");
 			EnsureRegistryValue("DigitaleBriefwahl.WahlUrlFile", "Digitale Briefwahl Download URL");
-			EnsureRegistryValue(@"DigitaleBriefwahl.WahlUrlFile\DefaultIcon", icon + ", 0");
+			EnsureRegistryValue(@"DigitaleBriefwahl.WahlUrlFile\DefaultIcon", urlIcon + ", 0");
 			EnsureRegistryValue(@"DigitaleBriefwahl.WahlUrlFile\shell\open", "Open");
 			EnsureRegistryValue(@"DigitaleBriefwahl.WahlUrlFile\shell\open\command", $"\"{Executable}\" --url \"%1\"");
 		}

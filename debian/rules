@@ -41,6 +41,8 @@ override_dh_auto_install:
 	install -d $(DESTDIR)/usr/share/pixmaps
 	install -m 644 Resources/DigitaleBriefwahl.png $(DESTDIR)/usr/share/pixmaps/digitale-briefwahl.png
 	install -m 644 Resources/DigitaleBriefwahl.svg $(DESTDIR)/usr/share/pixmaps/digitale-briefwahl.svg
+	install -m 644 Resources/DigitaleBriefwahlUrl.png $(DESTDIR)/usr/share/pixmaps/digitale-briefwahl-url.png
+	install -m 644 Resources/DigitaleBriefwahlUrl.svg $(DESTDIR)/usr/share/pixmaps/digitale-briefwahl-url.svg
 	install -d $(DESTDIR)/usr/share/applications
 	desktop-file-install --dir $(DESTDIR)/usr/share/applications debian/digitale-briefwahl.desktop
 	desktop-file-install --dir $(DESTDIR)/usr/share/applications debian/digitale-briefwahl-download.desktop
@@ -48,10 +50,10 @@ override_dh_auto_install:
 	# NOTE: mime type installation is handled by dh_installmime
 	install -d $(DESTDIR)/usr/share/icons/hicolor/48x48/mimetypes/
 	install -m 644 Resources/DigitaleBriefwahl.png $(DESTDIR)/usr/share/icons/hicolor/48x48/mimetypes/application-wahl.png
-	install -m 644 Resources/DigitaleBriefwahl.png $(DESTDIR)/usr/share/icons/hicolor/48x48/mimetypes/application-wahlurl.png
+	install -m 644 Resources/DigitaleBriefwahlUrl.png $(DESTDIR)/usr/share/icons/hicolor/48x48/mimetypes/application-wahlurl.png
 	install -d $(DESTDIR)/usr/share/icons/hicolor/scalable/mimetypes/
 	install -m 644 Resources/DigitaleBriefwahl.svg $(DESTDIR)/usr/share/icons/hicolor/scalable/mimetypes/application-wahl.svg
-	install -m 644 Resources/DigitaleBriefwahl.svg $(DESTDIR)/usr/share/icons/hicolor/scalable/mimetypes/application-wahlurl.svg
+	install -m 644 Resources/DigitaleBriefwahlUrl.svg $(DESTDIR)/usr/share/icons/hicolor/scalable/mimetypes/application-wahlurl.svg
 
 # Don't export any assemblies to other packages
 override_dh_makeclilibs:
