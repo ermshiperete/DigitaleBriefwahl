@@ -1,3 +1,18 @@
+digitale-briefwahl (0.3.3) xenial; urgency=medium
+
+  * Improve console messages.
+  * Packer.exe: Improve handling of Google Drive URLs.
+  * Packer.exe: Check download URL when packing.
+  * Support wahlurl:// URLs.
+  * Improve handling of emails. Improve detecting Outlook and Thunderbird
+    on Windows.
+  * [launcher] Fix crash trying to download if offline.
+  * Catch exception when sending email fails.
+  * Fix email handling if no default email client is set in registry but
+    Thunderbird is installed.
+
+ -- Eberhard Beilharz <eb1@sil.org>  Wed, 28 Mar 2018 12:12:30 +0200
+
 digitale-briefwahl (0.3.2) xenial; urgency=medium
 
   * Fix dependencies - now need Mono >= 5
