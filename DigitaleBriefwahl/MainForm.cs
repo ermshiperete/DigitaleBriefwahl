@@ -8,10 +8,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Bugsnag;
 using DigitaleBriefwahl.Encryption;
 using DigitaleBriefwahl.ExceptionHandling;
 using DigitaleBriefwahl.Mail;
-using DigitaleBriefwahl.Model;
 using DigitaleBriefwahl.Views;
 using Eto.Drawing;
 using Eto.Forms;
@@ -19,6 +19,7 @@ using Eto.Threading;
 using Microsoft.Win32;
 using SIL.Email;
 using SIL.IO;
+using Configuration = DigitaleBriefwahl.Model.Configuration;
 using Thread = System.Threading.Thread;
 
 namespace DigitaleBriefwahl
@@ -120,33 +121,51 @@ namespace DigitaleBriefwahl
 
 			var mailSent = false;
 			string newFileName = null;
-			if (MailUtils.CanUsePreferredEmailProvider)
+			try
 			{
-				mailSent = SendEmail(EmailProviderFactory.PreferredEmailProvider(), filename);
-				Logger.Log($"Sending email through preferred email provider successful: {mailSent}");
+				if (MailUtils.CanUsePreferredEmailProvider)
+				{
+					mailSent = SendEmail(EmailProviderFactory.PreferredEmailProvider(), filename);
+					Logger.Log($"Sending email through preferred email provider successful: {mailSent}");
+				}
+
+				if (!mailSent && MailUtils.IsWindowsThunderbirdInstalled)
+				{
+					mailSent = SendEmail(new ThunderbirdWindowsEmailProvider(), filename);
+					Logger.Log($"Sending email through Thunderbird on Windows successful: {mailSent}");
+				}
+
+				if (!mailSent && MailUtils.IsOutlookInstalled)
+				{
+					mailSent = SendEmail(new OutlookEmailProvider(), filename);
+					Logger.Log($"Sending email through Outlook successful: {mailSent}");
+				}
+
+				if (!mailSent)
+				{
+					newFileName = SaveBallot(
+						"Bitte Verzeichnis wählen, in dem der Stimmzettel gespeichert wird!",
+						filename);
+					var bldr = new StringBuilder();
+					bldr.AppendLine(
+						"ACHTUNG: Bei der E-Mail, die sich nun öffnet, kann der Stimmzettel unter Umständen " +
+						"nicht automatisch angehängt werden.");
+					bldr.AppendLine(
+						$"Falls das der Fall ist, bitte die Datei '{newFileName}' an die E-Mail anhängen.");
+
+					MessageBox.Show(bldr.ToString(), "Stimmzettel kann u.U. angehängt werden");
+
+					mailSent = SendEmail(EmailProviderFactory.AlternateEmailProvider(), filename);
+					Logger.Log($"Sending email through alternate email provider successful: {mailSent}");
+				}
+			}
+			catch (Exception ex)
+			{
+				var metadata = new Metadata();
+				metadata.AddToTab("App", "CaughtException", "Trying to send email");
+				ExceptionLogging.Client.Notify(ex, metadata);
 			}
 
-			if (!mailSent && MailUtils.IsWindowsThunderbirdInstalled)
-			{
-				mailSent = SendEmail(new ThunderbirdWindowsEmailProvider(), filename);
-				Logger.Log($"Sending email through Thunderbird on Windows successful: {mailSent}");
-			}
-
-			if (!mailSent)
-			{
-				newFileName = SaveBallot(
-					"Bitte Verzeichnis wählen, in dem der Stimmzettel gespeichert wird!",
-					filename);
-				var bldr = new StringBuilder();
-				bldr.AppendLine("ACHTUNG: Bei der E-Mail, die sich nun öffnet, kann der Stimmzettel unter Umständen " +
-					"nicht automatisch angehängt werden.");
-				bldr.AppendLine($"Falls das der Fall ist, bitte die Datei '{newFileName}' an die E-Mail anhängen.");
-
-				MessageBox.Show(bldr.ToString(), "Stimmzettel kann u.U. angehängt werden");
-
-				mailSent = SendEmail(EmailProviderFactory.AlternateEmailProvider(), filename);
-				Logger.Log($"Sending email through alternate email provider successful: {mailSent}");
-			}
 			if (mailSent)
 			{
 				Thread.Sleep(100);

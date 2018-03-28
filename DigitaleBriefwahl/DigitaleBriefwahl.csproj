@@ -46,7 +46,9 @@
     <Compile Include="ExceptionHandling\ErrorReport.eto.cs" />
     <Compile Include="ExceptionHandling\ExceptionLoggingUI.cs" />
     <Compile Include="Mail\MailUtils.cs" />
+    <Compile Include="Mail\OutlookEmailProvider.cs" />
     <Compile Include="Mail\ThunderbirdWindowsEmailProvider.cs" />
+    <Compile Include="Mail\WindowsEmailProviderBase.cs" />
     <Compile Include="Model\ElectionModelFactory.cs" />
     <Compile Include="Model\WeightedElectionModel.cs" />
     <Compile Include="Model\YesNoElectionModel.cs" />

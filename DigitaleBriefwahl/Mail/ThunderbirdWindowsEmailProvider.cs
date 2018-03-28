@@ -1,44 +1,26 @@
-﻿// // Copyright (c) 2018 SIL International
-// // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+﻿// Copyright (c) 2018 SIL International
+// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using Microsoft.Win32;
-using SIL.Email;
-using SIL.PlatformUtilities;
 
 namespace DigitaleBriefwahl.Mail
 {
-	public class ThunderbirdWindowsEmailProvider: IEmailProvider
+	public class ThunderbirdWindowsEmailProvider: WindowsEmailProviderBase
 	{
-		public IEmailMessage CreateMessage()
-		{
-			return new EmailMessage();
-		}
+		protected override bool IsApplicable => MailUtils.IsWindowsThunderbirdInstalled;
 
-		private static string EscapeString(string input)
+		protected override string EscapeString(string input)
 		{
 			return input.Replace(@"""", @"\""");
 		}
 
-		public bool SendMessage(IEmailMessage message)
-		{
-			if (!Platform.IsWindows || !MailUtils.IsWindowsThunderbirdInstalled)
-				return false;
+		protected override string FormatString => "-osint -compose \"to='{0}',subject='{3}',body='{4}'{1}{2}{5}\"";
 
-			var body = EscapeString(message.Body);
-			var subject = EscapeString(message.Subject);
-			var toBuilder = GetToRecipients(message.To);
-			var commandLine = $"-osint -compose \"to='{toBuilder}',subject='{subject}',body='{body}'" +
-				$"{GetCcRecipients(message.Cc)}{GetBccRecipients(message.Bcc)}{GetAttachments(message.AttachmentFilePath)}\"";
-			return StartEmailProcess(commandLine);
-		}
-
-		private static string EmailCommand
+		protected override string EmailCommand
 		{
 			get
 			{
@@ -56,22 +38,6 @@ namespace DigitaleBriefwahl.Mail
 			}
 		}
 
-		private static bool StartEmailProcess(string commandLine)
-		{
-			var p = new Process
-			{
-				StartInfo =
-				{
-					FileName = EmailCommand,
-					Arguments = commandLine,
-					UseShellExecute = false,
-					ErrorDialog = true
-				}
-			};
-
-			return p.Start();
-		}
-
 		private static string GetArguments(IEnumerable<string> arguments, string prefix = "")
 		{
 			var toBuilder = new StringBuilder();
@@ -86,22 +52,22 @@ namespace DigitaleBriefwahl.Mail
 			return toBuilder.ToString();
 		}
 
-		private static string GetToRecipients(IEnumerable<string> recipientTo)
+		protected override string GetToRecipients(IEnumerable<string> recipientTo)
 		{
 			return GetArguments(recipientTo);
 		}
 
-		private static string GetCcRecipients(ICollection<string> recipients)
+		protected override string GetCcRecipients(ICollection<string> recipients)
 		{
 			return recipients.Count > 0 ? $",cc='{GetArguments(recipients)}'" : null;
 		}
 
-		private static string GetBccRecipients(ICollection<string> recipients)
+		protected override string GetBccRecipients(ICollection<string> recipients)
 		{
 			return recipients.Count > 0 ? $",bcc='{GetArguments(recipients)}'" : null;
 		}
 
-		private static string GetAttachments(ICollection<string> attachments)
+		protected override string GetAttachments(ICollection<string> attachments)
 		{
 			return attachments.Count > 0 ? $",attachment='{GetArguments(attachments, "file://")}'" : null;
 		}

@@ -34,6 +34,10 @@ namespace DigitaleBriefwahl.Mail
 			}
 		}
 
+		public static bool IsOutlookInstalled => Platform.IsWindows &&
+			InstalledOutlookVersion > 10 && // minimum Outlook 2003 (11.0)
+			NumberOfOutlookProfiles > 0;
+
 		public static string WindowsThunderbirdPath => Path.Combine(
 			Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
 			"Mozilla Thunderbird", "thunderbird.exe");
