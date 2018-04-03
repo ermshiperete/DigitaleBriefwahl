@@ -1,3 +1,10 @@
+digitale-briefwahl (0.3.4) xenial; urgency=medium
+
+  * Add Outlook email handler for cases where MAPI isn't set up
+  * Fixed download on Linux
+
+ -- Eberhard Beilharz <eb1@sil.org>  Tue, 03 Apr 2018 11:41:35 +0200
+
 digitale-briefwahl (0.3.3) xenial; urgency=medium
 
   * Improve console messages.
