@@ -31,7 +31,7 @@ namespace Packer
 			if (Debugger.IsAttached)
 				return;
 
-			Console.WriteLine("Press 'Enter' to continue");
+			Console.WriteLine("Press 'Enter' to finish");
 			Console.ReadLine();
 		}
 
@@ -143,7 +143,7 @@ namespace Packer
 			if (urlString.StartsWith("https://drive.google.com/file"))
 				regex = new Regex("https://drive.google.com/file/d/([^/]+)/");
 			else if (urlString.StartsWith("https://drive.google.com/open"))
-				regex = new Regex("https://drive.google.com/open?id=/([^/]+)/");
+				regex = new Regex(@"https://drive.google.com/open\?id=(.+)");
 			return regex.IsMatch(urlString)
 				? $"https://drive.google.com/uc?export=download&id={regex.Match(urlString).Groups[1]}"
 				: urlString;
