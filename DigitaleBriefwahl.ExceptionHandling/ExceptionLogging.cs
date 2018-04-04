@@ -21,7 +21,7 @@ namespace DigitaleBriefwahl.ExceptionHandling
 			: base(apiKey)
 		{
 			Setup(launcherVersion, appName, args, callerFilePath);
-			AddAnalytics();
+			//AddAnalytics();
 		}
 
 		private void Setup(string launcherVersion, string appName, string[] args, string callerFilePath)
@@ -106,7 +106,7 @@ namespace DigitaleBriefwahl.ExceptionHandling
 			return Client;
 		}
 
-		public void AddAnalytics()
+		private void AddAnalytics()
 		{
 			NotifyAsync(new AnalyticsException(), Severity.Info);
 		}

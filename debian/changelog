@@ -1,3 +1,9 @@
+digitale-briefwahl (1.0.0) xenial; urgency=medium
+
+  * First release
+
+ -- Eberhard Beilharz <eb1@sil.org>  Wed, 04 Apr 2018 10:52:27 +0200
+
 digitale-briefwahl (0.3.4) xenial; urgency=medium
 
   * Add Outlook email handler for cases where MAPI isn't set up

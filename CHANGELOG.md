@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [1.0.0] - 2018-04-04
+
+### Changed
+
+- Removed analytics of beta version
+
 ## [0.3.4] - 2018-04-03
 
 ### Changed
