@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [1.0.2] - 2018-04-09
+
+### Fixed
+
+- [launcher] Catch and ignore CannotUnloadAppDomainException when shutting down app
+
 ## [1.0.1] - 2018-04-04
 
 ### Fixed

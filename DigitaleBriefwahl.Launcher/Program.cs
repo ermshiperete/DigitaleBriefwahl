@@ -81,28 +81,37 @@ namespace DigitaleBriefwahl.Launcher
 
 		private static bool UpdateAndLaunchApp(Options options)
 		{
-			using (var launcher = new Launcher(options.RunDirectory))
+			var retVal = false;
+			try
 			{
-				Console.WriteLine(options.SkipUpdateCheck || options.IsInstall ? "Lade Anwendung..." : "Überprüfe auf Updates...");
-
-				var didUpdate = UpdateApp(options, launcher).GetAwaiter().GetResult();
-
-				if (string.IsNullOrEmpty(options.RunApp) &&
-					string.IsNullOrEmpty(options.RunDirectory) || didUpdate)
+				using (var launcher = new Launcher(options.RunDirectory))
 				{
-					return didUpdate;
-				}
+					Console.WriteLine(options.SkipUpdateCheck || options.IsInstall
+						? "Lade Anwendung..."
+						: "Überprüfe auf Updates...");
 
-				if (!string.IsNullOrEmpty(options.PackageDir))
-					SquirrelInstallerSupport.ExecuteUpdatedApp(options);
-				else
-				{
-					Console.WriteLine("Starte Anwendung...");
-					launcher.LaunchVotingApp();
-				}
+					var didUpdate = UpdateApp(options, launcher).GetAwaiter().GetResult();
 
-				return false;
+					if (string.IsNullOrEmpty(options.RunApp) &&
+						string.IsNullOrEmpty(options.RunDirectory) || didUpdate)
+					{
+						retVal = didUpdate;
+					}
+					else if (!string.IsNullOrEmpty(options.PackageDir))
+						SquirrelInstallerSupport.ExecuteUpdatedApp(options);
+					else
+					{
+						Console.WriteLine("Starte Anwendung...");
+						launcher.LaunchVotingApp();
+					}
+				}
 			}
+			catch (CannotUnloadAppDomainException e)
+			{
+				// just ignore
+				Logger.Log($"Got {e.GetType()} trying to dispose launcher - IGNORED.");
+			}
+			return retVal;
 		}
 
 		[DllImport("wininet.dll")]
