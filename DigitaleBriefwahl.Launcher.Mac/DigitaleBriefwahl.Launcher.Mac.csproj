@@ -46,8 +46,9 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BugsnagMono, Version=1.4.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\BugsnagMonoImproved.1.4.0.0\lib\Net45\BugsnagMono.dll</HintPath>
+    <Reference Include="Bugsnag, Version=2.0.2.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\Bugsnag.2.0.2\lib\net45\Bugsnag.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Eto, Version=2.3.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\packages\Eto.Forms.2.3.0\lib\net45\Eto.dll</HintPath>
@@ -74,6 +75,7 @@
     <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
     </Reference>
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>

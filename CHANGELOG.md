@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Updated Bugsnag library and exception handling to v2 API
+
 ## [1.0.2] - 2018-04-09
 
 ### Fixed

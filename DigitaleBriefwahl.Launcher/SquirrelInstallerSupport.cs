@@ -145,7 +145,7 @@ namespace DigitaleBriefwahl.Launcher
 			}
 			catch (UnauthorizedAccessException ex)
 			{
-				ExceptionLogging.Client.NotifyAsync(new UnauthorizedAccessException(
+				ExceptionLogging.Client.Notify(new UnauthorizedAccessException(
 					$"Unable to set registry entry {keyName}:{name} to {value}: {ex.Message}", ex));
 			}
 		}

@@ -1,9 +1,7 @@
-// Copyright (c) 2017 Eberhard Beilharz
+// Copyright (c) 2017-2018 Eberhard Beilharz
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 using System;
-using System.Net;
-using System.Reflection;
 using Eto.Forms;
 
 namespace DigitaleBriefwahl.ExceptionHandling
@@ -54,15 +52,8 @@ namespace DigitaleBriefwahl.ExceptionHandling
 		private void OnMoreInfoButtonClick(object sender, EventArgs e)
 		{
 			var ex = GetInnerException(_exception);
-			var runtime = SIL.PlatformUtilities.Platform.IsMono
-				? $"Mono\nmonoversion={SIL.PlatformUtilities.Platform.MonoVersion}" : ".NET";
 			MessageBox.Show(
-				$"The following details will be sent:\nhostname={Dns.GetHostName()}\n" +
-				$"desktop={SIL.PlatformUtilities.Platform.DesktopEnvironment}\n" +
-				$"shell={SIL.PlatformUtilities.Platform.DesktopEnvironmentInfoString}\n" +
-				$"processorCount={Environment.ProcessorCount}\n" +
-				$"user={ExceptionLogging.Client.Config.UserId}\n" +
-				$"runtime={runtime}\n\n" +
+				$"The following details will be sent:\n{ExceptionLogging.Client.DataThatWillBeSent}\n" +
 				$"Exception: {ex?.GetType().Name}\n{ex?.Message}\n\n" +
 				$"Stacktrace:\n{_exception?.StackTrace}",
 				$"{Application.Instance.Name} Error Report Details");

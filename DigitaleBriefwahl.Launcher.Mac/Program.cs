@@ -79,6 +79,11 @@ namespace DigitaleBriefwahl.Launcher.Mac
 					Logger.Log("Returned from launching; quitting app.");
 				}
 			}
+			catch (CannotUnloadAppDomainException e)
+			{
+				// just ignore
+				Logger.Log($"Got {e.GetType()} trying to dispose launcher - IGNORED.");
+			}
 			finally
 			{
 				Application.Instance.Quit();

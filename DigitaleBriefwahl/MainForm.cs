@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Eberhard Beilharz
+// Copyright (c) 2016-2018 Eberhard Beilharz
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 using System;
@@ -8,17 +8,13 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Bugsnag;
 using DigitaleBriefwahl.Encryption;
 using DigitaleBriefwahl.ExceptionHandling;
 using DigitaleBriefwahl.Mail;
 using DigitaleBriefwahl.Views;
 using Eto.Drawing;
 using Eto.Forms;
-using Eto.Threading;
-using Microsoft.Win32;
 using SIL.Email;
-using SIL.IO;
 using Configuration = DigitaleBriefwahl.Model.Configuration;
 using Thread = System.Threading.Thread;
 
@@ -161,9 +157,7 @@ namespace DigitaleBriefwahl
 			}
 			catch (Exception ex)
 			{
-				var metadata = new Metadata();
-				metadata.AddToTab("App", "CaughtException", "Trying to send email");
-				ExceptionLogging.Client.Notify(ex, metadata);
+				ExceptionLogging.Client.Notify(ex, "App", "CaughtException", "Trying to send email");
 			}
 
 			if (mailSent)
