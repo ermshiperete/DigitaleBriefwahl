@@ -208,16 +208,15 @@ namespace DigitaleBriefwahl.ExceptionHandling
 		/// <returns></returns>
 		private static string UnixOrMacVersion()
 		{
-			if (RunTerminalCommand("uname") != "Darwin")
+			if (RunTerminalCommand("uname") == "Darwin")
 			{
-				var distro = RunTerminalCommand("bash", "-c \"[ $(which lsb_release) ] && lsb_release -d -s\"");
-				return string.IsNullOrEmpty(distro) ? "UNIX" : distro;
+				var osName = RunTerminalCommand("sw_vers", "-productName");
+				var osVersion = RunTerminalCommand("sw_vers", "-productVersion");
+				return osName + " (" + osVersion + ")";
 			}
 
-			var osName = RunTerminalCommand("sw_vers", "-productName");
-			var osVersion = RunTerminalCommand("sw_vers", "-productVersion");
-			return osName + " (" + osVersion + ")";
-
+			var distro = RunTerminalCommand("bash", "-c \"[ $(which lsb_release) ] && lsb_release -d -s\"");
+			return string.IsNullOrEmpty(distro) ? "UNIX" : distro;
 		}
 
 		/// <summary>
@@ -283,11 +282,12 @@ namespace DigitaleBriefwahl.ExceptionHandling
 				if (string.IsNullOrEmpty(Configuration.AppVersion))
 					configuration.AppVersion = entryAssembly.GetName().Version.ToString();
 
-				var informationalVersion = entryAssembly
+				if (entryAssembly
 					.GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), true)
-					.FirstOrDefault() as AssemblyInformationalVersionAttribute;
-				if (informationalVersion != null)
+					.FirstOrDefault() is AssemblyInformationalVersionAttribute informationalVersion)
+				{
 					app.Add("infoVersion", informationalVersion.InformationalVersion);
+				}
 			}
 
 			var device = FindMetadata("Device", metadata);
@@ -348,6 +348,7 @@ namespace DigitaleBriefwahl.ExceptionHandling
 				$"{frame.GetMethod().Name} {linenumber}";
 		}
 
+		// ReSharper disable once UnusedMember.Local
 		private void AddAnalytics()
 		{
 			Notify(new AnalyticsException(), Severity.Info);
@@ -359,7 +360,7 @@ namespace DigitaleBriefwahl.ExceptionHandling
 			{
 				var bldr = new StringBuilder();
 				var configuration = Configuration as Configuration;
-				foreach (var metadata in configuration.GlobalMetadata)
+				foreach (var metadata in configuration?.GlobalMetadata)
 				{
 					if (!(metadata.Value is Dictionary<string, string> dict))
 						continue;
