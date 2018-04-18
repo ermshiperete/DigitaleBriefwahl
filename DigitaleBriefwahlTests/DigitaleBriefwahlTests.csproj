@@ -1,68 +1,24 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E7041C43-BE2C-4454-A140-D3465848D476}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <TargetFrameworks>net461</TargetFrameworks>
     <RootNamespace>DigitaleBriefwahlTests</RootNamespace>
-    <AssemblyName>DigitaleBriefwahlTests</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\output\Debug</OutputPath>
-    <DefineConstants>TRACE;DEBUG;</DefineConstants>
+    <Configurations>Debug;Release</Configurations>
+    <AssemblyTitle>DigitaleBriefwahlTests</AssemblyTitle>
+    <Company>Eberhard Beilharz</Company>
+    <Product>Digitale Briefwahl</Product>
+    <Copyright>Copyright © 2018 Eberhard Beilharz</Copyright>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-    <PlatformTarget>x86</PlatformTarget>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\output\Release</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-    <PlatformTarget>x86</PlatformTarget>
-    <DefineConstants>TRACE</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseMac|AnyCPU'">
-    <OutputPath>bin\ReleaseMac\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="INIFileParser, Version=2.5.2.0, Culture=neutral, PublicKeyToken=79af7b307b65cf3c">
-      <HintPath>..\packages\ini-parser.2.5.2\lib\net20\INIFileParser.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework, Version=3.9.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb">
-      <HintPath>..\packages\NUnit.3.9.0\lib\net45\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
+    <PackageReference Include="ini-parser" Version="2.5.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.0" />
+    <PackageReference Include="NUnit" Version="3.10.1" />
+    <PackageReference Include="NUnit.ConsoleRunner" Version="3.8.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ElectionModelFactoryTests.cs" />
-    <Compile Include="ElectionModelTests.cs" />
-    <Compile Include="WeightedElectionModelTests.cs" />
-    <Compile Include="YesNoElectionModelTests.cs" />
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <ProjectReference Include="..\DigitaleBriefwahl\DigitaleBriefwahl.csproj">
-      <Project>{92307315-8B23-4D90-8C3B-29EF6508EEA7}</Project>
-      <Name>DigitaleBriefwahl</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\DigitaleBriefwahl.ExceptionHandling\DigitaleBriefwahl.ExceptionHandling.csproj" />
+    <ProjectReference Include="..\DigitaleBriefwahl\DigitaleBriefwahl.csproj" />
   </ItemGroup>
 </Project>

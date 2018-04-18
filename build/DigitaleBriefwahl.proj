@@ -65,7 +65,8 @@
 
 	<Target Name="TestOnly">
 		<ItemGroup>
-			<TestAssemblies Include="$(RootDir)/output/$(Configuration)/*Tests.dll"/>
+			<TestAssemblies
+				Include="$(RootDir)/DigitaleBriefwahlTests/bin/$(Configuration)/net461/*Tests.dll"/>
 		</ItemGroup>
 
 		<NUnit3 Assemblies="@(TestAssemblies)"
