@@ -6,10 +6,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Management;
 using System.Net;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Text;
 using Bugsnag;
@@ -98,16 +98,6 @@ namespace DigitaleBriefwahl.ExceptionHandling
 		}
 
 		/// <summary>
-		/// Enum holding the different types of OS
-		/// </summary>
-		private enum OsType
-		{
-			Server,
-			Desktop,
-			Unknown
-		}
-
-		/// <summary>
 		/// Detects the current operating system version if its Win32 NT
 		/// </summary>
 		/// <returns>The operation system version</returns>
@@ -127,44 +117,14 @@ namespace DigitaleBriefwahl.ExceptionHandling
 						case 0:
 							return "Windows Server 2008";
 						case 1:
-							switch (GetOsType())
-							{
-								case OsType.Desktop:
-									return "Windows 7";
-								case OsType.Server:
-									return "Windows Server 2008 R2";
-								case OsType.Unknown:
-									return "Windows 7 / Server 2008 R2";
-							}
-
-							break;
+							return IsWindowsServer ? "Windows Server 2008 R2" : "Windows 7";
 						case 2:
-							switch (GetOsType())
-							{
-								case OsType.Desktop:
-									return "Windows 8";
-								case OsType.Server:
-									return "Windows Server 2012";
-								case OsType.Unknown:
-									return "Windows 8 / Server 2012";
-							}
-
-							break;
+							return IsWindowsServer ? "Windows Server 2012" : "Windows 8";
 						case 3:
-							switch (GetOsType())
-							{
-								case OsType.Desktop:
-									return "Windows 8.1";
-								case OsType.Server:
-									return "Windows Server 2012 R2";
-								case OsType.Unknown:
-									return "Windows 8 / Server 2012 R2";
-							}
-
-							break;
+							return IsWindowsServer ? "Windows Server 2012 R2" : "Windows 8.1";
+						default:
+							return "UNKNOWN";
 					}
-
-					return "UNKNOWN";
 				case 10:
 					return "Windows 10";
 				default:
@@ -172,35 +132,13 @@ namespace DigitaleBriefwahl.ExceptionHandling
 			}
 		}
 
-		/// <summary>
-		/// Determines if the current operating system is the server version
-		/// </summary>
-		/// <returns>True if the current operating system is the server version, otherwise false</returns>
-		private static OsType GetOsType()
-		{
-			try
-			{
-				using (var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_OperatingSystem"))
-				{
-					foreach (var managementObject in searcher.Get())
-					{
-						// ProductType will be one of:
-						// 1: Workstation
-						// 2: Domain Controller
-						// 3: Server
-						var productType = (uint) managementObject.GetPropertyValue("ProductType");
-						return productType != 1 ? OsType.Server : OsType.Desktop;
-					}
-				}
-			}
-			catch (UnauthorizedAccessException)
-			{
-				// If we don't have permssions to query the WMI, then indicate we don't know the OS type
-				return OsType.Unknown;
-			}
+		// https://stackoverflow.com/a/3138781/487503
+		private static bool IsWindowsServer => IsOS(OS_ANYSERVER);
 
-			return OsType.Desktop;
-		}
+		private const int OS_ANYSERVER = 29;
+
+		[DllImport("shlwapi.dll", SetLastError=true)]
+		private static extern bool IsOS(int os);
 
 		/// <summary>
 		/// Determines the OS version if on a UNIX based system
