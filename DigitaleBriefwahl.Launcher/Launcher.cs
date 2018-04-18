@@ -61,6 +61,12 @@ namespace DigitaleBriefwahl.Launcher
 
 		public string UnzipVotingApp(string sourceArchiveFileName)
 		{
+			if (!File.Exists(sourceArchiveFileName))
+			{
+				Logger.Log($"Can't find {sourceArchiveFileName} trying to unzip voting app.");
+				return null;
+			}
+
 			Directory.CreateDirectory(OutputDir);
 
 			ZipFile.ExtractToDirectory(sourceArchiveFileName, OutputDir);

@@ -161,10 +161,10 @@ namespace DigitaleBriefwahl.Launcher
 			else
 				Console.WriteLine("Keine Updates vorhanden.");
 
-			if (!string.IsNullOrEmpty(options.UrlFile))
+			if (!string.IsNullOrEmpty(options.UrlFile) && File.Exists(options.UrlFile))
 				downloadVotingApp = DownloadVotingAppFromUrlFile(options.UrlFile);
 
-			if (!string.IsNullOrEmpty(options.RunApp))
+			if (!string.IsNullOrEmpty(options.RunApp) && File.Exists(options.RunApp))
 				unzipVotingApp = launcher.UnzipVotingAppAsync(options.RunApp);
 
 			if (updateManagerTask != null)
@@ -173,7 +173,7 @@ namespace DigitaleBriefwahl.Launcher
 			if (downloadVotingApp != null)
 			{
 				options.RunApp = await downloadVotingApp;
-				if (!string.IsNullOrEmpty(options.RunApp))
+				if (!string.IsNullOrEmpty(options.RunApp) && File.Exists(options.RunApp))
 					unzipVotingApp = launcher.UnzipVotingAppAsync(options.RunApp);
 			}
 
