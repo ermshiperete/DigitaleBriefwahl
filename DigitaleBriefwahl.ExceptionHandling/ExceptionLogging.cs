@@ -269,6 +269,9 @@ namespace DigitaleBriefwahl.ExceptionHandling
 
 		protected virtual void OnBeforeNotify(Report report)
 		{
+			var logMetadata = FindMetadata("Log", report.Event.Metadata);
+			logMetadata.Add("data", Logger.GetLogSinceLastStart());
+
 			var exception = report.OriginalException;
 			var stackTrace = new StackTrace(exception, true);
 			if (stackTrace.FrameCount <= 0)

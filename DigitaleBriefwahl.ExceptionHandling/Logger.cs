@@ -6,36 +6,52 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using SIL.PlatformUtilities;
+using SIL.Providers;
 
 namespace DigitaleBriefwahl.ExceptionHandling
 {
 	public static class Logger
 	{
+		private const string SeparatorLine = "-----------------------------";
+
 		private static string LogDirectory
 		{
 			get
 			{
-				if (Platform.IsMac)
-				{
-					var home = Environment.GetEnvironmentVariable("HOME");
-					if (!string.IsNullOrEmpty(home))
-						return Path.Combine(home, "Library/Logs/DigitaleBriefwahl");
-				}
+				// Windows/Linux
+				if (!Platform.IsMac)
+					return Path.GetTempPath();
 
-				return Path.GetTempPath();
+				// Mac
+				var home = Environment.GetEnvironmentVariable("HOME");
+				return !string.IsNullOrEmpty(home)
+					? Path.Combine(home, "Library/Logs/DigitaleBriefwahl")
+					: Path.GetTempPath();
 			}
 		}
 
 		static Logger()
 		{
 			LogFile = Path.Combine(LogDirectory, $"{AppName}.log");
-			Directory.CreateDirectory(LogDirectory);
-
-			Log("-----------------------------");
-			Log(DateTime.Now.ToString("u"));
+			Initialize();
 		}
 
-		private static string AppName => Path.GetFileNameWithoutExtension(Assembly.GetEntryAssembly().Location);
+		private static void Initialize()
+		{
+			Directory.CreateDirectory(LogDirectory);
+
+			Log(SeparatorLine);
+			Log(DateTimeProvider.Current.Now.ToString("u"));
+		}
+
+		private static string AppName
+		{
+			get
+			{
+				var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
+				return Path.GetFileNameWithoutExtension(assembly.Location);
+			}
+		}
 
 		public static string LogFile { get; }
 
@@ -43,6 +59,18 @@ namespace DigitaleBriefwahl.ExceptionHandling
 		{
 			File.AppendAllText(LogFile,
 				$"[{Process.GetCurrentProcess().Id}] {text.TrimEnd('\r', '\n')}{Environment.NewLine}");
+		}
+
+		public static void Truncate()
+		{
+			File.Delete(LogFile);
+			Initialize();
+		}
+
+		public static string GetLogSinceLastStart()
+		{
+			var allLog = File.ReadAllText(LogFile);
+			return allLog.Substring(allLog.LastIndexOf($"[{Process.GetCurrentProcess().Id}] {SeparatorLine}"));
 		}
 	}
 }
