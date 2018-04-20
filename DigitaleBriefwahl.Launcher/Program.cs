@@ -168,13 +168,34 @@ namespace DigitaleBriefwahl.Launcher
 				unzipVotingApp = launcher.UnzipVotingAppAsync(options.RunApp);
 
 			if (updateManagerTask != null)
-				didUpdate = await updateManagerTask;
+			{
+				try
+				{
+					didUpdate = await updateManagerTask;
+				}
+				catch (HttpRequestException e)
+				{
+					// just ignore
+					Logger.Log($"Got {e.GetType()} in trying to update launcher - IGNORED.");
+					Console.WriteLine("Netzwerkprobleme - kann Updates nicht herunterladen.");
+					didUpdate = false;
+				}
+			}
 
 			if (downloadVotingApp != null)
 			{
-				options.RunApp = await downloadVotingApp;
-				if (!string.IsNullOrEmpty(options.RunApp) && File.Exists(options.RunApp))
-					unzipVotingApp = launcher.UnzipVotingAppAsync(options.RunApp);
+				try
+				{
+					options.RunApp = await downloadVotingApp;
+					if (!string.IsNullOrEmpty(options.RunApp) && File.Exists(options.RunApp))
+						unzipVotingApp = launcher.UnzipVotingAppAsync(options.RunApp);
+				}
+				catch (HttpRequestException e)
+				{
+					// just ignore
+					Logger.Log($"Got {e.GetType()} in trying to download voting app");
+					ReportNetworkProblemsForDownload(GetUrlFromFile(options.UrlFile), GetBallotFilename(options.UrlFile));
+				}
 			}
 
 			if (unzipVotingApp != null)
@@ -188,26 +209,49 @@ namespace DigitaleBriefwahl.Launcher
 
 		private static async Task<string> DownloadVotingAppFromUrlFile(string urlFile)
 		{
-			var url = File.ReadAllText(urlFile);
-			url.Replace("wahlurl://", "https://");
+			var url = GetUrlFromFile(urlFile);
 			var uri = new Uri(url);
-			var ballotFile = Path.GetFileNameWithoutExtension(urlFile) + ".wahl";
+			var ballotFile = GetBallotFilename(urlFile);
 
 			if (Platform.IsWindows && !InternetGetConnectedState(out var flags, 0))
 			{
 				Logger.Log($"Network not connected - skipping download from URL (0x{flags:X2})");
-				Console.WriteLine("Netzwerk nicht verbunden - kann Stimmzettel nicht automatisch herunterladen.");
-				Console.WriteLine($"Bitte Stimmzettel von {url} herunterladen und als '{ballotFile}' abspeichern.");
-				Console.WriteLine("Diese Datei kann dann aufgerufen werden.");
+				ReportNetworkProblemsForDownload(url, ballotFile);
 				return null;
 			}
 
 			Console.WriteLine("Die Wahlunterlagen werden heruntergeladen...");
 			Logger.Log($"Downloading from {uri}...");
 			var targetFile = await DownloadVotingApp(uri, ballotFile);
-			Console.WriteLine("Download abgeschlossen.");
-			Logger.Log($"Download of {targetFile} finished.");
+			if (string.IsNullOrEmpty(targetFile))
+			{
+				Logger.Log("Didn't get a file after download - network problems?");
+				ReportNetworkProblemsForDownload(uri.AbsoluteUri, ballotFile);
+			}
+			else
+			{
+				Logger.Log($"Download of '{targetFile}' finished.");
+				Console.WriteLine("Download abgeschlossen.");
+			}
+
 			return targetFile;
+		}
+
+		private static string GetBallotFilename(string urlFile)
+		{
+			return Path.GetFileNameWithoutExtension(urlFile) + ".wahl";
+		}
+
+		private static string GetUrlFromFile(string urlFile)
+		{
+			return File.ReadAllText(urlFile).Replace("wahlurl://", "https://");
+		}
+
+		private static void ReportNetworkProblemsForDownload(string url, string ballotFile)
+		{
+			Console.WriteLine("Netzwerkprobleme - kann Stimmzettel nicht automatisch herunterladen.");
+			Console.WriteLine($"Bitte Stimmzettel von {url} herunterladen und als '{ballotFile}' abspeichern.");
+			Console.WriteLine("Diese Datei kann dann aufgerufen werden.");
 		}
 
 		private static async Task<string> DownloadVotingApp(Uri uri, string ballotFile)
@@ -325,6 +369,7 @@ namespace DigitaleBriefwahl.Launcher
 					Logger.Log(File.Exists(targetFile)
 						? $"Could not retrieve latest {targetFile}. No network connection. Keeping existing file."
 						: $"Could not retrieve latest {targetFile}. No network connection.");
+					Console.WriteLine("Kann Netzwerkverbindung mit dem Server nicht herstellen. Download nicht erfolgreich.");
 					return null;
 				}
 				if (wex.Response != null)
@@ -333,10 +378,12 @@ namespace DigitaleBriefwahl.Launcher
 					using (var sr = new StreamReader(wex.Response.GetResponseStream()))
 						html = sr.ReadToEnd();
 					Logger.Log($"Could not download from {uri}: {wex.Message} Server responds '{html}'. Status {wex.Status}.");
+					Console.WriteLine("Server meldet einen Fehler. Download nicht erfolgreich.");
 				}
 				else
 				{
 					Logger.Log($"Could not download from {uri}. Exception: {wex.Message} No server response. Status {wex.Status}.");
+					Console.WriteLine("Keine Antwort vom Server. Download nicht erfolgreich.");
 				}
 				return null;
 			}

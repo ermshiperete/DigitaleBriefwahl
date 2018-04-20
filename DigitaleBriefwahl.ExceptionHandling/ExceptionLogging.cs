@@ -261,6 +261,8 @@ namespace DigitaleBriefwahl.ExceptionHandling
 
 		private string RemoveFileNamePrefix(string fileName)
 		{
+			if (string.IsNullOrEmpty(fileName))
+				return null;
 			var ret = fileName.StartsWith(_solutionPath)
 				? fileName.Substring(_solutionPath.Length)
 				: fileName;

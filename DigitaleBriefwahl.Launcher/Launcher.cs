@@ -7,6 +7,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Reflection;
 using System.Threading.Tasks;
+using Bugsnag;
 using DigitaleBriefwahl.ExceptionHandling;
 
 namespace DigitaleBriefwahl.Launcher
@@ -76,6 +77,16 @@ namespace DigitaleBriefwahl.Launcher
 
 		public void LaunchVotingApp()
 		{
+			if (!File.Exists(Path.Combine(OutputDir, $"DigitaleBriefwahl.Desktop.{Extension}")))
+			{
+				Logger.Log($"Can't find 'DigitaleBriefwahl.Desktop.{Extension}' in '{OutputDir}' - aborting.");
+				Console.WriteLine("Kann Wahlanwendung nicht finden.");
+				ExceptionLogging.Client.Notify(
+					new FileNotFoundException($"Can't find 'DigitaleBriefwahl.Desktop.{Extension}'"),
+					Severity.Info);
+				return;
+			}
+
 			var setup = new AppDomainSetup { ApplicationBase = OutputDir };
 
 			var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
