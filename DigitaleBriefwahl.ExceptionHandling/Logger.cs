@@ -57,13 +57,29 @@ namespace DigitaleBriefwahl.ExceptionHandling
 
 		public static void Log(string text)
 		{
-			File.AppendAllText(LogFile,
-				$"[{Process.GetCurrentProcess().Id}] {text.TrimEnd('\r', '\n')}{Environment.NewLine}");
+			try
+			{
+				File.AppendAllText(LogFile,
+					$"[{Process.GetCurrentProcess().Id}] {text.TrimEnd('\r', '\n')}{Environment.NewLine}");
+			}
+			catch (IOException)
+			{
+				// simply ignore if we can't write the file - maybe another instance is running that
+				// has the logfile already open
+			}
 		}
 
 		public static void Truncate()
 		{
-			File.Delete(LogFile);
+			try
+			{
+				File.Delete(LogFile);
+			}
+			catch (IOException)
+			{
+				// simply ignore - maybe another instance is running that has the logfile already
+				// open
+			}
 			Initialize();
 		}
 
