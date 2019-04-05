@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [1.0.3] - 2019-04-05
+
 ### Added
 
 - Append log data when sending exception to Bugsnag
