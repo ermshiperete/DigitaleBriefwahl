@@ -75,7 +75,6 @@
 			Force32Bit="$(useNUnit-x86)"
 			Verbose="true"
 			UseNUnit3Xml="true"
-			Teamcity="$('$(teamcity_version)' != '')"
 			OutputXmlFile="$(RootDir)/output/$(Configuration)/TestResults.xml"/>
 	</Target>
 
