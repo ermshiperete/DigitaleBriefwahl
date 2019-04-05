@@ -12,7 +12,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("DigitaleBriefwahl.Launcher")]
-[assembly: AssemblyCopyright("Copyright (c) 2018 Eberhard Beilharz")]
+[assembly: AssemblyCopyright("Copyright (c) 2018-2019 Eberhard Beilharz")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: AssemblyMetadata("SquirrelAwareVersion", "1")]
