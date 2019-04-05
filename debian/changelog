@@ -1,3 +1,9 @@
+digitale-briefwahl (1.0.3) xenial; urgency=medium
+
+  * [launcher] Improve robustness
+
+ -- Eberhard Beilharz <eb1@sil.org>  Fri, 05 Apr 2019 12:20:42 +0200
+
 digitale-briefwahl (1.0.2) xenial; urgency=medium
 
   * [launcher] Catch and ignore CannotUnloadAppDomainException when
