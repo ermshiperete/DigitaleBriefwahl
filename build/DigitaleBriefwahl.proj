@@ -1,22 +1,37 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTarget="Test">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
 		<RootDir Condition="'$(RootDir)'==''">$(MSBuildProjectDirectory)/..</RootDir>
-	</PropertyGroup>
-
-	<UsingTask TaskName="NUnit3" AssemblyFile="SIL.BuildTasks.dll"/>
-
-	<Import Project="NuGet.targets"/>
-
-	<PropertyGroup>
 		<Solution>DigitaleBriefwahl.sln</Solution>
 		<SolutionPath>$(RootDir)/$(Solution)</SolutionPath>
 		<ApplicationName>DigitaleBriefwahl</ApplicationName>
 		<Configuration Condition="'$(Configuration)'==''">Release</Configuration>
 		<useNUnit-x86 Condition="'$(OS)'=='Windows_NT'">true</useNUnit-x86>
 		<useNUnit-x86 Condition="'$(OS)'!='Windows_NT'">false</useNUnit-x86>
+		<NuGetPackageDir>$(RootDir)/packages</NuGetPackageDir>
+
+		<RestartBuild Condition="!Exists('$(NuGetPackageDir)/SIL.BuildTasks/tools/SIL.BuildTasks.dll')">true</RestartBuild>
+		<RestartBuild Condition="Exists('$(NuGetPackageDir)/SIL.BuildTasks/tools/SIL.BuildTasks.dll')">false</RestartBuild>
 	</PropertyGroup>
 
+	<UsingTask TaskName="SIL.BuildTasks.UnitTestTasks.NUnit3"
+		AssemblyFile="$(NuGetPackageDir)/SIL.BuildTasks/tools/SIL.BuildTasks.dll"
+		Condition="Exists('$(NuGetPackageDir)/SIL.BuildTasks/tools/SIL.BuildTasks.dll')" />
+
+	<Import Project="NuGet.targets"/>
+
+	<Target Name="RestoreBuildTasks" DependsOnTargets="CheckPrerequisites">
+		<Message Text="RestartBuild=$(RestartBuild)"/>
+		<Message Text="MSBuildProjectDirectory=$(MSBuildProjectDirectory)"/>
+		<Exec Command='$(NuGetCommand) install SIL.BuildTasks -excludeVersion -version 2.2.0 -source "$(PackageSources)" -solutionDirectory "$(RootDir)"' />
+	</Target>
+
 	<Target Name="Build">
+		<CallTarget Targets="RestoreBuildTasks"/>
+		<CallTarget Targets="BuildInternal" Condition="!$(RestartBuild)" />
+		<MSBuild Projects="$(MSBuildProjectFullPath)" Targets="BuildInternal" Properties="Configuration=$(Configuration);RootDir=$(RootDir)" Condition="$(RestartBuild)" />
+	</Target>
+
+	<Target Name="BuildInternal">
 		<CallTarget Targets="Clean"/>
 		<CallTarget Targets="Compile"/>
 		<Message Text="Build Complete"/>
@@ -60,7 +75,10 @@
 	</Target>
 
 	<Target Name="Test" DependsOnTargets="Build">
-		<CallTarget Targets="TestOnly"/>
+		<CallTarget Targets="TestOnly" Condition="!$(RestartBuild)" />
+		<MSBuild Projects="$(MSBuildProjectFullPath)" Targets="TestOnly"
+			Properties="Configuration=$(Configuration);RootDir=$(RootDir)"
+			Condition="$(RestartBuild)" />
 	</Target>
 
 	<Target Name="TestOnly">
@@ -69,12 +87,13 @@
 				Include="$(RootDir)/DigitaleBriefwahlTests/bin/$(Configuration)/net461/*Tests.dll"/>
 		</ItemGroup>
 
-		<NUnit3 Assemblies="@(TestAssemblies)"
+		<SIL.BuildTasks.UnitTestTasks.NUnit3 Assemblies="@(TestAssemblies)"
 			ToolPath="$(RootDir)/packages/NUnit.ConsoleRunner.3.8.0/tools"
 			WorkingDirectory="$(RootDir)/output/$(Configuration)"
 			Force32Bit="$(useNUnit-x86)"
 			Verbose="true"
 			UseNUnit3Xml="true"
+			Teamcity="$('$(teamcity_version)' != '')"
 			OutputXmlFile="$(RootDir)/output/$(Configuration)/TestResults.xml"/>
 	</Target>
 
