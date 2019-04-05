@@ -21,7 +21,7 @@ VERSION=$(dpkg-parsechangelog --show-field=Version)
 
 git clean -dxf
 
-xbuild /t:Build /p:Configuration=Release build/DigitaleBriefwahl.proj
+msbuild /t:Build /p:Configuration=Release build/DigitaleBriefwahl.proj
 
 rm -rf packages
 rm -rf output
