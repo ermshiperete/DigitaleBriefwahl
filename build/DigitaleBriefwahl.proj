@@ -9,8 +9,8 @@
 		<useNUnit-x86 Condition="'$(OS)'!='Windows_NT'">false</useNUnit-x86>
 		<NuGetPackageDir>$(RootDir)/packages</NuGetPackageDir>
 
-		<RestartBuild Condition="!Exists('$(NuGetPackageDir)/SIL.BuildTasks/tools/SIL.BuildTasks.dll')">true</RestartBuild>
-		<RestartBuild Condition="Exists('$(NuGetPackageDir)/SIL.BuildTasks/tools/SIL.BuildTasks.dll')">false</RestartBuild>
+		<RestartBuild Condition="!Exists('$(NuGetPackageDir)/SIL.BuildTasks/tools/SIL.BuildTasks.dll') OR !Exists('$(NuGetPackageDir)/NUnit.ConsoleRunner/tools/nunit3-console.exe')">true</RestartBuild>
+		<RestartBuild Condition="Exists('$(NuGetPackageDir)/SIL.BuildTasks/tools/SIL.BuildTasks.dll') AND Exists('$(NuGetPackageDir)/NUnit.ConsoleRunner/tools/nunit3-console.exe')">false</RestartBuild>
 	</PropertyGroup>
 
 	<UsingTask TaskName="SIL.BuildTasks.UnitTestTasks.NUnit3"
@@ -23,6 +23,7 @@
 		<Message Text="RestartBuild=$(RestartBuild)"/>
 		<Message Text="MSBuildProjectDirectory=$(MSBuildProjectDirectory)"/>
 		<Exec Command='$(NuGetCommand) install SIL.BuildTasks -excludeVersion -version 2.2.0 -source "$(PackageSources)" -solutionDirectory "$(RootDir)"' />
+		<Exec Command='$(NuGetCommand) install NUnit.ConsoleRunner -excludeVersion -version 3.10.0 -source "$(PackageSources)" -solutionDirectory "$(RootDir)"' />
 	</Target>
 
 	<Target Name="Build">
@@ -88,7 +89,7 @@
 		</ItemGroup>
 
 		<SIL.BuildTasks.UnitTestTasks.NUnit3 Assemblies="@(TestAssemblies)"
-			ToolPath="$(RootDir)/packages/NUnit.ConsoleRunner.3.8.0/tools"
+			ToolPath="$(NuGetPackageDir)/NUnit.ConsoleRunner/tools"
 			WorkingDirectory="$(RootDir)/output/$(Configuration)"
 			Force32Bit="$(useNUnit-x86)"
 			Verbose="true"
