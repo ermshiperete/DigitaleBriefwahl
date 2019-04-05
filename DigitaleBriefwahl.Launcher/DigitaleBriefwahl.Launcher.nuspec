@@ -4,7 +4,7 @@
 		<id>$id$</id>
 		<version>$version$</version>
 		<authors>Eberhard Beilharz</authors>
-		<licenseUrl>https://github.com/ermshiperete/DigitaleBriefwahl/blob/master/LICENSE.md</licenseUrl>
+		<license type="expression">MIT</license>
 		<projectUrl>https://github.com/ermshiperete/DigitaleBriefwahl</projectUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>Launcher for Digitale Briefwahl</summary>
