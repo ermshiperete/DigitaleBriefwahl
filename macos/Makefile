@@ -8,7 +8,7 @@ SIZE=$(shell du -BK -s $(TARGETDIR)/root | cut -f1 -d'K')
 all: installer
 
 compile:
-	xbuild /t:Build /p:Configuration=ReleaseMac ../build/DigitaleBriefwahl.proj
+	msbuild /t:Build /p:Configuration=ReleaseMac ../build/DigitaleBriefwahl.proj
 
 prepare:
 	mkdir -p $(INSTALLERDIR)
