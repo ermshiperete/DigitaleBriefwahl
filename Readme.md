@@ -70,3 +70,9 @@ between `a` and `b`.
 	LimitKandidat2=2-3
 	Kandidat3=Dagobert Duck
 	Kandidat4=Goofy
+
+## Special Thanks To
+
+[![Bugsnag logo](Resources/bugsnag-logo.png "Bugsnag")](https://www.bugsnag.com/open-source)
+
+for providing error reporting.
