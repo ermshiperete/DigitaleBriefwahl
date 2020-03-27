@@ -24,7 +24,7 @@
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="SIL.Core" Version="8.0.0-beta0091" />
-    <PackageReference Include="squirrel.windows" Version="1.7.9" />
+    <PackageReference Include="squirrel.windows" Version="1.9.1" />
     <PackageReference Include="System.Runtime.InteropServices.RuntimeInformation" Version="4.3.0" />
   </ItemGroup>
 
@@ -55,7 +55,7 @@
     <AssemblySearchPaths>$(AssemblySearchPaths);{GAC}</AssemblySearchPaths>
   </PropertyGroup>
 
-  <Target Name="BuildSquirrelInstaller" AfterTargets="CopyFilesToOutputDirectory">
+  <Target Name="BuildSquirrelPackage" AfterTargets="CopyFilesToOutputDirectory">
     <WriteLinesToFile File="$(OutputPath)/../Version.txt" Lines="$(GitVersion_FullSemVer)" Overwrite="true" />
     <PropertyGroup>
       <RootDir Condition="'$(RootDir)' == ''">$(MSBuildProjectDirectory)/..</RootDir>
@@ -68,7 +68,6 @@
       <NuGetBuildFolder>$(RootDir)/SquirrelBuild</NuGetBuildFolder>
       <!-- squirrel expects to find the files in lib/net45 regardless of framework used -->
       <FilesFolder>$(NuGetBuildFolder)/lib/net45</FilesFolder>
-      <SquirrelCommand>$(RootDir)/packages/squirrel.windows.1.7.9/tools/Squirrel.exe</SquirrelCommand>
     </PropertyGroup>
     <ItemGroup>
       <FilesToDelete Include="$(NuGetBuildFolder)\**\*.*" />
@@ -81,9 +80,20 @@
     <Copy SourceFiles="$(ProjectDir)/$(NuSpecFile)" DestinationFolder="$(NuGetBuildFolder)" />
     <Exec Command="$(NuGetCommand) pack &quot;$(NuSpecFile)&quot; -p &quot;Configuration=$(Configuration);id=$(AssemblyName)&quot; -Version $(GitVersion_NuGetVersion) -Symbols -Verbosity detailed" WorkingDirectory="$(NuGetBuildFolder)" />
     <Message Importance="High" Text="Created nuget package version $(GitVersion_NuGetVersion) ($(GitVersion_FullSemVer))" />
-    <Exec Command="$(SquirrelCommand) --releasify $(NuGetBuildFolder)/DigitaleBriefwahl.Launcher.$(GitVersion_NuGetVersion).nupkg" WorkingDirectory="$(RootDir)" Condition="'$(OS)' == 'Windows_NT'" />
+  </Target>
+
+  <Target Name="CreateSquirrelInstaller" Condition="'$(OS)' == 'Windows_NT'" AfterTargets="BuildSquirrelPackage">
+    <PropertyGroup>
+      <RootDir Condition="'$(RootDir)' == ''">$(MSBuildProjectDirectory)/..</RootDir>
+      <NuGetHome Condition=" '$(OS)' != 'Windows_NT' ">$(HOME)/.nuget/packages</NuGetHome>
+      <NuGetHome Condition=" '$(OS)' == 'Windows_NT' ">$(USERPROFILE)/.nuget/packages</NuGetHome>
+      <NuGetBuildFolder>$(RootDir)/SquirrelBuild</NuGetBuildFolder>
+      <SquirrelCommand>$(NuGetHome)/squirrel.windows/1.9.1/tools/Squirrel.exe</SquirrelCommand>
+    </PropertyGroup>
+
+    <Exec Command="$(SquirrelCommand) --releasify $(NuGetBuildFolder)/DigitaleBriefwahl.Launcher.$(GitVersion_NuGetVersion).nupkg" WorkingDirectory="$(RootDir)" />
     <Message Importance="High" Text="Created squirrel installer for version $(GitVersion_NuGetVersion)" />
     <Delete Files="$(RootDir)/Releases/Setup.msi" />
-    <Move Condition=" '$(OS)' == 'Windows_NT'" SourceFiles="$(RootDir)/Releases/Setup.exe" DestinationFiles="$(RootDir)/Releases/DigitaleBriefwahl.Launcher-$(GitVersion_NuGetVersion)-Setup.exe" />
+    <Move SourceFiles="$(RootDir)/Releases/Setup.exe" DestinationFiles="$(RootDir)/Releases/DigitaleBriefwahl.Launcher-$(GitVersion_NuGetVersion)-Setup.exe" />
   </Target>
 </Project>
