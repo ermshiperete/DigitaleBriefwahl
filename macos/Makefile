@@ -50,9 +50,9 @@ create-flat: create-base-pkg
 		<domains enable_anywhere="true"/>
 		<installation-check script="pm_install_check();"/>
 		<script>function pm_install_check() {
-			if(!(system.compareVersions(system.version.ProductVersion,'10.7') >= 0)) {
+			if(!(system.compareVersions(system.version.ProductVersion,'10.9') >= 0)) {
 				my.result.title = 'Failure';
-				my.result.message = 'You need at least Mac OS X 10.7 to install DigitaleBriefwahl.';
+				my.result.message = 'You need at least Mac OS X 10.9 to install DigitaleBriefwahl.';
 				my.result.type = 'Fatal';
 				return false;
 			}
