@@ -16,11 +16,11 @@
 
   <ItemGroup>
     <PackageReference Include="Bugsnag" Version="2.2.0" />
-    <PackageReference Include="Eto.Forms" Version="2.3.0" />
-    <PackageReference Include="Eto.Platform.Gtk" Version="2.3.0" />
-    <PackageReference Include="Eto.Platform.Gtk3" Version="2.3.0" />
-    <PackageReference Include="Eto.Platform.Windows" Version="2.3.0" />
-    <PackageReference Include="Eto.Platform.Wpf" Version="2.3.0" />
+    <PackageReference Include="Eto.Forms" Version="2.5.0" />
+    <PackageReference Include="Eto.Platform.Gtk" Version="2.5.0" />
+    <PackageReference Include="Eto.Platform.Gtk3" Version="2.5.0" />
+    <PackageReference Include="Eto.Platform.Windows" Version="2.5.0" />
+    <PackageReference Include="Eto.Platform.Wpf" Version="2.5.0" />
     <PackageReference Include="GitVersionTask" Version="5.0.1">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
