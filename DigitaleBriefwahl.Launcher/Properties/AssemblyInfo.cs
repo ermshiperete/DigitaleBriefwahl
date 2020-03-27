@@ -4,15 +4,4 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-// General Information about an assembly is controlled through the following
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
-[assembly: AssemblyTitle("DigitaleBriefwahl.Launcher")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("DigitaleBriefwahl.Launcher")]
-[assembly: AssemblyCopyright("Copyright (c) 2018-2019 Eberhard Beilharz")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
 [assembly: AssemblyMetadata("SquirrelAwareVersion", "1")]
