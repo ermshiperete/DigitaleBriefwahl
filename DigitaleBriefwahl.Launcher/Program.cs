@@ -109,7 +109,7 @@ namespace DigitaleBriefwahl.Launcher
 			catch (CannotUnloadAppDomainException e)
 			{
 				// just ignore
-				Logger.Log($"Got {e.GetType()} trying to dispose launcher - IGNORED.");
+				Logger.Log($"Got {e.GetType()} trying to dispose launcher - IGNORED ({e.Message})");
 			}
 			return retVal;
 		}
@@ -176,7 +176,7 @@ namespace DigitaleBriefwahl.Launcher
 				catch (HttpRequestException e)
 				{
 					// just ignore
-					Logger.Log($"Got {e.GetType()} in trying to update launcher - IGNORED.");
+					Logger.Log($"Got {e.GetType()} in trying to update launcher - IGNORED ({e.Message})");
 					Console.WriteLine("Netzwerkprobleme - kann Updates nicht herunterladen.");
 					didUpdate = false;
 				}
