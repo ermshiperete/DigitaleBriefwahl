@@ -84,7 +84,7 @@ namespace DigitaleBriefwahl.Launcher
 			var retVal = false;
 			try
 			{
-				using (var launcher = new Launcher(options.RunDirectory, "exe"))
+				using (var launcher = new Launcher(options.RunDirectory))
 				{
 					Console.WriteLine(options.SkipUpdateCheck || options.IsInstall
 						? "Lade Anwendung..."

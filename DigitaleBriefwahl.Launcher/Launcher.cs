@@ -77,14 +77,22 @@ namespace DigitaleBriefwahl.Launcher
 
 		public void LaunchVotingApp()
 		{
-			if (!File.Exists(Path.Combine(OutputDir, $"DigitaleBriefwahl.Desktop.{Extension}")))
+			// in the packed version we have ...Desktop.dll, when running locally .exe
+			var extension = Extension;
+			if (!File.Exists(Path.Combine(OutputDir, $"DigitaleBriefwahl.Desktop.{extension}")))
 			{
-				Logger.Log($"Can't find 'DigitaleBriefwahl.Desktop.{Extension}' in '{OutputDir}' - aborting.");
-				Console.WriteLine("Kann Wahlanwendung nicht finden.");
-				ExceptionLogging.Client.Notify(
-					new FileNotFoundException($"Can't find 'DigitaleBriefwahl.Desktop.{Extension}'"),
-					Severity.Info);
-				return;
+				extension = "exe";
+				if (!File.Exists(Path.Combine(OutputDir, $"DigitaleBriefwahl.Desktop.{extension}")))
+				{
+					Logger.Log(
+						$"Can't find 'DigitaleBriefwahl.Desktop.{Extension}' in '{OutputDir}' - aborting.");
+					Console.WriteLine("Kann Wahlanwendung nicht finden.");
+					ExceptionLogging.Client.Notify(
+						new FileNotFoundException(
+							$"Can't find 'DigitaleBriefwahl.Desktop.{Extension}'"),
+						Severity.Info);
+					return;
+				}
 			}
 
 			var setup = new AppDomainSetup { ApplicationBase = OutputDir };
@@ -92,7 +100,7 @@ namespace DigitaleBriefwahl.Launcher
 			var versionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
 			Environment.CurrentDirectory = OutputDir;
 			VotingAppDomain = AppDomain.CreateDomain("VotingApp", null, setup);
-			VotingAppDomain.ExecuteAssembly($"DigitaleBriefwahl.Desktop.{Extension}",
+			VotingAppDomain.ExecuteAssembly($"DigitaleBriefwahl.Desktop.{extension}",
 				new [] { versionInfo.FileVersion });
 		}
 	}
