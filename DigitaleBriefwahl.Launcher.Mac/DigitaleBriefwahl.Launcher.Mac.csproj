@@ -9,7 +9,6 @@
     <Copyright>Copyright © 2017-2020 Eberhard Beilharz</Copyright>
     <RootNamespace>DigitaleBriefwahl.Launcher.Mac</RootNamespace>
     <AssemblyName>DigitaleBriefwahl.Launcher.Mac</AssemblyName>
-    <OutputPath>../output/$(Configuration)</OutputPath>
     <DebugType>portable</DebugType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <OutputType>Exe</OutputType>
@@ -37,12 +36,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Mac\MyApp.app\Contents\MonoBundle\README.txt" />
-    <Content Include="Mac\MyApp.app\Contents\Resources\icons.icns" />
-    <Content Include="Mac\MyApp.app\MacAppTemplate.app\Contents\MonoBundle\README.txt" />
     <Content Include="Mac\README.txt" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Compile Include="..\DigitaleBriefwahl.Launcher\Launcher.cs">
       <Link>Launcher.cs</Link>
@@ -57,5 +53,18 @@
     <!-- See https://github.com/dotnet/sdk/issues/987#issuecomment-286307697 why that is needed -->
     <AssemblySearchPaths>$(AssemblySearchPaths);{GAC}</AssemblySearchPaths>
   </PropertyGroup>
+
+  <Target Name="WorkaroundGlobExtProblem" BeforeTargets="MacBundleMono">
+    <!-- when building this project in a separate directory (which makes sense so that we have
+    only the files we need), mkbundle fails because it can't find several System.* assemblies.
+    This is a hack that works around this problem.
+    MonoPath is set in BundleMono.targets (included in Eto.Platform.Mac64), and the files
+    get copied in MacBundleMono together with some more files.
+    -->
+    <ItemGroup>
+      <CrossCompileMissingDependencies Include="$(MonoPath)lib\mono\4.5\Facades\System.Globalization.Extensions.dll" />
+      <CrossCompileMissingDependencies Include="$(MonoPath)lib\mono\4.5\Facades\System.Threading.Overlapped.dll" />
+    </ItemGroup>
+  </Target>
 
 </Project>

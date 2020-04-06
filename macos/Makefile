@@ -1,7 +1,7 @@
 INSTALLERDIR=$(PWD)/../Releases
 TARGETDIR=$(PWD)/../output/macos
 APPDIR=root/Applications/DigitaleBriefwahl.Launcher.Mac.app/Contents
-VERSION=$(shell cat ../DigitaleBriefwahl.Launcher/bin/Version.txt)
+VERSION=$(shell cat ../output/Release/Version.txt)
 NUMFILES=$(shell find $(TARGETDIR)/root | wc -l)
 SIZE=$(shell du -BK -s $(TARGETDIR)/root | cut -f1 -d'K')
 
@@ -17,7 +17,7 @@ prepare:
 	mkdir -p $(TARGETDIR)/root/Applications
 
 app: prepare compile
-	cp -r ../DigitaleBriefwahl.Launcher.Mac/bin/ReleaseMac/DigitaleBriefwahl.Launcher.Mac.app $(TARGETDIR)/root/Applications/
+	cp -r ../DigitaleBriefwahl.Launcher.Mac/bin/Release/net461/DigitaleBriefwahl.Launcher.Mac.app $(TARGETDIR)/root/Applications/
 	cp Info.plist $(TARGETDIR)/root/Applications/DigitaleBriefwahl.Launcher.Mac.app/Contents/
 	mkdir -p $(TARGETDIR)/root/Applications/DigitaleBriefwahl.Launcher.Mac.app/Contents/Resources/
 	cp ../Resources/icons.icns $(TARGETDIR)/root/Applications/DigitaleBriefwahl.Launcher.Mac.app/Contents/Resources/
