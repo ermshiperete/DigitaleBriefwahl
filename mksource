@@ -23,7 +23,7 @@ git clean -dxf
 
 msbuild /t:Build /p:Configuration=Release build/DigitaleBriefwahl.proj
 
-mv output/Release/DigitaleBriefwahl.Launcher LauncherBin
+mv output/Release/DigitaleBriefwahl.Launcher/net461 LauncherBin
 
 rm -rf packages
 rm -rf output
