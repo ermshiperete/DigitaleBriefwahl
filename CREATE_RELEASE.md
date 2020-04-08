@@ -22,7 +22,7 @@ This document describes how to create a new release.
 ### Packer
 
 - The packer binaries can be built on Linux: `msbuild /t:Test build/DigitaleBriefwahl.proj`
-- Compress all files from `output/Release` into a `DigitaleBriefwahl-1.0.3.zip` file
+- Compress all files from `output/Release/net461` into a `DigitaleBriefwahl.Packer-1.0.3.zip` file
 
 ### MacOS
 

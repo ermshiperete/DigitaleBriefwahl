@@ -9,7 +9,7 @@
     <Copyright>Copyright © 2017-2020 Eberhard Beilharz</Copyright>
     <RootNamespace>DigitaleBriefwahl.Launcher</RootNamespace>
     <AssemblyName>DigitaleBriefwahl.Launcher</AssemblyName>
-    <OutputPath>../output/$(Configuration)</OutputPath>
+    <OutputPath>../output/$(Configuration)/DigitaleBriefwahl.Launcher</OutputPath>
     <DebugType>portable</DebugType>
     <ApplicationIcon>..\Resources\DigitaleBriefwahl.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
