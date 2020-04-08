@@ -62,25 +62,7 @@ override_dh_makeclilibs:
 #override_dh_shlibdeps:
 #	dh_shlibdeps -l$(MONO_PREFIX)/lib
 
-# Include mono5-sil in cli dirs searched
 override_dh_clideps:
-	#mkdir -p debian/tmp/usr && ln -s $(MONO_PREFIX)/* debian/tmp/usr/ && \
-	#PATH=$(MONO_PREFIX)/bin:$(PATH) \
-	#dh_clideps internal-mono -l$(MONO_PREFIX)/lib
-	dh_clideps \
-		--exclude-moduleref=security.dll \
-		--exclude-moduleref=Crypt32.dll --exclude-moduleref=libdconf.dll \
-		--exclude-moduleref=libhunspell --exclude-moduleref=Autofac \
-		--exclude-moduleref=CommandLine --exclude-moduleref=NDesk.DBus \
-		--exclude-moduleref=INIFileParser --exclude-moduleref=Newtonsoft.Json \
-		--exclude-moduleref=MAPI32.DLL --exclude-moduleref=__Internal \
-		--exclude-moduleref=ole32.dll --exclude-moduleref=version.dll \
-		--exclude-moduleref=psapi.dll --exclude-moduleref=msdelta.dll \
-		--exclude-moduleref=wininet.dll --exclude-moduleref=NTDLL.DLL \
-		--exclude-moduleref=mspatcha.dll --exclude-moduleref=mspatchc.dll \
-		--exclude-moduleref=ntdll.dll --exclude-moduleref=api-ms-win-core-sysinfo-l1-2-0.dll \
-		--exclude-moduleref=api-ms-win-core-sysinfo-l1-1-0.dll
-	# rm -rf debian/tmp/usr
 
 # Don't strip debug symbols -- we want them for informative crash stack traces
 override_dh_strip:
