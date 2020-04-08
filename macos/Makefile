@@ -1,7 +1,7 @@
 INSTALLERDIR=$(PWD)/../Releases
 TARGETDIR=$(PWD)/../output/macos
 APPDIR=root/Applications/DigitaleBriefwahl.Launcher.Mac.app/Contents
-VERSION=$(shell cat ../output/Release/Version.txt)
+VERSION=$(shell cat ../output/Release/DigitaleBriefwahl.Launcher/Version.txt)
 NUMFILES=$(shell find $(TARGETDIR)/root | wc -l)
 SIZE=$(shell du -BK -s $(TARGETDIR)/root | cut -f1 -d'K')
 
