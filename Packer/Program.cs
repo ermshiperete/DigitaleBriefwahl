@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2018 Eberhard Beilharz
+// Copyright (c) 2017-2020 Eberhard Beilharz
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 
@@ -6,8 +6,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using DigitaleBriefwahl;
 using DigitaleBriefwahl.Encryption;
@@ -39,8 +41,8 @@ namespace Packer
 		{
 			if (!File.Exists(Configuration.ConfigName))
 			{
-				Console.WriteLine();
-				Console.WriteLine($"The configuration file '{Configuration.ConfigName}' is missing. Exiting.");
+				Console.Error.WriteLine();
+				Console.Error.WriteLine($"Config: The configuration file '{Configuration.ConfigName}' is missing. Exiting.");
 				return false;
 			}
 
@@ -49,22 +51,23 @@ namespace Packer
 			var packCompiler = new PackCompiler(ExecutableLocation);
 			if (!File.Exists(packCompiler.ConfigFilename))
 			{
-				Console.WriteLine();
-				Console.WriteLine($"The configuration file '{packCompiler.ConfigFilename}' is missing. Exiting.");
+				Console.Error.WriteLine();
+				Console.Error.WriteLine($"PackCompiler: The configuration file '{packCompiler.ConfigFilename}' is missing. Exiting.");
 				return false;
 			}
 
 			if (!File.Exists(packCompiler.Config.PublicKey))
 			{
-				Console.WriteLine();
-				Console.WriteLine(
-					$"The public key file '{packCompiler.Config.PublicKey}' specified in {packCompiler.ConfigFilename} is missing. Exiting.");
+				Console.Error.WriteLine();
+				Console.Error.WriteLine(
+					$"PackCompiler: The public key file '{packCompiler.Config.PublicKey}' specified in {packCompiler.ConfigFilename} is missing. Exiting.");
 				return false;
 			}
 
 			var zipFile = packCompiler.PackAllFiles();
 			var ballotFile = WriteBallot();
 			var publicKeyFile = WritePublicKey();
+			var zipFileHash = CalculateHash(zipFile);
 			Console.WriteLine();
 			Console.WriteLine("Files packed successfully.");
 			Console.WriteLine($"Now upload the file '{Path.GetFileName(zipFile)}' in directory");
@@ -79,12 +82,13 @@ namespace Packer
 				try
 				{
 					urlString = AdjustUrlIfGoogleDrive(urlString);
+					urlString = AdjustUrlIfMicrosoftOneDrive(urlString);
 					url = new Uri(urlString);
-					urlOk = TryDownload(url);
+					urlOk = TryDownload(url, zipFileHash);
 				}
 				catch (UriFormatException)
 				{
-					Console.WriteLine("Invalid URL. Please enter a valid download URL:");
+					Console.Error.WriteLine("Invalid URL. Please enter a valid download URL:");
 				}
 			}
 
@@ -102,7 +106,7 @@ namespace Packer
 			return true;
 		}
 
-		private static bool TryDownload(Uri uri)
+		private static bool TryDownload(Uri uri, byte[] originalHash)
 		{
 			var targetFile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 			try
@@ -112,13 +116,22 @@ namespace Packer
 					client.DownloadFile(uri, targetFile);
 				}
 
+				if (!VerifyDownloadedFile(targetFile, originalHash))
+				{
+					Console.Error.WriteLine();
+					Console.Error.WriteLine("Downloaded file doesn't match expected uploaded file. Please check that");
+					Console.Error.WriteLine("the file can be downloaded without requiring authentication.");
+					Console.WriteLine("Please enter a valid download URL:");
+					return false;
+				}
+
 				Console.WriteLine("Download URL is valid.");
 				return true;
 			}
 			catch (Exception e)
 			{
-				Console.WriteLine();
-				Console.WriteLine($"Error trying to download file: {e.Message}");
+				Console.Error.WriteLine();
+				Console.Error.WriteLine($"Error trying to download file: {e.Message}");
 				Console.WriteLine("Please enter a valid download URL:");
 				return false;
 			}
@@ -147,6 +160,39 @@ namespace Packer
 			return regex.IsMatch(urlString)
 				? $"https://drive.google.com/uc?export=download&id={regex.Match(urlString).Groups[1]}"
 				: urlString;
+		}
+
+		private static string AdjustUrlIfMicrosoftOneDrive(string urlString)
+		{
+			// <iframe src="https://onedrive.live.com/embed?cid=F2063761FAADDF22&resid=F2063761FAADDF22%21421&authkey=ALEvCse_3f7okbk" width="98" height="120" frameborder="0" scrolling="no"></iframe>
+			if (!urlString.Contains("https://onedrive.live.com"))
+				return urlString;
+
+			var regex = new Regex("<iframe src=\"([^\"]+)\".+");
+			if (regex.IsMatch(urlString))
+				urlString = regex.Match(urlString).Groups[1].ToString();
+
+			return urlString.Replace("/embed?", "/download?");
+		}
+
+		private static bool VerifyDownloadedFile(string fileName, byte[] originalHash)
+		{
+			var downloadedFileHash = CalculateHash(fileName);
+			if (downloadedFileHash.Length != originalHash.Length)
+				return false;
+
+			return !downloadedFileHash.Where((hashByte, index) => hashByte != originalHash[index]).Any();
+		}
+
+		private static byte[] CalculateHash(string fileName)
+		{
+			using (var sha256 = SHA256.Create())
+			{
+				using (var stream = File.OpenRead(fileName))
+				{
+					return sha256.ComputeHash(stream);
+				}
+			}
 		}
 
 		private static string MoveToExeLocation(string fileName)

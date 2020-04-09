@@ -16,11 +16,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-## [1.0.4] - 2020-04-07
+## [1.0.4] - 2020-04-09
+
+### Added
+
+- [Packer] Support Microsoft OneDrive
 
 ### Changed
 
 - Update dependencies
+- [Packer] Verify file from download link
 
 ## [1.0.3] - 2019-04-05
 
