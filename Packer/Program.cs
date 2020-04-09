@@ -111,11 +111,14 @@ namespace Packer
 			var targetFile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 			try
 			{
+				Console.WriteLine("Verifying download URL:");
+				Console.WriteLine("    - downloading file");
 				using (var client = new WebClient())
 				{
 					client.DownloadFile(uri, targetFile);
 				}
 
+				Console.WriteLine("    - comparing file content");
 				if (!VerifyDownloadedFile(targetFile, originalHash))
 				{
 					Console.Error.WriteLine();
