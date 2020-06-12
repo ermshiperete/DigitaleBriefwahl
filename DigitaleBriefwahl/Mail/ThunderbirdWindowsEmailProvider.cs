@@ -18,7 +18,7 @@ namespace DigitaleBriefwahl.Mail
 			return input.Replace(@"""", @"\""");
 		}
 
-		protected override string FormatString => "-osint -compose \"to='{0}',subject='{3}',body='{4}'{1}{2}{5}\"";
+		protected override string FormatString => "-compose \"to='{0}',subject='{3}',body='{4}'{1}{2}{5}\"";
 
 		protected override string EmailCommand
 		{

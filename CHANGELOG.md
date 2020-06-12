@@ -16,6 +16,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- sending emails through Thunderbird (#6)
+
+### Changed
+
+- logging output
+
+### Added
+
+- save encrypted ballot to file (#4)
+
 ## [1.0.4] - 2020-04-09
 
 ### Added
