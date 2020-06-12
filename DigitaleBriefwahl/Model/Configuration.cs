@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using DigitaleBriefwahl.ExceptionHandling;
 using IniParser;
 
 namespace DigitaleBriefwahl.Model
@@ -46,6 +47,7 @@ namespace DigitaleBriefwahl.Model
 			if (!File.Exists(filename))
 			{
 				Console.WriteLine("Can't find configuration file {0}", filename);
+				Logger.Log($"Can't find configuration file {filename}");
 				return configuration;
 			}
 

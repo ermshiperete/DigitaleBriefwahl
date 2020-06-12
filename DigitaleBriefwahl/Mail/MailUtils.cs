@@ -50,12 +50,19 @@ namespace DigitaleBriefwahl.Mail
 					return true;
 
 				var retVal = false;
-				if (!string.IsNullOrEmpty(GetDefaultValue(Registry.CurrentUser, @"Software\Clients\Mail")))
+				var value = GetDefaultValue(Registry.CurrentUser, @"Software\Clients\Mail");
+				Logger.Log($@"HKCU\Software\Clients\Mail: {value}");
+				if (!string.IsNullOrEmpty(value))
 					retVal = true;
-				else if (!string.IsNullOrEmpty(GetDefaultValue(Registry.LocalMachine, @"Software\Clients\Mail")))
-					retVal = NumberOfOutlookProfiles > 0;
+				else
+				{
+					value = GetDefaultValue(Registry.LocalMachine, @"Software\Clients\Mail");
+					Logger.Log($@"HKLM\Software\Clients\Mail: {value}");
+					if (!string.IsNullOrEmpty(value))
+						retVal = NumberOfOutlookProfiles > 0;
+				}
 
-				Logger.Log($"Can use perferred email provider: {retVal}");
+				Logger.Log($"Can use preferred email provider: {retVal}");
 				return retVal;
 			}
 		}
