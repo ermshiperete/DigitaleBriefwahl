@@ -130,9 +130,13 @@ namespace DigitaleBriefwahl.Encryption
 			return election.Replace(' ', '_').Replace('.', '_');
 		}
 
-		public string WriteVote(string vote)
+		public string WriteVote(string vote, string filePath = null)
 		{
-			var outputFileName = Path.ChangeExtension(BallotFilePath, ".gpg");
+			if (string.IsNullOrEmpty(filePath))
+				filePath = BallotFilePath;
+			if (Path.GetFileName(filePath) != FileName)
+				filePath = Path.Combine(Path.GetDirectoryName(filePath), FileName);
+			var outputFileName = Path.ChangeExtension(filePath, ".gpg");
 			var voteBytes = Encoding.UTF8.GetBytes(vote);
 
 			using (var outputStream = new FileStream(outputFileName, FileMode.Create))

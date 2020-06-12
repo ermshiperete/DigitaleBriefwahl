@@ -1,4 +1,4 @@
-// Copyright (c) 2016-2018 Eberhard Beilharz
+// Copyright (c) 2016-2020 Eberhard Beilharz
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 using System;
@@ -59,6 +59,9 @@ namespace DigitaleBriefwahl
 				var writeCommand = new Command {MenuText = "Stimmzettel schreiben"};
 				writeCommand.Executed += OnWriteClicked;
 
+				var writeEncryptedCommand = new Command {MenuText = "Verschlüsselten Stimmzettel schreiben"};
+				writeEncryptedCommand.Executed += OnWriteEncryptedClicked;
+
 				var writeEmptyCommand = new Command {MenuText = "Leeren Stimmzettel schreiben"};
 				writeEmptyCommand.Executed += OnWriteEmptyClicked;
 
@@ -82,7 +85,7 @@ namespace DigitaleBriefwahl
 					{
 						// File submenu
 						new ButtonMenuItem {Text = "&File",
-							Items = {sendCommand, writeCommand, writeEmptyCommand, writeKeyCommand}}
+							Items = {sendCommand, writeCommand, writeEncryptedCommand, writeEmptyCommand, writeKeyCommand}}
 					},
 					QuitItem = quitCommand,
 					AboutItem = aboutCommand
@@ -230,7 +233,7 @@ namespace DigitaleBriefwahl
 			}
 		}
 
-		private void WriteBallot(bool writeEmptyBallot)
+		private void WriteBallot(bool writeEmptyBallot, bool writeEncryptedBallot = false)
 		{
 			var vote = CollectVote(writeEmptyBallot);
 			if (string.IsNullOrEmpty(vote))
@@ -246,10 +249,13 @@ namespace DigitaleBriefwahl
 				if (result != DialogResult.Ok)
 					return;
 
-				var fileName = encryptVote.WriteVoteUnencrypted(vote,
-					Path.Combine(dialog.Directory, Path.GetFileName(encryptVote.BallotFilePath)));
-				var emptyBallotString = writeEmptyBallot ? "leere " : "";
-				MessageBox.Show($"Der {emptyBallotString}Stimmzettel wurde in der Datei '{fileName}' gespeichert.",
+				var originalFilePath = Path.Combine(dialog.Directory,
+					Path.GetFileName(encryptVote.BallotFilePath));
+				var fileName = writeEncryptedBallot ?
+					encryptVote.WriteVote(vote, originalFilePath) :
+					encryptVote.WriteVoteUnencrypted(vote, originalFilePath);
+				var ballotString = writeEmptyBallot ? "leere " : writeEncryptedBallot ? "verschlüsselte " : "";
+				MessageBox.Show($"Der {ballotString}Stimmzettel wurde in der Datei '{fileName}' gespeichert.",
 					"Stimmzettel gespeichert");
 			}
 		}
@@ -257,6 +263,11 @@ namespace DigitaleBriefwahl
 		private void OnWriteClicked(object sender, EventArgs e)
 		{
 			WriteBallot(false);
+		}
+
+		private void OnWriteEncryptedClicked(object sender, EventArgs e)
+		{
+			WriteBallot(false, true);
 		}
 
 		private void OnWriteEmptyClicked(object sender, EventArgs e)
