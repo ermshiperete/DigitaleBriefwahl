@@ -6,7 +6,7 @@
     <Company>Eberhard Beilharz</Company>
     <Authors>Eberhard Beilharz</Authors>
     <Product>DigitaleBriefwahl</Product>
-    <Copyright>Copyright © 2017-2020 Eberhard Beilharz</Copyright>
+    <Copyright>Copyright © 2017-2021 Eberhard Beilharz</Copyright>
     <RootNamespace>DigitaleBriefwahl.Desktop</RootNamespace>
     <AssemblyName>DigitaleBriefwahl.Desktop</AssemblyName>
     <OutputPath>../output/$(Configuration)</OutputPath>
@@ -15,15 +15,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Bugsnag" Version="2.2.0" />
-    <PackageReference Include="Eto.Forms" Version="2.5.0" />
-    <PackageReference Include="Eto.Platform.Gtk" Version="2.5.0" />
-    <PackageReference Include="Eto.Platform.Gtk3" Version="2.5.0" />
-    <PackageReference Include="Eto.Platform.Windows" Version="2.5.0" />
-    <PackageReference Include="Eto.Platform.Wpf" Version="2.5.0" />
-    <PackageReference Include="GitVersionTask" Version="5.0.1">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
+    <PackageReference Include="Bugsnag" Version="2.2.2" />
+    <PackageReference Include="Eto.Forms" Version="2.5.10" />
+    <PackageReference Include="Eto.Platform.Gtk" Version="2.5.10" />
+    <PackageReference Include="Eto.Platform.Gtk3" Version="2.5.10" />
+    <PackageReference Include="Eto.Platform.Windows" Version="2.5.10" />
+    <PackageReference Include="Eto.Platform.Wpf" Version="2.5.10" />
+    <PackageReference Include="GitVersion.MsBuild" Version="5.6.8" PrivateAssets="true" />
     <PackageReference Include="ini-parser" Version="2.5.2" />
   </ItemGroup>
 
