@@ -1,3 +1,12 @@
+digitale-briefwahl (1.0.7) bionic; urgency=medium
+
+  * Update dependencies
+  * Fix sending email through Thunderbird
+  * Implement saving encrypted ballot from menu
+  * Improve logging output
+
+ -- Eberhard Beilharz <eb1@sil.org>  Tue, 13 Apr 2021 19:17:36 +0200
+
 digitale-briefwahl (1.0.4.2) bionic; urgency=medium
 
   * Update dependencies
