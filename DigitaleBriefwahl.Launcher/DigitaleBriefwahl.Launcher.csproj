@@ -86,7 +86,7 @@
       <NuGetHome Condition=" '$(OS)' != 'Windows_NT' ">$(HOME)/.nuget/packages</NuGetHome>
       <NuGetHome Condition=" '$(OS)' == 'Windows_NT' ">$(USERPROFILE)/.nuget/packages</NuGetHome>
       <NuGetBuildFolder>$(RootDir)/SquirrelBuild</NuGetBuildFolder>
-      <SquirrelCommand>$(NuGetHome)/squirrel.windows/1.9.1/tools/Squirrel.exe</SquirrelCommand>
+      <SquirrelCommand>$(NuGetHome)/squirrel.windows/2.0.1/tools/Squirrel.exe</SquirrelCommand>
     </PropertyGroup>
 
     <Exec Command="$(SquirrelCommand) --releasify $(NuGetBuildFolder)/DigitaleBriefwahl.Launcher.$(GitVersion_NuGetVersion).nupkg" WorkingDirectory="$(RootDir)" />
