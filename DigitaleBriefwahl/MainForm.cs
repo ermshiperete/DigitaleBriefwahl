@@ -15,6 +15,7 @@ using DigitaleBriefwahl.Views;
 using Eto.Drawing;
 using Eto.Forms;
 using SIL.Email;
+using SIL.IO;
 using Configuration = DigitaleBriefwahl.Model.Configuration;
 using Thread = System.Threading.Thread;
 
@@ -56,16 +57,16 @@ namespace DigitaleBriefwahl
 				var sendCommand = new Command {MenuText = "Absenden", ToolBarText = "Absenden"};
 				sendCommand.Executed += OnSendClicked;
 
-				var writeCommand = new Command {MenuText = "Stimmzettel schreiben"};
+				var writeCommand = new Command {MenuText = "Stimmzettel speichern"};
 				writeCommand.Executed += OnWriteClicked;
 
-				var writeEncryptedCommand = new Command {MenuText = "Verschlüsselten Stimmzettel schreiben"};
+				var writeEncryptedCommand = new Command {MenuText = "Verschlüsselten Stimmzettel speichern"};
 				writeEncryptedCommand.Executed += OnWriteEncryptedClicked;
 
-				var writeEmptyCommand = new Command {MenuText = "Leeren Stimmzettel schreiben"};
+				var writeEmptyCommand = new Command {MenuText = "Leeren Stimmzettel speichern"};
 				writeEmptyCommand.Executed += OnWriteEmptyClicked;
 
-				var writeKeyCommand = new Command {MenuText = "Öffentlichen Schlüssel schreiben"};
+				var writeKeyCommand = new Command {MenuText = "Öffentlichen Schlüssel speichern"};
 				writeKeyCommand.Executed += OnWritePublicKeyClicked;
 
 				var quitCommand = new Command
@@ -77,6 +78,12 @@ namespace DigitaleBriefwahl
 
 				var aboutCommand = new Command {MenuText = "Über..."};
 				aboutCommand.Executed += OnAboutClicked;
+
+				var sendLogCommand = new Command { MenuText = "Logdateien senden" };
+				sendLogCommand.Executed += OnSendLogClicked;
+
+				var viewLogCommand = new Command { MenuText = "Logdateien öffnen" };
+				viewLogCommand.Executed += OnViewLogClicked;
 
 				// create menu
 				Menu = new MenuBar
@@ -91,12 +98,81 @@ namespace DigitaleBriefwahl
 					AboutItem = aboutCommand
 				};
 				Menu.ApplicationMenu.Text = "&Datei";
+				Menu.HelpMenu.Items.Add(sendLogCommand);
+				Menu.HelpMenu.Items.Add(viewLogCommand);
 				Menu.HelpMenu.Text = "&Hilfe";
 			}
 			catch (InvalidConfigurationException ex)
 			{
 				MessageBox.Show($"Konfigurationsfehler: {ex.Message}", "Digitale Briefwahl");
 				Application.Instance.Quit();
+			}
+		}
+
+		private void OnViewLogClicked(object sender, EventArgs e)
+		{
+			foreach (var logfile in GetLogfiles())
+			{
+				PathUtilities.OpenFileInApplication(logfile);
+			}
+		}
+
+		private void OnSendLogClicked(object sender, EventArgs e)
+		{
+			IEmailProvider emailProvider;
+			var appendLogfiles = false;
+			if (MailUtils.CanUsePreferredEmailProvider)
+				emailProvider = EmailProviderFactory.PreferredEmailProvider();
+			else if (MailUtils.IsWindowsThunderbirdInstalled)
+				emailProvider = new ThunderbirdWindowsEmailProvider();
+			else if (MailUtils.IsOutlookInstalled)
+				emailProvider = new OutlookEmailProvider();
+			else
+			{
+				emailProvider = EmailProviderFactory.AlternateEmailProvider();
+				appendLogfiles = true;
+			}
+
+			try
+			{
+				Logger.Log($"Sending email with logs through {emailProvider.GetType().Name}");
+				var email = emailProvider.CreateMessage();
+
+				email.Subject = "DigiWahl Logfiles";
+				email.Body =
+					$"Anbei die Logfiles. Gesendet mittels {emailProvider.GetType().Name}.";
+				var logfiles = GetLogfiles();
+				if (logfiles?.Length > 0)
+				{
+					if (appendLogfiles)
+					{
+						var bldr = new StringBuilder();
+						foreach (var logfile in logfiles)
+						{
+							bldr.AppendLine();
+							bldr.AppendLine($"{Path.GetFileName(logfile)}:");
+							bldr.AppendLine(File.ReadAllText(logfile));
+						}
+
+						email.Body += bldr.ToString();
+					}
+					else
+					{
+						foreach (var logfile in logfiles)
+							email.AttachmentFilePath.Add(logfile);
+					}
+				}
+				else
+				{
+					email.Body += "Keine Logfiles gefunden.";
+				}
+
+				emailProvider.SendMessage(email);
+			}
+			catch (Exception ex)
+			{
+				Logger.Log(
+					$"Got {ex.GetType()} exception trying to send email through {emailProvider.GetType().Name}: {ex.Message}");
 			}
 		}
 
@@ -184,6 +260,18 @@ namespace DigitaleBriefwahl
 					$"'{newFileName}' als Anhang einer E-Mail an '{_configuration.EmailAddress}' senden.",
 					"Automatischer E-Mail-Versand nicht möglich");
 			}
+		}
+
+		private static string[] GetLogfiles()
+		{
+			var logFiles = new List<string>();
+			var logDesktop = Path.Combine(Logger.LogDirectory, "DigitaleBriefwahl.Desktop.log");
+			if (File.Exists(logDesktop))
+				logFiles.Add(logDesktop);
+			var logLauncher = Path.Combine(Logger.LogDirectory, "DigitaleBriefwahl.Launcher.log");
+			if (File.Exists(logLauncher))
+				logFiles.Add(logLauncher);
+			return logFiles.ToArray();
 		}
 
 		private string SaveBallot(string title, string filename)

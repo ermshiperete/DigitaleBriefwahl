@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- sending or viewing logfiles (#5)
+
 ### Fixed
 
 - Sending emails with Outlook (#6)

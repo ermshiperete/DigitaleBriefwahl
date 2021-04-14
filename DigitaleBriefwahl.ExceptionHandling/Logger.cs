@@ -14,7 +14,7 @@ namespace DigitaleBriefwahl.ExceptionHandling
 	{
 		private const string SeparatorLine = "-----------------------------";
 
-		private static string LogDirectory
+		public static string LogDirectory
 		{
 			get
 			{
