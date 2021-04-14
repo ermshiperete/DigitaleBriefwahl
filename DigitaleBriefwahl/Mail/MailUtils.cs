@@ -104,7 +104,8 @@ namespace DigitaleBriefwahl.Mail
 					if (subkeyName.Length < 2 || !int.TryParse(subkeyName.Substring(0, 2), out var version))
 						continue;
 					var subkey = key.OpenSubKey(subkeyName)?.OpenSubKey(@"Outlook\Profiles");
-					return subkey?.SubKeyCount ?? -1;
+					if (subkey != null)
+						return subkey.SubKeyCount;
 				}
 				return -1;
 			}

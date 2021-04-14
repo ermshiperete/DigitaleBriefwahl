@@ -16,9 +16,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
-## [1.0.7] - 2021-04-13
+### Fixed
 
-Re-release
+- Sending emails with Outlook (#6)
 
 ## [1.0.6] - 2021-04-13
 
