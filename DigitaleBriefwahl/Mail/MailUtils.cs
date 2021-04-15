@@ -82,32 +82,19 @@ namespace DigitaleBriefwahl.Mail
 				const string outlookApplication = "Outlook.Application.";
 				var outlookVerString = GetDefaultValue(Registry.ClassesRoot, @"Outlook.Application\CurVer");
 				if (string.IsNullOrEmpty(outlookVerString) || outlookVerString.Length < outlookApplication.Length)
+				{
+					Logger.Log("No Outlook installed");
 					return -1;
+				}
 
 				if (!int.TryParse(outlookVerString.Substring(outlookApplication.Length), out var version))
+				{
+					Logger.Log($"Outlook not installed (found {outlookVerString})");
 					return -1;
+				}
 
 				Logger.Log($"Found Outlook version {version}");
 				return version;
-			}
-		}
-
-		private static int GetNumberOfOutlookProfiles(string keyName)
-		{
-			using (var key = Registry.CurrentUser.OpenSubKey(keyName))
-			{
-				if (key == null || key.SubKeyCount <= 0)
-					return -1;
-
-				foreach (var subkeyName in key.GetSubKeyNames())
-				{
-					if (subkeyName.Length < 2 || !int.TryParse(subkeyName.Substring(0, 2), out var version))
-						continue;
-					var subkey = key.OpenSubKey(subkeyName)?.OpenSubKey(@"Outlook\Profiles");
-					if (subkey != null)
-						return subkey.SubKeyCount;
-				}
-				return -1;
 			}
 		}
 
@@ -115,18 +102,46 @@ namespace DigitaleBriefwahl.Mail
 		{
 			get
 			{
-				if (InstalledOutlookVersion > 14)
+				int GetNumberOfOutlookProfilesForKey(string keyName)
 				{
-					var ret = GetNumberOfOutlookProfiles(@"Software\Microsoft\Office");
-					return ret > 0 ? ret : GetNumberOfOutlookProfiles(@"Software\Wow6432Node\Microsoft\Office");
+					using (var key = Registry.CurrentUser.OpenSubKey(keyName))
+					{
+						if (key == null || key.SubKeyCount <= 0)
+							return -1;
+
+						foreach (var subkeyName in key.GetSubKeyNames())
+						{
+							if (subkeyName.Length < 2 || !int.TryParse(subkeyName.Substring(0, 2), out var version))
+								continue;
+							var subkey = key.OpenSubKey(subkeyName)?.OpenSubKey(@"Outlook\Profiles");
+							if (subkey != null)
+								return subkey.SubKeyCount;
+						}
+						return -1;
+					}
 				}
 
-				// location of profiles in older Outlook versions up to Outlook 2010 (14.0)
-				using (var key = Registry.CurrentUser.OpenSubKey(
-					@"Software\Microsoft\Windows NT\CurrentVersion\Windows Messaging Subsystem\Profiles"))
+				int GetNumberOfOutlookProfiles()
 				{
-					return key?.SubKeyCount ?? -1;
+					if (InstalledOutlookVersion > 14)
+					{
+						var ret = GetNumberOfOutlookProfilesForKey(@"Software\Microsoft\Office");
+						return ret > 0
+							? ret
+							: GetNumberOfOutlookProfilesForKey(@"Software\Wow6432Node\Microsoft\Office");
+					}
+
+					// location of profiles in older Outlook versions up to Outlook 2010 (14.0)
+					using (var key = Registry.CurrentUser.OpenSubKey(
+						@"Software\Microsoft\Windows NT\CurrentVersion\Windows Messaging Subsystem\Profiles"))
+					{
+						return key?.SubKeyCount ?? -1;
+					}
 				}
+
+				var numberOfOutlookProfiles = GetNumberOfOutlookProfiles();
+				Logger.Log($"Found {numberOfOutlookProfiles} Outlook profiles");
+				return numberOfOutlookProfiles;
 			}
 		}
 
