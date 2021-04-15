@@ -16,9 +16,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.0] - 2021-04-15
+
 ### Added
 
 - sending or viewing logfiles (#5)
+
+### Changed
+
+- improved logging and display of progress
 
 ### Fixed
 
@@ -195,9 +201,9 @@ Re-release
 
 - Initial beta version
 
-[Unreleased]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.0.7...master
+[Unreleased]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.1.0...master
 
-[1.0.7]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.0.4...v1.0.7
+[1.1.0]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.0.4...v1.1.0
 [1.0.6]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.0.4...v1.0.6
 [1.0.5]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.0.3...v1.0.4
