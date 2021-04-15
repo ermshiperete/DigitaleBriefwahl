@@ -1,0 +1,11 @@
+<Project>
+	<PropertyGroup>
+		<TargetFrameworks>net461</TargetFrameworks>
+		<Company>Eberhard Beilharz</Company>
+		<Authors>Eberhard Beilharz</Authors>
+		<Product>DigitaleBriefwahl</Product>
+		<Copyright>Copyright © 2017-2021 Eberhard Beilharz</Copyright>
+		<OutputPath>$(MSBuildProjectDirectory)/output/$(Configuration)</OutputPath>
+		<DebugType>portable</DebugType>
+	</PropertyGroup>
+</Project>

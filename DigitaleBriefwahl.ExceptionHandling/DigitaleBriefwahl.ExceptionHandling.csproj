@@ -1,16 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461</TargetFrameworks>
-    <Configurations>Debug;Release</Configurations>
-    <Company>Eberhard Beilharz</Company>
-    <Authors>Eberhard Beilharz</Authors>
-    <Product>DigitaleBriefwahl</Product>
-    <Copyright>Copyright © 2017-2021 Eberhard Beilharz</Copyright>
     <RootNamespace>DigitaleBriefwahl.ExceptionHandling</RootNamespace>
     <AssemblyName>DigitaleBriefwahl.ExceptionHandling</AssemblyName>
-    <OutputPath>../output/$(Configuration)</OutputPath>
-    <DebugType>portable</DebugType>
   </PropertyGroup>
 
   <ItemGroup>

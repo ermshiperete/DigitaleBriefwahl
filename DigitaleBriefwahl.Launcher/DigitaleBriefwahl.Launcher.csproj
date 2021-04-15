@@ -1,19 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461</TargetFrameworks>
-    <Configurations>Debug;Release</Configurations>
-    <Company>Eberhard Beilharz</Company>
-    <Authors>Eberhard Beilharz</Authors>
-    <Product>DigitaleBriefwahl</Product>
-    <Copyright>Copyright © 2017-2021 Eberhard Beilharz</Copyright>
     <RootNamespace>DigitaleBriefwahl.Launcher</RootNamespace>
     <AssemblyName>DigitaleBriefwahl.Launcher</AssemblyName>
-    <OutputPath>../output/$(Configuration)/DigitaleBriefwahl.Launcher</OutputPath>
-    <DebugType>portable</DebugType>
     <ApplicationIcon>..\Resources\DigitaleBriefwahl.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <OutputType>Exe</OutputType>
+    <OutputPath>../output/$(Configuration)/DigitaleBriefwahl.Launcher</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>

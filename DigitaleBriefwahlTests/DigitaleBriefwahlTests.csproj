@@ -1,14 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net461</TargetFrameworks>
     <RootNamespace>DigitaleBriefwahlTests</RootNamespace>
-    <Configurations>Debug;Release</Configurations>
     <AssemblyTitle>DigitaleBriefwahlTests</AssemblyTitle>
-    <Company>Eberhard Beilharz</Company>
-    <Product>Digitale Briefwahl</Product>
-    <Copyright>Copyright © 2018-2021 Eberhard Beilharz</Copyright>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <OutputPath>bin/$(Configuration)</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="ini-parser" Version="2.5.2" />

@@ -1,17 +1,11 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461</TargetFrameworks>
-    <Configurations>Debug;Release</Configurations>
-    <Company>Eberhard Beilharz</Company>
-    <Authors>Eberhard Beilharz</Authors>
-    <Product>DigitaleBriefwahl</Product>
-    <Copyright>Copyright © 2017-2021 Eberhard Beilharz</Copyright>
     <RootNamespace>DigitaleBriefwahl.Launcher.Mac</RootNamespace>
     <AssemblyName>DigitaleBriefwahl.Launcher.Mac</AssemblyName>
-    <DebugType>portable</DebugType>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <OutputType>Exe</OutputType>
+    <OutputPath>bin/$(Configuration)</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
