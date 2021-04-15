@@ -316,6 +316,7 @@ namespace DigitaleBriefwahl.Launcher
 				// Once the WebResponse object has been retrieved,
 				// get the stream object associated with the response's data
 				remoteStream = response.GetResponseStream();
+				Console.Write("...");
 
 				// Create the local file
 				Directory.CreateDirectory(Path.GetDirectoryName(targetFile));
@@ -324,8 +325,10 @@ namespace DigitaleBriefwahl.Launcher
 					localStream.Position = localStream.Length;
 
 				// Allocate a 10k buffer
-				var buffer = new byte[10240];
+				const int bufferSize = 10240;
+				var buffer = new byte[bufferSize];
 				int bytesRead;
+				var increment = (int)(response.ContentLength / bufferSize / 100);
 
 				// Simple do/while loop to read from stream until
 				// no bytes are returned
@@ -336,7 +339,10 @@ namespace DigitaleBriefwahl.Launcher
 
 					// Write the data to the local file
 					localStream.Write(buffer, 0, bytesRead);
+					Console.Write(new string('.', increment * 4));
 				} while (bytesRead > 0);
+
+				Console.WriteLine();
 
 				var localStreamLength = localStream.Length;
 				localStream.Close();
@@ -354,6 +360,7 @@ namespace DigitaleBriefwahl.Launcher
 			}
 			catch (WebException wex)
 			{
+				Console.WriteLine();
 				if (wex.Status == WebExceptionStatus.ProtocolError)
 				{
 					var resp = wex.Response as HttpWebResponse;

@@ -43,7 +43,8 @@ namespace DigitaleBriefwahl.Launcher
 							Console.WriteLine($"Update auf Version '{updateInfo.FutureReleaseEntry?.Version}'.");
 							Logger.Log($"Found new update. Applying {updateInfo.ReleasesToApply?.Count} releases. " +
 								$"bootstrapping: {updateInfo.IsBootstrapping}, package dir: {updateInfo.PackageDirectory}");
-							await mgr.UpdateApp();
+							await mgr.UpdateApp((n) => { Console.Write(new string('.', n * 4 / 10));});
+							Console.WriteLine();
 							if (!updateInfo.IsBootstrapping)
 								options.PackageDir = Path.Combine(Path.GetDirectoryName(updateInfo.PackageDirectory),
 									$"app-{updateInfo.FutureReleaseEntry?.Version}");
