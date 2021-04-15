@@ -22,8 +22,8 @@
 	<Target Name="RestoreBuildTasks" DependsOnTargets="CheckPrerequisites">
 		<Message Text="RestartBuild=$(RestartBuild)"/>
 		<Message Text="MSBuildProjectDirectory=$(MSBuildProjectDirectory)"/>
-		<Exec Command='$(NuGetCommand) install SIL.BuildTasks -excludeVersion -version 2.2.0 -source "$(PackageSources)" -solutionDirectory "$(RootDir)"' />
-		<Exec Command='$(NuGetCommand) install NUnit.ConsoleRunner -excludeVersion -version 3.10.0 -source "$(PackageSources)" -solutionDirectory "$(RootDir)"' />
+		<Exec Command='$(NuGetCommand) install SIL.BuildTasks -excludeVersion -version 2.5.0 -source "$(PackageSources)" -solutionDirectory "$(RootDir)"' />
+		<Exec Command='$(NuGetCommand) install NUnit.ConsoleRunner -excludeVersion -version 3.12.0 -source "$(PackageSources)" -solutionDirectory "$(RootDir)"' />
 	</Target>
 
 	<Target Name="Build">
