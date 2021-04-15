@@ -16,6 +16,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.1] - 2021-04-15
+
+### Fixed
+
+- another problem sending emails with Outlook
+- copyright date
+
 ## [1.1.0] - 2021-04-15
 
 ### Added
@@ -201,8 +208,9 @@ Re-release
 
 - Initial beta version
 
-[Unreleased]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.1.0...master
+[Unreleased]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.1.1...master
 
+[1.1.1]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.0.4...v1.1.0
 [1.0.6]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.0.4...v1.0.6
 [1.0.5]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.0.4...v1.0.5
