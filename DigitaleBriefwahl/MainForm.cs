@@ -17,6 +17,7 @@ using Eto.Forms;
 using SIL.Email;
 using SIL.IO;
 using Configuration = DigitaleBriefwahl.Model.Configuration;
+using MapiEmailProvider = DigitaleBriefwahl.Mail.MapiEmailProvider;
 using Thread = System.Threading.Thread;
 
 namespace DigitaleBriefwahl
@@ -120,9 +121,11 @@ namespace DigitaleBriefwahl
 		private void OnSendLogClicked(object sender, EventArgs e)
 		{
 			IEmailProvider emailProvider;
-			var appendLogfiles = false;
+			var appendLogfileContents = false;
 			if (MailUtils.CanUsePreferredEmailProvider)
-				emailProvider = EmailProviderFactory.PreferredEmailProvider();
+			{
+				emailProvider = new MapiEmailProvider();
+			}
 			else if (MailUtils.IsWindowsThunderbirdInstalled)
 				emailProvider = new ThunderbirdWindowsEmailProvider();
 			else if (MailUtils.IsOutlookInstalled)
@@ -130,7 +133,7 @@ namespace DigitaleBriefwahl
 			else
 			{
 				emailProvider = EmailProviderFactory.AlternateEmailProvider();
-				appendLogfiles = true;
+				appendLogfileContents = true;
 			}
 
 			try
@@ -139,12 +142,11 @@ namespace DigitaleBriefwahl
 				var email = emailProvider.CreateMessage();
 
 				email.Subject = "DigiWahl Logfiles";
-				email.Body =
-					$"Anbei die Logfiles. Gesendet mittels {emailProvider.GetType().Name}.";
+				email.Body = $"Anbei die Logfiles. Gesendet mittels {emailProvider.GetType().Name}.";
 				var logfiles = GetLogfiles();
 				if (logfiles?.Length > 0)
 				{
-					if (appendLogfiles)
+					if (appendLogfileContents)
 					{
 						var bldr = new StringBuilder();
 						foreach (var logfile in logfiles)
@@ -164,7 +166,7 @@ namespace DigitaleBriefwahl
 				}
 				else
 				{
-					email.Body += "Keine Logfiles gefunden.";
+					email.Body += "\nKeine Logfiles gefunden.";
 				}
 
 				emailProvider.SendMessage(email);
@@ -200,7 +202,7 @@ namespace DigitaleBriefwahl
 			{
 				if (MailUtils.CanUsePreferredEmailProvider)
 				{
-					mailSent = SendEmail(EmailProviderFactory.PreferredEmailProvider(), filename);
+					mailSent = SendEmail(new MapiEmailProvider(), filename);
 					Logger.Log($"Sending email through preferred email provider successful: {mailSent}");
 				}
 
