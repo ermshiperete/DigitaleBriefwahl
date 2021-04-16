@@ -65,7 +65,7 @@ namespace DigitaleBriefwahl.Launcher
 			}
 
 			if (options.IsInstall || options.FirstRun)
-				Console.WriteLine("Installiere Anwendung...");
+				Console.WriteLine("Anwendung wird installiert...");
 
 			var didUpdate = UpdateAndLaunchApp(options);
 
@@ -87,8 +87,8 @@ namespace DigitaleBriefwahl.Launcher
 				using (var launcher = new Launcher(options.RunDirectory))
 				{
 					Console.WriteLine(options.SkipUpdateCheck || options.IsInstall
-						? "Lade Anwendung..."
-						: "Überprüfe auf Updates...");
+						? "Anwendung wird geladen..."
+						: "Überprüfung auf Updates...");
 
 					var didUpdate = UpdateApp(options, launcher).GetAwaiter().GetResult();
 
@@ -101,7 +101,7 @@ namespace DigitaleBriefwahl.Launcher
 						SquirrelInstallerSupport.ExecuteUpdatedApp(options);
 					else
 					{
-						Console.WriteLine("Starte Anwendung...");
+						Console.WriteLine("Anwendung wird gestartet...");
 						launcher.LaunchVotingApp();
 					}
 				}
