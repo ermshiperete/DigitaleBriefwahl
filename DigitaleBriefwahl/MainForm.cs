@@ -45,7 +45,7 @@ namespace DigitaleBriefwahl
 			try
 			{
 				_configuration = Configuration.Configure(Configuration.ConfigName);
-				Title = _configuration.Title;
+				Title = string.IsNullOrEmpty(_configuration.Title) ? "<Missing>" : _configuration.Title;
 
 				ClientSize = new Size(700, 400);
 				// scrollable region as the main content
