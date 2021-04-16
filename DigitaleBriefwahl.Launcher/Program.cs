@@ -328,17 +328,17 @@ namespace DigitaleBriefwahl.Launcher
 				const int bufferSize = 10240;
 				var buffer = new byte[bufferSize];
 				int bytesRead;
-				var increment = (int)(response.ContentLength / bufferSize / 100);
+				var increment = (int)(response.ContentLength * 100 / bufferSize);
 
 				// Simple do/while loop to read from stream until
 				// no bytes are returned
 				do
 				{
-					// Read data (up to 1k) from the stream
-					bytesRead = remoteStream.Read(buffer, 0, buffer.Length);
+					// Read data (up to 10k) from the stream
+					bytesRead = await remoteStream.ReadAsync(buffer, 0, buffer.Length);
 
 					// Write the data to the local file
-					localStream.Write(buffer, 0, bytesRead);
+					await localStream.WriteAsync(buffer, 0, bytesRead);
 					Console.Write(new string('.', increment * 4));
 				} while (bytesRead > 0);
 
