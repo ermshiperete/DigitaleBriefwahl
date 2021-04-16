@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- display of progress in Launcher
+
 ## [1.1.2] - 2021-04-16
 
 ### Fixed

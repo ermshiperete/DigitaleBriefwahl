@@ -328,7 +328,8 @@ namespace DigitaleBriefwahl.Launcher
 				const int bufferSize = 10240;
 				var buffer = new byte[bufferSize];
 				int bytesRead;
-				var increment = (int)(response.ContentLength * 100 / bufferSize);
+				var increment = (float) (100 / (response.ContentLength / bufferSize));
+				var totalProgress = 0f;
 
 				// Simple do/while loop to read from stream until
 				// no bytes are returned
@@ -339,7 +340,8 @@ namespace DigitaleBriefwahl.Launcher
 
 					// Write the data to the local file
 					await localStream.WriteAsync(buffer, 0, bytesRead);
-					Console.Write(new string('.', increment * 4));
+					Console.Write(new string('.', (int)(totalProgress + increment) - (int)totalProgress));
+					totalProgress += increment;
 				} while (bytesRead > 0);
 
 				Console.WriteLine();
