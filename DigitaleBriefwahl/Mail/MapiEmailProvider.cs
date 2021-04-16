@@ -2,6 +2,7 @@
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 
+using DigitaleBriefwahl.ExceptionHandling;
 using SIL.Email;
 using Win32Mapi;
 
@@ -30,7 +31,10 @@ namespace DigitaleBriefwahl.Mail
 			foreach (var file in message.AttachmentFilePath)
 				mapi.Attach(file);
 
-			return mapi.Send(message.Subject, message.Body, true);
+			var result = mapi.Send(message.Subject, message.Body, true);
+			if (!result)
+				Logger.Log($"SendMessage with MapiEmailProvider failed with {mapi.Error()}");
+			return result;
 		}
 	}
 }
