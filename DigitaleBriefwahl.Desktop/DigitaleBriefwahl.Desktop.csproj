@@ -17,29 +17,21 @@
     <PackageReference Include="ini-parser" Version="2.5.2" />
   </ItemGroup>
 
-  <PropertyGroup>
-    <ApplicationIcon>..\Resources\DigitaleBriefwahl.ico</ApplicationIcon>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject>DigitaleBriefwahl.Desktop.Program</StartupObject>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <None Include="app.manifest" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\Resources\DigitaleBriefwahl.ico">
-      <Link>DigitaleBriefwahl.ico</Link>
-    </Content>
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DigitaleBriefwahl.ExceptionHandling\DigitaleBriefwahl.ExceptionHandling.csproj" />
     <ProjectReference Include="..\DigitaleBriefwahl\DigitaleBriefwahl.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
-    <!-- See https://github.com/dotnet/sdk/issues/987#issuecomment-286307697 why that is needed -->
-    <AssemblySearchPaths>$(AssemblySearchPaths);{GAC}</AssemblySearchPaths>
+    <ApplicationIcon>..\Resources\DigitaleBriefwahl.ico</ApplicationIcon>
+    <StartupObject>DigitaleBriefwahl.Desktop.Program</StartupObject>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="app.manifest" />
+    <Content Include="..\Resources\DigitaleBriefwahl.ico">
+      <Link>DigitaleBriefwahl.ico</Link>
+    </Content>
+  </ItemGroup>
 
 </Project>
