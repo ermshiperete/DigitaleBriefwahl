@@ -124,7 +124,9 @@ namespace DigitaleBriefwahl
 			var appendLogfileContents = false;
 			if (MailUtils.CanUsePreferredEmailProvider)
 			{
-				emailProvider = new MapiEmailProvider();
+				emailProvider = SIL.PlatformUtilities.Platform.IsWindows ?
+					new MapiEmailProvider() :
+					EmailProviderFactory.PreferredEmailProvider();
 			}
 			else if (MailUtils.IsWindowsThunderbirdInstalled)
 				emailProvider = new ThunderbirdWindowsEmailProvider();
@@ -202,7 +204,10 @@ namespace DigitaleBriefwahl
 			{
 				if (MailUtils.CanUsePreferredEmailProvider)
 				{
-					mailSent = SendEmail(new MapiEmailProvider(), filename);
+					var emailProvider = SIL.PlatformUtilities.Platform.IsWindows ?
+						new MapiEmailProvider() :
+						EmailProviderFactory.PreferredEmailProvider();
+					mailSent = SendEmail(emailProvider, filename);
 					Logger.Log($"Sending email through preferred email provider successful: {mailSent}");
 				}
 
@@ -278,25 +283,23 @@ namespace DigitaleBriefwahl
 
 		private string SaveBallot(string title, string filename)
 		{
-			using (var dialog = new SelectFolderDialog() {
+			using var dialog = new SelectFolderDialog() {
 				Title = title,
 				Directory = Path.GetDirectoryName(filename)
-			})
-			{
-				var result = dialog.ShowDialog(this);
-				if (result != DialogResult.Ok)
-					return null;
+			};
+			var result = dialog.ShowDialog(this);
+			if (result != DialogResult.Ok)
+				return null;
 
-				var newFilename =
-					Path.Combine(dialog.Directory, Path.GetFileName(filename));
-				if (filename == newFilename)
-					return newFilename;
-
-				File.Copy(filename, newFilename, true);
-				File.Delete(filename);
-
+			var newFilename =
+				Path.Combine(dialog.Directory, Path.GetFileName(filename));
+			if (filename == newFilename)
 				return newFilename;
-			}
+
+			File.Copy(filename, newFilename, true);
+			File.Delete(filename);
+
+			return newFilename;
 		}
 
 		private bool SendEmail(IEmailProvider emailProvider, string filename)
@@ -330,24 +333,22 @@ namespace DigitaleBriefwahl
 				return;
 
 			var encryptVote = new EncryptVote(Title);
-			using (var dialog = new SelectFolderDialog() {
+			using var dialog = new SelectFolderDialog() {
 				Title = "Bitte Verzeichnis wählen, in dem der Stimmzettel gespeichert wird",
 				Directory = Path.GetDirectoryName(encryptVote.BallotFilePath)
-			})
-			{
-				var result = dialog.ShowDialog(this);
-				if (result != DialogResult.Ok)
-					return;
+			};
+			var result = dialog.ShowDialog(this);
+			if (result != DialogResult.Ok)
+				return;
 
-				var originalFilePath = Path.Combine(dialog.Directory,
-					Path.GetFileName(encryptVote.BallotFilePath));
-				var fileName = writeEncryptedBallot ?
-					encryptVote.WriteVote(vote, originalFilePath) :
-					encryptVote.WriteVoteUnencrypted(vote, originalFilePath);
-				var ballotString = writeEmptyBallot ? "leere " : writeEncryptedBallot ? "verschlüsselte " : "";
-				MessageBox.Show($"Der {ballotString}Stimmzettel wurde in der Datei '{fileName}' gespeichert.",
-					"Stimmzettel gespeichert");
-			}
+			var originalFilePath = Path.Combine(dialog.Directory,
+				Path.GetFileName(encryptVote.BallotFilePath));
+			var fileName = writeEncryptedBallot ?
+				encryptVote.WriteVote(vote, originalFilePath) :
+				encryptVote.WriteVoteUnencrypted(vote, originalFilePath);
+			var ballotString = writeEmptyBallot ? "leere " : writeEncryptedBallot ? "verschlüsselte " : "";
+			MessageBox.Show($"Der {ballotString}Stimmzettel wurde in der Datei '{fileName}' gespeichert.",
+				"Stimmzettel gespeichert");
 		}
 
 		private void OnWriteClicked(object sender, EventArgs e)
@@ -368,20 +369,18 @@ namespace DigitaleBriefwahl
 		private void OnWritePublicKeyClicked(object sender, EventArgs e)
 		{
 			var encryptVote = new EncryptVote(Title);
-			using (var dialog = new SelectFolderDialog() {
+			using var dialog = new SelectFolderDialog() {
 				Title = "Bitte Verzeichnis wählen, in dem der öffentliche Schlüssel gespeichert wird",
 				Directory = Path.GetDirectoryName(encryptVote.PublicKeyFilePath)
-			})
-			{
-				var result = dialog.ShowDialog(this);
-				if (result != DialogResult.Ok)
-					return;
+			};
+			var result = dialog.ShowDialog(this);
+			if (result != DialogResult.Ok)
+				return;
 
-				var fileName = encryptVote.WritePublicKey(Path.Combine(dialog.Directory,
-					Path.GetFileName(encryptVote.PublicKeyFilePath)));
-				MessageBox.Show($"Der öffentliche Schlüssel wurde in der Datei '{fileName}' gespeichert.",
-					"Öffentlicher Schlüssel gespeichert");
-			}
+			var fileName = encryptVote.WritePublicKey(Path.Combine(dialog.Directory,
+				Path.GetFileName(encryptVote.PublicKeyFilePath)));
+			MessageBox.Show($"Der öffentliche Schlüssel wurde in der Datei '{fileName}' gespeichert.",
+				"Öffentlicher Schlüssel gespeichert");
 		}
 
 		private string CollectVote(bool writeEmptyBallot = false)

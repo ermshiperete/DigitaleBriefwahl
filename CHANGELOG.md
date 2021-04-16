@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - display of progress in Launcher
+- sending of emails on Linux and Mac
 
 ## [1.1.2] - 2021-04-16
 
