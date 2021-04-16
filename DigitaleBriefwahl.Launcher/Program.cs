@@ -1,4 +1,4 @@
-// Copyright (c) 2018 Eberhard Beilharz
+// Copyright (c) 2018-2021 Eberhard Beilharz
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 
@@ -30,16 +30,13 @@ namespace DigitaleBriefwahl.Launcher
 
 			Logger.Log($"{SquirrelInstallerSupport.Executable} {string.Join(" ", args.Select(s => $"\"{s}\""))}");
 
-			Options options;
-			using (var writer = new StreamWriter(Logger.LogFile, true))
+			using var writer = new StreamWriter(Logger.LogFile, true);
+			var options = Options.ParseCommandLineArgs(writer, args);
+			if (options == null)
 			{
-				options = Options.ParseCommandLineArgs(writer, args);
-				if (options == null)
-				{
-					Console.WriteLine("Kann übergebene Parameter nicht interpretieren.");
-					Logger.Log("Couldn't parse passed in arguments");
-					return;
-				}
+				Console.WriteLine("Kann übergebene Parameter nicht interpretieren.");
+				Logger.Log("Couldn't parse passed in arguments");
+				return;
 			}
 
 			if (!string.IsNullOrEmpty(options.RunApp) && !File.Exists(options.RunApp))
@@ -84,26 +81,24 @@ namespace DigitaleBriefwahl.Launcher
 			var retVal = false;
 			try
 			{
-				using (var launcher = new Launcher(options.RunDirectory))
+				using var launcher = new Launcher(options.RunDirectory);
+				Console.WriteLine(options.SkipUpdateCheck || options.IsInstall
+					? "Anwendung wird geladen..."
+					: "Überprüfung auf Updates...");
+
+				var didUpdate = UpdateApp(options, launcher).GetAwaiter().GetResult();
+
+				if (string.IsNullOrEmpty(options.RunApp) &&
+					string.IsNullOrEmpty(options.RunDirectory) || didUpdate)
 				{
-					Console.WriteLine(options.SkipUpdateCheck || options.IsInstall
-						? "Anwendung wird geladen..."
-						: "Überprüfung auf Updates...");
-
-					var didUpdate = UpdateApp(options, launcher).GetAwaiter().GetResult();
-
-					if (string.IsNullOrEmpty(options.RunApp) &&
-						string.IsNullOrEmpty(options.RunDirectory) || didUpdate)
-					{
-						retVal = didUpdate;
-					}
-					else if (!string.IsNullOrEmpty(options.PackageDir))
-						SquirrelInstallerSupport.ExecuteUpdatedApp(options);
-					else
-					{
-						Console.WriteLine("Anwendung wird gestartet...");
-						launcher.LaunchVotingApp();
-					}
+					retVal = didUpdate;
+				}
+				else if (!string.IsNullOrEmpty(options.PackageDir))
+					SquirrelInstallerSupport.ExecuteUpdatedApp(options);
+				else
+				{
+					Console.WriteLine("Anwendung wird gestartet...");
+					launcher.LaunchVotingApp();
 				}
 			}
 			catch (CannotUnloadAppDomainException e)
@@ -383,9 +378,8 @@ namespace DigitaleBriefwahl.Launcher
 				}
 				if (wex.Response != null)
 				{
-					string html;
-					using (var sr = new StreamReader(wex.Response.GetResponseStream()))
-						html = sr.ReadToEnd();
+					using var streamReader = new StreamReader(wex.Response.GetResponseStream());
+					var html = await streamReader.ReadToEndAsync();
 					Logger.Log($"Could not download from {uri}: {wex.Message} Server responds '{html}'. Status {wex.Status}.");
 					Console.WriteLine("Server meldet einen Fehler. Download nicht erfolgreich.");
 				}

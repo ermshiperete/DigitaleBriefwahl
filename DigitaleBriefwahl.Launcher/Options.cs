@@ -1,4 +1,4 @@
-// Copyright (c) 2018 Eberhard Beilharz
+// Copyright (c) 2018-2021 Eberhard Beilharz
 // This software is licensed under the GNU General public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 
@@ -49,14 +49,12 @@ namespace DigitaleBriefwahl.Launcher
 		public static Options ParseCommandLineArgs(TextWriter writer, string[] args)
 		{
 			var options = new Options();
-			using (var parser = new Parser(s =>
+			using var parser = new Parser(s =>
 			{
 				s.MutuallyExclusive = true;
 				s.HelpWriter = writer;
-			}))
-			{
-				return parser.ParseArguments(args, options) ? options : null;
-			}
+			});
+			return parser.ParseArguments(args, options) ? options : null;
 		}
 
 		public string PackageDir { get; set; }

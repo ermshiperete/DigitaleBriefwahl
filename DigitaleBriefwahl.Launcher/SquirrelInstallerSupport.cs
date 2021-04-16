@@ -1,4 +1,4 @@
-// Copyright (c) 2018 Eberhard Beilharz
+// Copyright (c) 2018-2021 Eberhard Beilharz
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 using System;
@@ -26,69 +26,68 @@ namespace DigitaleBriefwahl.Launcher
 
 		internal static async Task<bool> HandleSquirrelInstallEvent(Options options)
 		{
-			using (var mgr = await UpdateManager.GitHubUpdateManager(UpdateUrl, prerelease: true))
-			{
-				// WARNING, in most of these scenarios, the app exits at the end of HandleEvents;
-				// thus, the method call does not return and nothing can be done after it!
-				// We replace two of the usual calls in order to prevent the installation of shortcuts
-				if (!options.IsSquirrelCommand || options.FirstRun)
-				{
-					try
-					{
-						var updateInfo = await mgr.CheckForUpdate();
-						Logger.Log($"Squirrel identified current version '{updateInfo.CurrentlyInstalledVersion?.Version}', " +
-							$"future version '{updateInfo.FutureReleaseEntry?.Version}'.");
-						if (updateInfo.ReleasesToApply?.Count > 0)
-						{
-							Console.WriteLine($"Update auf Version '{updateInfo.FutureReleaseEntry?.Version}'.");
-							Logger.Log($"Found new update. Applying {updateInfo.ReleasesToApply?.Count} releases. " +
-								$"bootstrapping: {updateInfo.IsBootstrapping}, package dir: {updateInfo.PackageDirectory}");
-							await mgr.UpdateApp((n) => { Console.Write(new string('.', n * 4 / 10));});
-							Console.WriteLine();
-							if (!updateInfo.IsBootstrapping)
-								options.PackageDir = Path.Combine(Path.GetDirectoryName(updateInfo.PackageDirectory),
-									$"app-{updateInfo.FutureReleaseEntry?.Version}");
-							return true;
-						}
-						Logger.Log("No updates");
-						if (options.IsInstall || options.FirstRun)
-							Console.WriteLine("Keine neuere Version vorhanden.");
-						else
-							Console.WriteLine("Keine Updates vorhanden. Neueste Version wird bereits ausgeführt.");
-					}
-					catch (Exception e)
-					{
-						Logger.Log($"Got exception {e.GetType()}: {e.Message}");
-						ExceptionLogging.Client.Notify(e);
-					}
+			using var mgr = await UpdateManager.GitHubUpdateManager(UpdateUrl, prerelease: true);
 
-					return false;
+			// WARNING, in most of these scenarios, the app exits at the end of HandleEvents;
+			// thus, the method call does not return and nothing can be done after it!
+			// We replace two of the usual calls in order to prevent the installation of shortcuts
+			if (!options.IsSquirrelCommand || options.FirstRun)
+			{
+				try
+				{
+					var updateInfo = await mgr.CheckForUpdate();
+					Logger.Log($"Squirrel identified current version '{updateInfo.CurrentlyInstalledVersion?.Version}', " +
+								$"future version '{updateInfo.FutureReleaseEntry?.Version}'.");
+					if (updateInfo.ReleasesToApply?.Count > 0)
+					{
+						Console.WriteLine($"Update auf Version '{updateInfo.FutureReleaseEntry?.Version}'.");
+						Logger.Log($"Found new update. Applying {updateInfo.ReleasesToApply?.Count} releases. " +
+									$"bootstrapping: {updateInfo.IsBootstrapping}, package dir: {updateInfo.PackageDirectory}");
+						await mgr.UpdateApp((n) => { Console.Write(new string('.', n * 4 / 10));});
+						Console.WriteLine();
+						if (!updateInfo.IsBootstrapping)
+							options.PackageDir = Path.Combine(Path.GetDirectoryName(updateInfo.PackageDirectory),
+								$"app-{updateInfo.FutureReleaseEntry?.Version}");
+						return true;
+					}
+					Logger.Log("No updates");
+					if (options.IsInstall || options.FirstRun)
+						Console.WriteLine("Keine neuere Version vorhanden.");
+					else
+						Console.WriteLine("Keine Updates vorhanden. Neueste Version wird bereits ausgeführt.");
+				}
+				catch (Exception e)
+				{
+					Logger.Log($"Got exception {e.GetType()}: {e.Message}");
+					ExceptionLogging.Client.Notify(e);
 				}
 
-				// args[0] is command, args[1] version number (at least in some cases)
-				if (options.IsInstall || options.IsUpdated)
-					MakeRegistryEntries(options);
-				else if (options.IsUninstall)
-					RemoveRegistryEntries();
-
-				var shortcutLocations = ShortcutLocation.AppRoot | ShortcutLocation.Desktop;
-				SquirrelAwareApp.HandleEvents(
-					onInitialInstall: v =>
-					{
-						mgr.CreateShortcutsForExecutable(Path.GetFileName(Executable),
-							shortcutLocations,
-							false); // not just an update, since this is case initial install
-					},
-					onAppUpdate: v =>
-					{
-						mgr.CreateShortcutsForExecutable(Path.GetFileName(Executable),
-							shortcutLocations,
-							true);
-					},
-					onAppUninstall: v =>
-						mgr.RemoveShortcutsForExecutable(Path.GetFileName(Executable), shortcutLocations)
-				);
+				return false;
 			}
+
+			// args[0] is command, args[1] version number (at least in some cases)
+			if (options.IsInstall || options.IsUpdated)
+				MakeRegistryEntries(options);
+			else if (options.IsUninstall)
+				RemoveRegistryEntries();
+
+			var shortcutLocations = ShortcutLocation.AppRoot | ShortcutLocation.Desktop;
+			SquirrelAwareApp.HandleEvents(
+				onInitialInstall: v =>
+				{
+					mgr.CreateShortcutsForExecutable(Path.GetFileName(Executable),
+						shortcutLocations,
+						false); // not just an update, since this is case initial install
+				},
+				onAppUpdate: v =>
+				{
+					mgr.CreateShortcutsForExecutable(Path.GetFileName(Executable),
+						shortcutLocations,
+						true);
+				},
+				onAppUninstall: v =>
+					mgr.RemoveShortcutsForExecutable(Path.GetFileName(Executable), shortcutLocations)
+				);
 
 			return false;
 		}
@@ -215,14 +214,15 @@ namespace DigitaleBriefwahl.Launcher
 			var startInfoArguments = $"--no-check {args}";
 			Logger.Log($"Starting new app: '{startInfoFileName}' with args '{startInfoArguments}'");
 			Launcher.DeleteOutputDir = false;
-			using (var process = new Process())
-			{
-				process.StartInfo.FileName = startInfoFileName;
-				process.StartInfo.Arguments = startInfoArguments;
-				process.StartInfo.WorkingDirectory = Environment.CurrentDirectory;
-				process.StartInfo.UseShellExecute = false;
-				process.Start();
-			}
+			using var process = new Process {
+				StartInfo = {
+					FileName = startInfoFileName,
+					Arguments = startInfoArguments,
+					WorkingDirectory = Environment.CurrentDirectory,
+					UseShellExecute = false
+				}
+			};
+			process.Start();
 		}
 	}
 }
