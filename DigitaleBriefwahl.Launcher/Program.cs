@@ -323,7 +323,7 @@ namespace DigitaleBriefwahl.Launcher
 				const int bufferSize = 10240;
 				var buffer = new byte[bufferSize];
 				int bytesRead;
-				var increment = (float) (100 / (response.ContentLength / bufferSize));
+				var increment = (float)100 / (response.ContentLength / bufferSize);
 				var totalProgress = 0f;
 
 				// Simple do/while loop to read from stream until
