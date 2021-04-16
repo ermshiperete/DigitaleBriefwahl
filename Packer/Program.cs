@@ -1,4 +1,4 @@
-// Copyright (c) 2017-2020 Eberhard Beilharz
+// Copyright (c) 2017-2021 Eberhard Beilharz
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 
@@ -7,14 +7,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Reflection;
 using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 using DigitaleBriefwahl;
 using DigitaleBriefwahl.Encryption;
 using DigitaleBriefwahl.ExceptionHandling;
 using DigitaleBriefwahl.Model;
+using DigitaleBriefwahl.Utils;
 using Microsoft.Win32;
 using SIL.Email;
 
@@ -112,11 +113,8 @@ namespace Packer
 			try
 			{
 				Console.WriteLine("Verifying download URL:");
-				Console.WriteLine("    - downloading file");
-				using (var client = new WebClient())
-				{
-					client.DownloadFile(uri, targetFile);
-				}
+				Console.Write("    - downloading file: ");
+				Downloader.DownloadFile(uri, targetFile).Wait();
 
 				Console.WriteLine("    - comparing file content");
 				if (!VerifyDownloadedFile(targetFile, originalHash))
@@ -160,7 +158,7 @@ namespace Packer
 				regex = new Regex("https://drive.google.com/file/d/([^/]+)/");
 			else if (urlString.StartsWith("https://drive.google.com/open"))
 				regex = new Regex(@"https://drive.google.com/open\?id=(.+)");
-			return regex.IsMatch(urlString)
+			return regex != null && regex.IsMatch(urlString)
 				? $"https://drive.google.com/uc?export=download&id={regex.Match(urlString).Groups[1]}"
 				: urlString;
 		}
@@ -189,13 +187,9 @@ namespace Packer
 
 		private static byte[] CalculateHash(string fileName)
 		{
-			using (var sha256 = SHA256.Create())
-			{
-				using (var stream = File.OpenRead(fileName))
-				{
-					return sha256.ComputeHash(stream);
-				}
-			}
+			using var sha256 = SHA256.Create();
+			using var stream = File.OpenRead(fileName);
+			return sha256.ComputeHash(stream);
 		}
 
 		private static string MoveToExeLocation(string fileName)
@@ -225,10 +219,8 @@ namespace Packer
 
 		private static string GetDefaultValue(string path)
 		{
-			using (var key = Registry.CurrentUser.OpenSubKey(path))
-			{
-				return key?.GetValue("") as string;
-			}
+			using var key = Registry.CurrentUser.OpenSubKey(path);
+			return key?.GetValue("") as string;
 		}
 
 		private static bool CanUsePreferredEmailProvider
@@ -239,7 +231,7 @@ namespace Packer
 					return true;
 
 				var retVal = !string.IsNullOrEmpty(GetDefaultValue(@"Software\Clients\Mail"));
-				Logger.Log($"Can use perferred email provider: {retVal}");
+				Logger.Log($"Can use preferred email provider: {retVal}");
 				return retVal;
 			}
 		}
