@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- fixed crash (#13)
+
 ## [1.1.3] - 2021-04-16
 
 ### Fixed

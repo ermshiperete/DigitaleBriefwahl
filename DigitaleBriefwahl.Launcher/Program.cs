@@ -333,6 +333,9 @@ namespace DigitaleBriefwahl.Launcher
 					// Read data (up to 10k) from the stream
 					bytesRead = await remoteStream.ReadAsync(buffer, 0, buffer.Length);
 
+					if (bytesRead <= 0)
+						break;
+
 					// Write the data to the local file
 					await localStream.WriteAsync(buffer, 0, bytesRead);
 					Console.Write(new string('.', (int)(totalProgress + increment) - (int)totalProgress));
