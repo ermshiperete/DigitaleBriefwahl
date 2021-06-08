@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - fixed crash (#13)
+- fixed length of ballot filename
 
 ## [1.1.3] - 2021-04-16
 

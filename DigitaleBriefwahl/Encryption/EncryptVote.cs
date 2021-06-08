@@ -29,13 +29,18 @@ namespace DigitaleBriefwahl.Encryption
 					return _FileName;
 
 				var random = new Random();
-				_FileName = $"{GetSanitizedElection(_Election)}_{random.Next():x4}{random.Next():x4}{random.Next():x4}{random.Next():x4}.txt";
+				_FileName = $"{GetSanitizedElection(_Election)}_{random.Next():x8}{random.Next():x8}{random.Next():x8}{random.Next():x8}.txt";
 
 				return _FileName;
 			}
 		}
 
 		public string BallotFilePath => Path.Combine(Path.GetTempPath(), FileName);
+
+		public string GetEncryptedFilePath(string filePath)
+		{
+			return Path.ChangeExtension(filePath, ".gpg");
+		}
 
 		private string PublicKeyFileName =>
 			$"{GetSanitizedElection(_Election)}_{Configuration.Current.PublicKey}";
@@ -136,7 +141,7 @@ namespace DigitaleBriefwahl.Encryption
 				filePath = BallotFilePath;
 			if (Path.GetFileName(filePath) != FileName)
 				filePath = Path.Combine(Path.GetDirectoryName(filePath), FileName);
-			var outputFileName = Path.ChangeExtension(filePath, ".gpg");
+			var outputFileName = GetEncryptedFilePath(filePath);
 			var voteBytes = Encoding.UTF8.GetBytes(vote);
 
 			using (var outputStream = new FileStream(outputFileName, FileMode.Create))
