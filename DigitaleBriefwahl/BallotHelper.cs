@@ -9,6 +9,22 @@ namespace DigitaleBriefwahl
 {
 	public static class BallotHelper
 	{
+		private static string _ballotId;
+
+		public static string BallotId
+		{
+			get
+			{
+				if (_ballotId != null)
+					return _ballotId;
+
+				var random = new Random();
+				_ballotId = $"{random.Next():X8}-{random.Next():X8}-{random.Next():X8}-{random.Next():X8}";
+
+				return _ballotId;
+			}
+		}
+
 		public static string GetBallot(string electionTitle, List<string> electionResults)
 		{
 			var bldr = new StringBuilder();
@@ -25,8 +41,7 @@ namespace DigitaleBriefwahl
 
 			// append random number so that two otherwise identical ballots show up differently
 			// when encrypted
-			var random = new Random();
-			bldr.AppendLine($"{random.Next():X4}-{random.Next():X4}-{random.Next():X4}-{random.Next():X4}");
+			bldr.AppendLine(BallotId);
 
 			return bldr.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n").ToString();
 		}

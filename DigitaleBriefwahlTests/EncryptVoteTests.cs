@@ -3,6 +3,7 @@
 // (https://opensource.org/licenses/GPL-3.0)
 
 using System.IO;
+using DigitaleBriefwahl;
 using DigitaleBriefwahl.Encryption;
 using NUnit.Framework;
 
@@ -13,12 +14,22 @@ namespace DigitaleBriefwahlTests
 	{
 		[Test]
 		[Repeat(10)]
-		public void BallotFilePath()
+		public void BallotFilePath_HasConstantLength()
 		{
 			var sut = new EncryptVote("foo");
 			var ballotFilePath = sut.BallotFilePath;
-			Assert.That(ballotFilePath, Does.Match($"{Path.GetTempPath()}foo_[0-9a-f]{{32}}.txt"));
+			Assert.That(ballotFilePath, Does.Match($"{Path.GetTempPath()}foo_[0-9A-F]{{32}}.txt"));
 			Assert.That(ballotFilePath.Length, Is.EqualTo(Path.GetTempPath().Length + 4 /* foo_ */ + 32 + 4 /* .txt */));
+		}
+
+		[Test]
+		public void BallotFilePath_NumberMatchesBallotId()
+		{
+			var ballotId = BallotHelper.BallotId;
+			var expectedNumber = ballotId.Replace("-", "");
+
+			var sut = new EncryptVote("foo");
+			Assert.That(sut.BallotFilePath, Is.EqualTo($"{Path.GetTempPath()}foo_{expectedNumber}.txt"));
 		}
 
 		[Test]

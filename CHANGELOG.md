@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- random number at end of ballot and filename now match
+
 ### Fixed
 
 - fixed crash (#13)

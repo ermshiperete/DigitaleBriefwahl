@@ -28,8 +28,7 @@ namespace DigitaleBriefwahl.Encryption
 				if (!string.IsNullOrEmpty(_FileName))
 					return _FileName;
 
-				var random = new Random();
-				_FileName = $"{GetSanitizedElection(_Election)}_{random.Next():x8}{random.Next():x8}{random.Next():x8}{random.Next():x8}.txt";
+				_FileName = $"{GetSanitizedElection(_Election)}_{BallotHelper.BallotId.Replace("-", "")}.txt";
 
 				return _FileName;
 			}
