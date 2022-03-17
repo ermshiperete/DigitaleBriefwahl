@@ -26,15 +26,13 @@ namespace DigitaleBriefwahl.Mail
 			{
 				// we already checked that the mail client is Thunderbird
 
-				using (var key = Registry.ClassesRoot.OpenSubKey(@"mailto\shell\open\command"))
-				{
-					var value = key?.GetValue("") as string;
-					var regex = new Regex(@"^""([^""]+)""");
-					if (value != null && regex.IsMatch(value))
-						return regex.Match(value).Groups[1].Value;
+				using var key = Registry.ClassesRoot.OpenSubKey(@"mailto\shell\open\command");
+				var value = key?.GetValue("") as string;
+				var regex = new Regex(@"^""([^""]+)""");
+				if (value != null && regex.IsMatch(value))
+					return regex.Match(value).Groups[1].Value;
 
-					return File.Exists(MailUtils.WindowsThunderbirdPath) ? MailUtils.WindowsThunderbirdPath : null;
-				}
+				return File.Exists(MailUtils.WindowsThunderbirdPath) ? MailUtils.WindowsThunderbirdPath : null;
 			}
 		}
 

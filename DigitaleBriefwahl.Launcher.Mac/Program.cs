@@ -70,14 +70,12 @@ namespace DigitaleBriefwahl.Launcher.Mac
 						return;
 				}
 
-				using (var launcher = new Launcher(null))
-				{
-					Logger.Log($"Launching {RunApp}");
-					var dir = launcher.UnzipVotingApp(RunApp);
-					Logger.Log($"Unzipped app to {dir}");
-					launcher.LaunchVotingApp();
-					Logger.Log("Returned from launching; quitting app.");
-				}
+				using var launcher = new Launcher(null);
+				Logger.Log($"Launching {RunApp}");
+				var dir = launcher.UnzipVotingApp(RunApp);
+				Logger.Log($"Unzipped app to {dir}");
+				launcher.LaunchVotingApp();
+				Logger.Log("Returned from launching; quitting app.");
 			}
 			catch (CannotUnloadAppDomainException e)
 			{
@@ -112,10 +110,8 @@ namespace DigitaleBriefwahl.Launcher.Mac
 		private static string DownloadVotingApp(Uri uri, string ballotFile)
 		{
 			var targetFile = Path.Combine(Path.GetTempPath(), ballotFile);
-			using (var client = new WebClient())
-			{
-				client.DownloadFile(uri, targetFile);
-			}
+			using var client = new WebClient();
+			client.DownloadFile(uri, targetFile);
 
 			return targetFile;
 		}

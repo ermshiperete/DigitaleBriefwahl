@@ -17,15 +17,13 @@ namespace DigitaleBriefwahlTests
 		internal static IniData ReadIniDataFromString(string s)
 		{
 			var parser = new FileIniDataParser();
-			using (var stream = new MemoryStream())
-			{
-				var writer = new StreamWriter(stream);
-				writer.Write(s);
-				writer.Flush();
-				stream.Position = 0;
-				var reader = new StreamReader(stream);
-				return parser.ReadData(reader);
-			}
+			using var stream = new MemoryStream();
+			var writer = new StreamWriter(stream);
+			writer.Write(s);
+			writer.Flush();
+			stream.Position = 0;
+			var reader = new StreamReader(stream);
+			return parser.ReadData(reader);
 		}
 
 		[Test]

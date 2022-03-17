@@ -55,58 +55,51 @@ namespace DigitaleBriefwahl.Encryption
 				if (!File.Exists(publicKeyFile))
 					throw new InvalidConfigurationException($"Can't find file for public key: '{publicKeyFile}'.");
 
-				using (var keyFile = File.OpenRead(publicKeyFile))
+				using var keyFile = File.OpenRead(publicKeyFile);
+				using var inputStream = PgpUtilities.GetDecoderStream(keyFile);
+				var publicKeyRingBundle = new PgpPublicKeyRingBundle(inputStream);
+
+				foreach (PgpPublicKeyRing keyRing in publicKeyRingBundle.GetKeyRings())
 				{
-					using (var inputStream = PgpUtilities.GetDecoderStream(keyFile))
+					foreach (PgpPublicKey key in keyRing.GetPublicKeys())
 					{
-
-						var publicKeyRingBundle = new PgpPublicKeyRingBundle(inputStream);
-
-						foreach (PgpPublicKeyRing keyRing in publicKeyRingBundle.GetKeyRings())
+						if (key.IsEncryptionKey)
 						{
-							foreach (PgpPublicKey key in keyRing.GetPublicKeys())
-							{
-								if (key.IsEncryptionKey)
-								{
-									return key;
-								}
-							}
+							return key;
 						}
-
-						throw new ArgumentException("Can't find encryption key in key ring.");
 					}
 				}
+
+				throw new ArgumentException("Can't find encryption key in key ring.");
 			}
 		}
 
 		private static byte[] CompressData(byte[] inputData)
 		{
-			using (var stream = new MemoryStream())
+			using var stream = new MemoryStream();
+			var compressedDataGenerator = new PgpCompressedDataGenerator(CompressionAlgorithmTag.Zip);
+
+			using (var compressedStream = compressedDataGenerator.Open(stream))
 			{
-				var compressedDataGenerator = new PgpCompressedDataGenerator(CompressionAlgorithmTag.Zip);
+				var lData = new PgpLiteralDataGenerator();
 
-				using (var compressedStream = compressedDataGenerator.Open(stream))
+				// we want to Generate compressed data. This might be a user option later,
+				// in which case we would pass in bOut.
+				using (var pOut = lData.Open(
+							compressedStream, // the compressed output stream
+							PgpLiteralData.Binary,
+							"data",           // "filename" to store
+							inputData.Length, // length of clear data
+							DateTime.UtcNow   // current time
+							))
 				{
-					var lData = new PgpLiteralDataGenerator();
+					pOut.Write(inputData, 0, inputData.Length);
 
-					// we want to Generate compressed data. This might be a user option later,
-					// in which case we would pass in bOut.
-					using (var pOut = lData.Open(
-						compressedStream, // the compressed output stream
-						PgpLiteralData.Binary,
-						"data", // "filename" to store
-						inputData.Length, // length of clear data
-						DateTime.UtcNow // current time
-					))
-					{
-						pOut.Write(inputData, 0, inputData.Length);
-
-						lData.Close();
-					}
+					lData.Close();
 				}
-				compressedDataGenerator.Close();
-				return stream.ToArray();
 			}
+			compressedDataGenerator.Close();
+			return stream.ToArray();
 		}
 
 		private static byte[] EncryptData(byte[] inputData)
@@ -118,15 +111,13 @@ namespace DigitaleBriefwahl.Encryption
 
 			encryptedDataGenerator.AddMethod(PublicKey);
 
-			using (var encOut = new MemoryStream())
+			using var encOut = new MemoryStream();
+			using (var cOut = encryptedDataGenerator.Open(encOut, bytes.Length))
 			{
-				using (var cOut = encryptedDataGenerator.Open(encOut, bytes.Length))
-				{
-					cOut.Write(bytes, 0, bytes.Length); // obtain the actual bytes from the compressed stream
-				}
-
-				return encOut.ToArray();
+				cOut.Write(bytes, 0, bytes.Length); // obtain the actual bytes from the compressed stream
 			}
+
+			return encOut.ToArray();
 		}
 
 		private static string GetSanitizedElection(string election)
@@ -143,11 +134,9 @@ namespace DigitaleBriefwahl.Encryption
 			var outputFileName = GetEncryptedFilePath(filePath);
 			var voteBytes = Encoding.UTF8.GetBytes(vote);
 
-			using (var outputStream = new FileStream(outputFileName, FileMode.Create))
-			{
-				var outBytes = EncryptData(voteBytes);
-				outputStream.Write(outBytes, 0, outBytes.Length);
-			}
+			using var outputStream = new FileStream(outputFileName, FileMode.Create);
+			var outBytes = EncryptData(voteBytes);
+			outputStream.Write(outBytes, 0, outBytes.Length);
 			return outputFileName;
 		}
 

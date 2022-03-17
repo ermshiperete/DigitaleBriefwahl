@@ -26,14 +26,12 @@ namespace DigitaleBriefwahl.Mail
 			get
 			{
 				// we already checked that the mail client is Outlook
-				using (var key = Registry.ClassesRoot.OpenSubKey(@"mailto\shell\open\command"))
-				{
-					var value = key?.GetValue("") as string;
-					var regex = new Regex(@"^""([^""]+)""");
-					if (value == null || !regex.IsMatch(value))
-						return null;
-					return regex.Match(value).Groups[1].Value;
-				}
+				using var key = Registry.ClassesRoot.OpenSubKey(@"mailto\shell\open\command");
+				var value = key?.GetValue("") as string;
+				var regex = new Regex(@"^""([^""]+)""");
+				if (value == null || !regex.IsMatch(value))
+					return null;
+				return regex.Match(value).Groups[1].Value;
 			}
 		}
 

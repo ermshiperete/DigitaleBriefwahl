@@ -69,10 +69,8 @@ namespace DigitaleBriefwahl.Mail
 
 		private static string GetDefaultValue(RegistryKey regKey, string path)
 		{
-			using (var key = regKey.OpenSubKey(path))
-			{
-				return key?.GetValue("") as string;
-			}
+			using var key = regKey.OpenSubKey(path);
+			return key?.GetValue("") as string;
 		}
 
 		private static int InstalledOutlookVersion
@@ -104,21 +102,19 @@ namespace DigitaleBriefwahl.Mail
 			{
 				int GetNumberOfOutlookProfilesForKey(string keyName)
 				{
-					using (var key = Registry.CurrentUser.OpenSubKey(keyName))
-					{
-						if (key == null || key.SubKeyCount <= 0)
-							return -1;
-
-						foreach (var subkeyName in key.GetSubKeyNames())
-						{
-							if (subkeyName.Length < 2 || !int.TryParse(subkeyName.Substring(0, 2), out var version))
-								continue;
-							var subkey = key.OpenSubKey(subkeyName)?.OpenSubKey(@"Outlook\Profiles");
-							if (subkey != null)
-								return subkey.SubKeyCount;
-						}
+					using var key = Registry.CurrentUser.OpenSubKey(keyName);
+					if (key == null || key.SubKeyCount <= 0)
 						return -1;
+
+					foreach (var subkeyName in key.GetSubKeyNames())
+					{
+						if (subkeyName.Length < 2 || !int.TryParse(subkeyName.Substring(0, 2), out var version))
+							continue;
+						var subkey = key.OpenSubKey(subkeyName)?.OpenSubKey(@"Outlook\Profiles");
+						if (subkey != null)
+							return subkey.SubKeyCount;
 					}
+					return -1;
 				}
 
 				int GetNumberOfOutlookProfiles()
@@ -132,11 +128,9 @@ namespace DigitaleBriefwahl.Mail
 					}
 
 					// location of profiles in older Outlook versions up to Outlook 2010 (14.0)
-					using (var key = Registry.CurrentUser.OpenSubKey(
-						@"Software\Microsoft\Windows NT\CurrentVersion\Windows Messaging Subsystem\Profiles"))
-					{
-						return key?.SubKeyCount ?? -1;
-					}
+					using var key = Registry.CurrentUser.OpenSubKey(
+						@"Software\Microsoft\Windows NT\CurrentVersion\Windows Messaging Subsystem\Profiles");
+					return key?.SubKeyCount ?? -1;
 				}
 
 				var numberOfOutlookProfiles = GetNumberOfOutlookProfiles();
