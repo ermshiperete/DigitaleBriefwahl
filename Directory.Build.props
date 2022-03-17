@@ -4,7 +4,7 @@
 		<Company>Eberhard Beilharz</Company>
 		<Authors>Eberhard Beilharz</Authors>
 		<Product>DigitaleBriefwahl</Product>
-		<Copyright>Copyright © 2017-2021 Eberhard Beilharz</Copyright>
+		<Copyright>Copyright © 2017-2022 Eberhard Beilharz</Copyright>
 		<OutputPath>$(MSBuildThisFileDirectory)/output/$(Configuration)</OutputPath>
 		<DebugType>portable</DebugType>
 		<LangVersion>latest</LangVersion>
