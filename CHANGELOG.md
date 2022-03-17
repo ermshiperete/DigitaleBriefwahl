@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - random number at end of ballot and filename now match
+- [Packer] Add uploading to Gist (#10)
 
 ### Fixed
 
