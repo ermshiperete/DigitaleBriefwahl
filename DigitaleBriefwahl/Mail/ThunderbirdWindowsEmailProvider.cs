@@ -1,5 +1,6 @@
-﻿// Copyright (c) 2018 SIL International
-// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+﻿// Copyright (c) 2018-2022 Eberhard Beilharz
+// This software is licensed under the GNU General Public License version 3
+// (https://opensource.org/licenses/GPL-3.0)
 
 using System.Collections.Generic;
 using System.IO;
@@ -26,13 +27,34 @@ namespace DigitaleBriefwahl.Mail
 			{
 				// we already checked that the mail client is Thunderbird
 
-				using var key = Registry.ClassesRoot.OpenSubKey(@"mailto\shell\open\command");
-				var value = key?.GetValue("") as string;
-				var regex = new Regex(@"^""([^""]+)""");
-				if (value != null && regex.IsMatch(value))
-					return regex.Match(value).Groups[1].Value;
+				var mailtoCommand = MailtoCommand;
+				if (string.IsNullOrEmpty(mailtoCommand))
+					return File.Exists(MailUtils.WindowsThunderbirdPath)
+						? MailUtils.WindowsThunderbirdPath
+						: null;
 
-				return File.Exists(MailUtils.WindowsThunderbirdPath) ? MailUtils.WindowsThunderbirdPath : null;
+				if (!mailtoCommand.Contains("ThunderbirdPortable"))
+					return mailtoCommand;
+
+				// mailtoCommand might look like "E:\ThunderbirdPortable\App\Thunderbird64\thunderbird.exe" -osint -compose "%1"
+				// mailto contains 32-bit and 64-bit versions under ThunderbirdPortable\App.
+				// However, the value we got from mailto might not have a profile configured.
+				// There's also ThunderbirdPortable\ThunderbirdPortable.exe which is
+				// what's usually started, so we use that.
+				var regex = new Regex("^(\")?(?<path>.+)thunderbird.exe(\")?", RegexOptions.IgnoreCase);
+				var match = regex.Match(mailtoCommand);
+				if (!match.Success)
+					return mailtoCommand;
+
+				var path = match.Groups["path"].Value;
+				var pathRegex = new Regex("(?<start>.+)ThunderbirdPortable[^\"]+");
+				var pathMatch = pathRegex.Match(path);
+				if (!pathMatch.Success)
+					return mailtoCommand;
+
+				var thunderbird = Path.Combine(pathMatch.Groups["start"].Value,
+					"ThunderbirdPortable", "ThunderbirdPortable.exe");
+				return $"\"{thunderbird}\"";
 			}
 		}
 

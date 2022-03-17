@@ -16,10 +16,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- support Thunderbird Portable (#12)
+- [Packer] Add uploading to Gist (#10)
+
 ### Changed
 
 - random number at end of ballot and filename now match
-- [Packer] Add uploading to Gist (#10)
 
 ### Fixed
 

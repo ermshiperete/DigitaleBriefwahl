@@ -1,5 +1,6 @@
-// Copyright (c) 2018 SIL International
-// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+// Copyright (c) 2018-2022 Eberhard Beilharz
+// This software is licensed under the GNU General Public License version 3
+// (https://opensource.org/licenses/GPL-3.0)
 using System;
 using System.IO;
 using DigitaleBriefwahl.ExceptionHandling;
@@ -53,7 +54,22 @@ namespace DigitaleBriefwahl.Mail
 				var value = GetDefaultValue(Registry.CurrentUser, @"Software\Clients\Mail");
 				Logger.Log($@"HKCU\Software\Clients\Mail: {value}");
 				if (!string.IsNullOrEmpty(value))
-					retVal = true;
+				{
+					if (value == "Mozilla Thunderbird")
+					{
+						value = GetDefaultValue(Registry.LocalMachine, @"Software\Clients\Mail");
+						// if the values in HKLM and HKCU don't agree then MAPI is probably not going
+						// to work - so observed with Portable Thunderbird which still brought up
+						// non-configured Outlook
+						retVal = value == "Mozilla Thunderbird";
+						if (!retVal)
+						{
+							Logger.Log("Not using preferred email provider since HKCU and HKLM disagree");
+						}
+					}
+					else
+						retVal = true;
+				}
 				else
 				{
 					value = GetDefaultValue(Registry.LocalMachine, @"Software\Clients\Mail");

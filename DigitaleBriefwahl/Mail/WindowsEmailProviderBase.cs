@@ -1,8 +1,11 @@
-﻿// Copyright (c) 2018 SIL International
-// This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
+﻿// Copyright (c) 2018-2022 Eberhard Beilharz
+// This software is licensed under the GNU General Public License version 3
+// (https://opensource.org/licenses/GPL-3.0)
 
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
+using Microsoft.Win32;
 using SIL.Email;
 using SIL.PlatformUtilities;
 
@@ -55,5 +58,19 @@ namespace DigitaleBriefwahl.Mail
 		protected abstract string GetCcRecipients(ICollection<string> recipients);
 		protected abstract string GetBccRecipients(ICollection<string> recipients);
 		protected abstract string GetAttachments(ICollection<string> attachments);
+
+		protected virtual string MailtoCommand
+		{
+			get
+			{
+				using var key = Registry.ClassesRoot.OpenSubKey(@"mailto\shell\open\command");
+				var value = key?.GetValue("") as string;
+				var regex = new Regex(@"^""([^""]+)""");
+				if (value == null || !regex.IsMatch(value))
+					return null;
+
+				return regex.Match(value).Groups[1].Value;
+			}
+		}
 	}
 }
