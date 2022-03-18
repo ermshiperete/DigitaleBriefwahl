@@ -5,42 +5,46 @@
 using DigitaleBriefwahl.Mail;
 using NUnit.Framework;
 
-namespace DigitaleBriefwahlTests.Mail;
-
-[TestFixture]
-[Platform(Include = "Win")]
-public class ThunderbirdWindowsEmailProviderTests
+namespace DigitaleBriefwahlTests.Mail
 {
-	private class ThunderbirdWindowsEmailProviderFacade: ThunderbirdWindowsEmailProvider
+	[TestFixture]
+	[Platform(Include = "Win")]
+	public class ThunderbirdWindowsEmailProviderTests
 	{
-		public ThunderbirdWindowsEmailProviderFacade(string path)
+		private class ThunderbirdWindowsEmailProviderFacade : ThunderbirdWindowsEmailProvider
 		{
-			MailtoCommand = path;
+			public ThunderbirdWindowsEmailProviderFacade(string path)
+			{
+				MailtoCommand = path;
+			}
+
+			protected override string MailtoCommand { get; }
+
+			public string GetEmailCommand()
+			{
+				return EmailCommand;
+			}
 		}
 
-		protected override string MailtoCommand { get; }
-
-		public string GetEmailCommand()
+		[Test]
+		public void EmailCommand_ThunderbirdPortable()
 		{
-			return EmailCommand;
+			const string thunderbird =
+				"\"E:\\ThunderbirdPortable\\App\\Thunderbird64\\thunderbird.exe\"";
+			var sut = new ThunderbirdWindowsEmailProviderFacade(thunderbird);
+
+			Assert.That(sut.GetEmailCommand(),
+				Is.EqualTo("\"E:\\ThunderbirdPortable\\ThunderbirdPortable.exe\""));
 		}
-	}
 
-	[Test]
-	public void EmailCommand_ThunderbirdPortable()
-	{
-		const string thunderbird = "\"E:\\ThunderbirdPortable\\App\\Thunderbird64\\thunderbird.exe\"";
-		var sut = new ThunderbirdWindowsEmailProviderFacade(thunderbird);
+		[Test]
+		public void EmailCommand_InstalledThunderbird()
+		{
+			const string thunderbird =
+				"\"C:\\Users\\User\\AppData\\Local\\Mozilla Thunderbird\\thunderbird.exe\"";
+			var sut = new ThunderbirdWindowsEmailProviderFacade(thunderbird);
 
-		Assert.That(sut.GetEmailCommand(), Is.EqualTo("\"E:\\ThunderbirdPortable\\ThunderbirdPortable.exe\""));
-	}
-
-	[Test]
-	public void EmailCommand_InstalledThunderbird()
-	{
-		const string thunderbird = "\"C:\\Users\\User\\AppData\\Local\\Mozilla Thunderbird\\thunderbird.exe\"";
-		var sut = new ThunderbirdWindowsEmailProviderFacade(thunderbird);
-
-		Assert.That(sut.GetEmailCommand(), Is.EqualTo(thunderbird));
+			Assert.That(sut.GetEmailCommand(), Is.EqualTo(thunderbird));
+		}
 	}
 }
