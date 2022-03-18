@@ -21,4 +21,8 @@
     <ProjectReference Include="..\DigitaleBriefwahl.ExceptionHandling\DigitaleBriefwahl.ExceptionHandling.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="System.Net.Http" />
+  </ItemGroup>
+
 </Project>

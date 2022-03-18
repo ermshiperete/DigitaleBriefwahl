@@ -1,6 +1,6 @@
 <Project>
 	<PropertyGroup>
-		<TargetFrameworks>net461</TargetFrameworks>
+		<TargetFrameworks>net472</TargetFrameworks>
 		<Company>Eberhard Beilharz</Company>
 		<Authors>Eberhard Beilharz</Authors>
 		<Product>DigitaleBriefwahl</Product>

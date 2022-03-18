@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 
 - random number at end of ballot and filename now match
+- use .NET Framework 4.7.2 to reduce size
 
 ### Fixed
 
