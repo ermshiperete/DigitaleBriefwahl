@@ -20,6 +20,7 @@ using DigitaleBriefwahl.Utils;
 using Microsoft.Win32;
 using SIL.Email;
 using MapiEmailProvider = DigitaleBriefwahl.Mail.MapiEmailProvider;
+using ThunderbirdEmailProvider = DigitaleBriefwahl.Mail.ThunderbirdEmailProvider;
 
 namespace Packer
 {
@@ -166,9 +167,9 @@ namespace Packer
 
 			IEmailProvider provider = null;
 			if (MailUtils.CanUsePreferredEmailProvider)
-				provider = SIL.PlatformUtilities.Platform.IsWindows ?
-					new MapiEmailProvider() :
-					EmailProviderFactory.PreferredEmailProvider();
+				provider = SIL.PlatformUtilities.Platform.IsWindows
+					? (IEmailProvider)new MapiEmailProvider()
+					: (IEmailProvider)new ThunderbirdEmailProvider();
 			else if (MailUtils.IsWindowsThunderbirdInstalled)
 				provider = new ThunderbirdWindowsEmailProvider();
 			else if (MailUtils.IsOutlookInstalled)
@@ -295,8 +296,8 @@ namespace Packer
 			return key?.GetValue("") as string;
 		}
 
-		private static bool SendEmail(IEmailProvider emailProvider, string zipFile, string ballotFile,
-			string publicKeyFile)
+		private static bool SendEmail(IEmailProvider emailProvider, string zipFile,
+			string ballotFile, string publicKeyFile)
 		{
 			if (emailProvider == null)
 				return false;

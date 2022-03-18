@@ -19,6 +19,7 @@ using SIL.IO;
 using Configuration = DigitaleBriefwahl.Model.Configuration;
 using MapiEmailProvider = DigitaleBriefwahl.Mail.MapiEmailProvider;
 using Thread = System.Threading.Thread;
+using ThunderbirdEmailProvider = DigitaleBriefwahl.Mail.ThunderbirdEmailProvider;
 
 namespace DigitaleBriefwahl
 {
@@ -124,9 +125,9 @@ namespace DigitaleBriefwahl
 			var appendLogfileContents = false;
 			if (MailUtils.CanUsePreferredEmailProvider)
 			{
-				emailProvider = SIL.PlatformUtilities.Platform.IsWindows ?
-					new MapiEmailProvider() :
-					EmailProviderFactory.PreferredEmailProvider();
+				emailProvider = SIL.PlatformUtilities.Platform.IsWindows
+					? (IEmailProvider)new MapiEmailProvider()
+					: (IEmailProvider)new ThunderbirdEmailProvider();
 			}
 			else if (MailUtils.IsWindowsThunderbirdInstalled)
 				emailProvider = new ThunderbirdWindowsEmailProvider();
