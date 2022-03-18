@@ -14,10 +14,12 @@ using System.Threading.Tasks;
 using DigitaleBriefwahl;
 using DigitaleBriefwahl.Encryption;
 using DigitaleBriefwahl.ExceptionHandling;
+using DigitaleBriefwahl.Mail;
 using DigitaleBriefwahl.Model;
 using DigitaleBriefwahl.Utils;
 using Microsoft.Win32;
 using SIL.Email;
+using MapiEmailProvider = DigitaleBriefwahl.Mail.MapiEmailProvider;
 
 namespace Packer
 {
@@ -162,8 +164,18 @@ namespace Packer
 			Console.WriteLine($"\t{Path.GetFileName(ballotFile)}");
 			Console.WriteLine($"\t{Path.GetFileName(publicKeyFile)}");
 
-			if (CanUsePreferredEmailProvider)
-				SendEmail(EmailProviderFactory.PreferredEmailProvider(), urlFile, ballotFile, publicKeyFile);
+			IEmailProvider provider = null;
+			if (MailUtils.CanUsePreferredEmailProvider)
+				provider = SIL.PlatformUtilities.Platform.IsWindows ?
+					new MapiEmailProvider() :
+					EmailProviderFactory.PreferredEmailProvider();
+			else if (MailUtils.IsWindowsThunderbirdInstalled)
+				provider = new ThunderbirdWindowsEmailProvider();
+			else if (MailUtils.IsOutlookInstalled)
+				provider = new OutlookEmailProvider();
+
+			if (provider != null)
+				SendEmail(provider, urlFile, ballotFile, publicKeyFile);
 			return true;
 		}
 
@@ -281,19 +293,6 @@ namespace Packer
 		{
 			using var key = Registry.CurrentUser.OpenSubKey(path);
 			return key?.GetValue("") as string;
-		}
-
-		private static bool CanUsePreferredEmailProvider
-		{
-			get
-			{
-				if (!SIL.PlatformUtilities.Platform.IsWindows)
-					return true;
-
-				var retVal = !string.IsNullOrEmpty(GetDefaultValue(@"Software\Clients\Mail"));
-				Logger.Log($"Can use preferred email provider: {retVal}");
-				return retVal;
-			}
 		}
 
 		private static bool SendEmail(IEmailProvider emailProvider, string zipFile, string ballotFile,
