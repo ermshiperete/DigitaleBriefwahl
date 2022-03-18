@@ -18,7 +18,9 @@ namespace DigitaleBriefwahlTests
 		{
 			var sut = new EncryptVote("foo");
 			var ballotFilePath = sut.BallotFilePath;
-			Assert.That(ballotFilePath, Does.Match($"{Path.GetTempPath()}foo_[0-9A-F]{{32}}.txt"));
+			var tempPath = Path.GetTempPath();
+			tempPath = tempPath.Replace(@"\", @"\\");
+			Assert.That(ballotFilePath, Does.Match($"{tempPath}foo_[0-9A-F]{{32}}.txt"));
 			Assert.That(ballotFilePath.Length, Is.EqualTo(Path.GetTempPath().Length + 4 /* foo_ */ + 32 + 4 /* .txt */));
 		}
 
