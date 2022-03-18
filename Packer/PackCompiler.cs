@@ -58,6 +58,9 @@ namespace Packer
 					fileInfo.Name.StartsWith(SanitizedElectionName) ||
 					fileInfo.Name.StartsWith("ManuelleVerschluesselung") ||
 					fileInfo.Name.StartsWith("Ude") ||
+					fileInfo.Name.StartsWith("git-") ||
+					fileInfo.Name.StartsWith("LibGit2Sharp") ||
+					fileInfo.Name.StartsWith("Octokit") ||
 					Path.GetExtension(fileInfo.Name) == ".wahl")
 				{
 					continue;
