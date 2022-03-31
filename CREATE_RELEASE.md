@@ -17,12 +17,12 @@ This document describes how to create a new release.
   build to the `Releases` folder so that squirrel can properly calculate the delta files. Also, delete
   old versions from `Releases` that are no longer needed.
 - Run the build from https://build.palaso.org/viewType.html?buildTypeId=DigitaleBriefwahl
-- Download the generated artifacts
+- Download the generated artifacts and attach to GitHub release
 
 ### Packer
 
 - The packer binaries can be built on Linux: `msbuild /t:Test build/DigitaleBriefwahl.proj`
-- Compress all files from `output/Release/net461` into a `DigitaleBriefwahl.Packer-1.0.3.zip` file
+- Compress all files from `output/Release/net472` into a `DigitaleBriefwahl.Packer-1.0.3.zip` file
 
 ### MacOS
 
