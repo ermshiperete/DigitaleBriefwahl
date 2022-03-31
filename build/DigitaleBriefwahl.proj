@@ -4,6 +4,7 @@
 		<Solution>DigitaleBriefwahl.sln</Solution>
 		<SolutionPath>$(RootDir)/$(Solution)</SolutionPath>
 		<ApplicationName>DigitaleBriefwahl</ApplicationName>
+		<Platform>Any CPU</Platform>
 		<Configuration Condition="'$(Configuration)'==''">Release</Configuration>
 		<useNUnit-x86 Condition="'$(OS)'=='Windows_NT'">true</useNUnit-x86>
 		<useNUnit-x86 Condition="'$(OS)'!='Windows_NT'">false</useNUnit-x86>
@@ -23,13 +24,13 @@
 		<Message Text="RestartBuild=$(RestartBuild)"/>
 		<Message Text="MSBuildProjectDirectory=$(MSBuildProjectDirectory)"/>
 		<Exec Command='$(NuGetCommand) install SIL.BuildTasks -excludeVersion -version 2.5.0 -source "$(PackageSources)" -solutionDirectory "$(RootDir)"' />
-		<Exec Command='$(NuGetCommand) install NUnit.ConsoleRunner -excludeVersion -version 3.12.0 -source "$(PackageSources)" -solutionDirectory "$(RootDir)"' />
+		<Exec Command='$(NuGetCommand) install NUnit.ConsoleRunner -excludeVersion -version 3.15.0 -source "$(PackageSources)" -solutionDirectory "$(RootDir)"' />
 	</Target>
 
 	<Target Name="Build">
 		<CallTarget Targets="RestoreBuildTasks"/>
 		<CallTarget Targets="BuildInternal" Condition="!$(RestartBuild)" />
-		<MSBuild Projects="$(MSBuildProjectFullPath)" Targets="BuildInternal" Properties="Configuration=$(Configuration);RootDir=$(RootDir)" Condition="$(RestartBuild)" />
+		<MSBuild Projects="$(MSBuildProjectFullPath)" Targets="BuildInternal" Properties="Configuration=$(Configuration);Platform=$(Platform);RootDir=$(RootDir)" Condition="$(RestartBuild)" />
 	</Target>
 
 	<Target Name="BuildInternal">
@@ -72,20 +73,20 @@
 		<MSBuild
 			Projects="$(SolutionPath)"
 			Targets="Build"
-			Properties="Configuration=$(Configuration)" />
+			Properties="Configuration=$(Configuration);Platform=$(Platform);" />
 	</Target>
 
 	<Target Name="Test" DependsOnTargets="Build">
 		<CallTarget Targets="TestOnly" Condition="!$(RestartBuild)" />
 		<MSBuild Projects="$(MSBuildProjectFullPath)" Targets="TestOnly"
-			Properties="Configuration=$(Configuration);RootDir=$(RootDir)"
+			Properties="Configuration=$(Configuration);Platform=$(Platform);RootDir=$(RootDir)"
 			Condition="$(RestartBuild)" />
 	</Target>
 
 	<Target Name="TestOnly">
 		<ItemGroup>
 			<TestAssemblies
-				Include="$(RootDir)/DigitaleBriefwahlTests/bin/$(Configuration)/net461/*Tests.dll"/>
+				Include="$(RootDir)/DigitaleBriefwahlTests/bin/$(Configuration)/net472/*Tests.dll"/>
 		</ItemGroup>
 
 		<SIL.BuildTasks.UnitTestTasks.NUnit3 Assemblies="@(TestAssemblies)"
