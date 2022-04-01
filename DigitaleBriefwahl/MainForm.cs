@@ -14,12 +14,10 @@ using DigitaleBriefwahl.Mail;
 using DigitaleBriefwahl.Views;
 using Eto.Drawing;
 using Eto.Forms;
-using SIL.Email;
 using SIL.IO;
 using Configuration = DigitaleBriefwahl.Model.Configuration;
-using MapiEmailProvider = DigitaleBriefwahl.Mail.MapiEmailProvider;
 using Thread = System.Threading.Thread;
-using ThunderbirdEmailProvider = DigitaleBriefwahl.Mail.ThunderbirdEmailProvider;
+using IEmailProvider = SIL.Email.IEmailProvider;
 
 namespace DigitaleBriefwahl
 {
