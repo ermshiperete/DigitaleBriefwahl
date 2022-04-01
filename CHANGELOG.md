@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [1.2.1] - 2022-04-01
+
 ### Fixed
 
 - Fixed crash if portable thunderbird (or other email program)
@@ -245,8 +247,9 @@ Re-release
 
 - Initial beta version
 
-[Unreleased]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.2.0...master
+[Unreleased]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.2.1...master
 
+[1.2.1]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.1.3...v1.2.0
 [1.1.3]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.1.2...v1.1.3
 [1.1.2]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.1.1...v1.1.2
