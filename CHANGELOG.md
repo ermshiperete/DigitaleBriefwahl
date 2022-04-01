@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed crash if portable thunderbird (or other email program)
+  is not available
+
 ## [1.2.0] - 2022-03-31
 
 ### Added

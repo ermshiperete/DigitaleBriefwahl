@@ -1,92 +1,45 @@
 // Copyright (c) 2018 Eberhard Beilharz
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
-using SIL.PlatformUtilities;
-using SIL.Providers;
 
 namespace DigitaleBriefwahl.ExceptionHandling
 {
 	public static class Logger
 	{
-		private const string SeparatorLine = "-----------------------------";
+		private static BasicLogger _logger;
 
-		public static string LogDirectory
-		{
-			get
-			{
-				// Windows/Linux
-				if (!Platform.IsMac)
-					return Path.GetTempPath();
-
-				// Mac
-				var home = Environment.GetEnvironmentVariable("HOME");
-				return !string.IsNullOrEmpty(home)
-					? Path.Combine(home, "Library/Logs/DigitaleBriefwahl")
-					: Path.GetTempPath();
-			}
-		}
+		public static string LogDirectory => _logger.LogDirectory;
 
 		static Logger()
 		{
-			LogFile = Path.Combine(LogDirectory, $"{AppName}.log");
-			Initialize();
+			_logger = new BasicLogger();
 		}
 
-		private static void Initialize()
+		public static void CreateLogger(BasicLogger logger)
 		{
-			Directory.CreateDirectory(LogDirectory);
-
-			Log(SeparatorLine);
-			Log(DateTimeProvider.Current.Now.ToString("u"));
+			_logger = logger;
 		}
 
-		private static string AppName
-		{
-			get
-			{
-				var assembly = Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly();
-				return Path.GetFileNameWithoutExtension(assembly.Location);
-			}
-		}
-
-		public static string LogFile { get; }
+		public static string LogFile => _logger.LogFile;
 
 		public static void Log(string text)
 		{
-			try
-			{
-				File.AppendAllText(LogFile,
-					$"[{Process.GetCurrentProcess().Id}] {text.TrimEnd('\r', '\n')}{Environment.NewLine}");
-			}
-			catch (IOException)
-			{
-				// simply ignore if we can't write the file - maybe another instance is running that
-				// has the logfile already open
-			}
+			_logger.Log(text);
+		}
+
+		public static void Error(string text)
+		{
+			_logger.Error(text);
 		}
 
 		public static void Truncate()
 		{
-			try
-			{
-				File.Delete(LogFile);
-			}
-			catch (IOException)
-			{
-				// simply ignore - maybe another instance is running that has the logfile already
-				// open
-			}
-			Initialize();
+			_logger.Truncate();
 		}
 
 		public static string GetLogSinceLastStart()
 		{
-			var allLog = File.ReadAllText(LogFile);
-			return allLog.Substring(allLog.LastIndexOf($"[{Process.GetCurrentProcess().Id}] {SeparatorLine}"));
+			return _logger.GetLogSinceLastStart();
 		}
 	}
 }

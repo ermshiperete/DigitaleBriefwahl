@@ -34,6 +34,7 @@ namespace Packer
 		public static void Main(string[] args)
 		{
 			ExceptionLogging.Initialize("5012aef9a281f091c1fceea40c03003b", "Packer", args);
+			Logger.CreateLogger(new ConsoleLogger());
 
 			for (var i = 0; i < args.Length; i++)
 			{
@@ -177,6 +178,8 @@ namespace Packer
 
 			if (provider != null)
 				SendEmail(provider, urlFile, ballotFile, publicKeyFile);
+			else
+				Console.WriteLine("Can't find an email provider; not sending email");
 			return true;
 		}
 

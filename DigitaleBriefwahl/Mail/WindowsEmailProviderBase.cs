@@ -2,9 +2,12 @@
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using DigitaleBriefwahl.ExceptionHandling;
 using Microsoft.Win32;
 using SIL.Email;
 using SIL.PlatformUtilities;
@@ -51,7 +54,15 @@ namespace DigitaleBriefwahl.Mail
 				}
 			};
 
-			return p.Start();
+			try
+			{
+				return p.Start();
+			}
+			catch (Win32Exception e)
+			{
+				Logger.Error($"There was an error opening the file {p.StartInfo.FileName}: {e.Message}");
+				return false;
+			}
 		}
 
 		protected abstract string GetToRecipients(IEnumerable<string> recipientTo);
