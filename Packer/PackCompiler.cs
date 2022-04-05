@@ -80,7 +80,7 @@ namespace Packer
 
 		private string ExecutableLocation { get; }
 
-		private void CreateZipFile(string directory, string archiveFilename)
+		private static void CreateZipFile(string directory, string archiveFilename)
 		{
 			if (File.Exists(archiveFilename))
 				File.Delete(archiveFilename);
@@ -95,7 +95,6 @@ namespace Packer
 			byte[] buffer;
 			int bufferLength;
 			int bytesUsed;
-			bool completed;
 			using (var fileStream = File.OpenRead(configFileName))
 			{
 				var charsetDetector = new Ude.CharsetDetector();
@@ -116,11 +115,11 @@ namespace Packer
 
 				chars = new char[bufferLength * 2];
 				encoding.GetDecoder().Convert(buffer, 0, bufferLength, chars, 0, bufferLength * 2,
-					true, out bytesUsed, out charsUsed, out completed);
+					true, out bytesUsed, out charsUsed, out _);
 			}
 
 			Encoding.UTF8.GetEncoder().Convert(chars, 0, charsUsed, buffer, 0, bufferLength, true,
-				out charsUsed, out bytesUsed, out completed);
+				out charsUsed, out bytesUsed, out _);
 			var sizedBuffer = new byte[bytesUsed];
 			Array.Copy(buffer, sizedBuffer, bytesUsed);
 			File.WriteAllBytes(configFileName, sizedBuffer);

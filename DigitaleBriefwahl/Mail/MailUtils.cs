@@ -18,12 +18,8 @@ namespace DigitaleBriefwahl.Mail
 				if (!Platform.IsWindows)
 					return false;
 
-				bool retVal;
-				using (var key = Registry.CurrentUser.OpenSubKey(@"Software\Clients\Mail"))
-				{
-					var client = key?.GetValue("") as string;
-					retVal = !string.IsNullOrEmpty(client) && client == "Mozilla Thunderbird";
-				}
+				var client = GetDefaultValue(Registry.CurrentUser, @"Software\Clients\Mail");
+				var retVal = !string.IsNullOrEmpty(client) && client == "Mozilla Thunderbird";
 
 				if (!retVal)
 				{
@@ -57,11 +53,11 @@ namespace DigitaleBriefwahl.Mail
 				{
 					if (value == "Mozilla Thunderbird")
 					{
-						value = GetDefaultValue(Registry.LocalMachine, @"Software\Clients\Mail");
+						var lmValue = GetDefaultValue(Registry.LocalMachine, @"Software\Clients\Mail");
 						// if the values in HKLM and HKCU don't agree then MAPI is probably not going
 						// to work - so observed with Portable Thunderbird which still brought up
 						// non-configured Outlook
-						retVal = value == "Mozilla Thunderbird";
+						retVal = lmValue == "Mozilla Thunderbird";
 						if (!retVal)
 						{
 							Logger.Log("Not using preferred email provider since HKCU and HKLM disagree");
