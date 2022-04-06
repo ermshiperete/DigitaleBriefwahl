@@ -77,9 +77,9 @@ namespace DigitaleBriefwahl.Mail
 				using var reader = File.OpenText(preferredAppFile);
 				while (!reader.EndOfStream)
 				{
-					var line = reader.ReadLine().Trim();
-					var keyValue = line.Split('=');
-					if (keyValue.Length != 2)
+					var line = reader.ReadLine()?.Trim();
+					var keyValue = line?.Split('=');
+					if (keyValue?.Length != 2)
 						continue;
 
 					result = keyValue[0] == "MailReader" && keyValue[1] == "thunderbird";

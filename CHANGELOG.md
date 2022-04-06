@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - when the user aborts sending the MAPI email, we no longer try to send with a different approach
+- fixed arguments passed to OutlookEmailProvider
+- fixed potential crash figuring out preferred email app
 
 ## [1.2.2] - 2022-04-02
 
