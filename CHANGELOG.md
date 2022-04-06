@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- when the user aborts sending the MAPI email, we no longer try to send with a different approach
+
 ## [1.2.2] - 2022-04-02
 
 ### Fixed

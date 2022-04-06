@@ -32,9 +32,17 @@ namespace DigitaleBriefwahl.Mail
 				mapi.Attach(file);
 
 			var result = mapi.Send(message.Subject, message.Body, true);
-			if (!result)
-				Logger.Log($"SendMessage with MapiEmailProvider failed with {mapi.Error()}");
-			return result;
+			if (result)
+				return true;
+
+			if (mapi.ErrorValue == SimpleMapi.RETURN_VALUE.MAPI_E_USER_ABORT)
+			{
+				Logger.Log($"User aborted SendMessage with MapiEmailProvider ({mapi.Error()})");
+				return true;
+			}
+
+			Logger.Log($"SendMessage with MapiEmailProvider failed with {mapi.Error()}");
+			return false;
 		}
 	}
 }
