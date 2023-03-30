@@ -10,7 +10,10 @@ using System.Net;
 using System.Net.Http;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+using CommandLine;
+using CommandLine.Text;
 using DigitaleBriefwahl.ExceptionHandling;
+using NuGet;
 using SIL.PlatformUtilities;
 
 namespace DigitaleBriefwahl.Launcher
@@ -31,14 +34,40 @@ namespace DigitaleBriefwahl.Launcher
 			Logger.Log($"{SquirrelInstallerSupport.Executable} {string.Join(" ", args.Select(s => $"\"{s}\""))}");
 
 			using var writer = new StreamWriter(Logger.LogFile, true);
-			var options = Options.ParseCommandLineArgs(writer, args);
-			if (options == null)
+			var parseResult = Options.ParseCommandLineArgs(writer, args);
+
+			parseResult.WithNotParsed(x =>
 			{
-				Console.WriteLine("Kann übergebene Parameter nicht interpretieren.");
-				Logger.Log("Couldn't parse passed in arguments");
+				var errors = x as Error[] ?? x.ToArray();
+				var helpText = "";
+				if (errors.IsVersion())
+				{
+					helpText = HelpText.AutoBuild(parseResult);
+				}
+				else
+				{
+					if (!errors.IsHelp())
+					{
+						Console.WriteLine("Kann übergebene Parameter nicht interpretieren.");
+						Logger.Log("Can't parse arguments");
+					}
+
+					helpText = HelpText.AutoBuild(parseResult, h =>
+					{
+						h.AdditionalNewLineAfterOption = false;
+						return HelpText.DefaultParsingErrorsHandler(parseResult, h);
+					}, e => e);
+				}
+
+				Console.WriteLine(helpText);
+				Logger.Log(helpText);
+			});
+			if (!parseResult.Errors.IsEmpty())
+			{
 				return;
 			}
 
+			var options = parseResult.Value;
 			if (!string.IsNullOrEmpty(options.RunApp) && !File.Exists(options.RunApp))
 			{
 				Console.WriteLine($"Datei '{options.RunApp}' nicht gefunden.");
@@ -54,7 +83,7 @@ namespace DigitaleBriefwahl.Launcher
 			}
 
 			if (!string.IsNullOrEmpty(options.UrlFile) && !options.UrlFile.StartsWith("wahlurl://")
-				&& !File.Exists(options.UrlFile))
+														&& !File.Exists(options.UrlFile))
 			{
 				Console.WriteLine($"URL-Datei '{options.UrlFile}' nicht gefunden.");
 				Logger.Log($"Can't find URL file {options.UrlFile}");

@@ -4,57 +4,45 @@
 
 using System.IO;
 using CommandLine;
-using CommandLine.Text;
 
 namespace DigitaleBriefwahl.Launcher
 {
 	internal class Options
 	{
-		[Option("run", MutuallyExclusiveSet = "run")]
+		[Option("run", MetaValue = "ZIP", SetName = "run",
+			HelpText = "Name and path of the zipped election application")]
 		public string RunApp { get; set; }
 
-		[Option("rundir", MutuallyExclusiveSet = "run")]
+		[Option("rundir", MetaValue = "DIR", SetName = "rundir",
+			HelpText = "Directory with the unzipped election application")]
 		public string RunDirectory { get; set; }
 
-		[Option("url", MutuallyExclusiveSet = "run")]
+		[Option("url", MetaValue = "URL", SetName = "url",
+			HelpText = "Name and path of a .wahlurl file that contains URL of election")]
 		public string UrlFile { get; set; }
 
-		[Option("no-check")]
+		[Option("no-check", HelpText = "Skip check for available updates.")]
 		public bool SkipUpdateCheck { get; set; }
 
-		[Option("squirrel-install")]
+		[Option("squirrel-install", Hidden = true)]
 		public string Install { get; set; }
 
-		[Option("squirrel-updated")]
+		[Option("squirrel-updated", Hidden = true)]
 		public string Updated { get; set; }
 
-		[Option("squirrel-obsolete")]
+		[Option("squirrel-obsolete", Hidden = true)]
 		public string Obsolete { get; set; }
 
-		[Option("squirrel-uninstall")]
+		[Option("squirrel-uninstall", Hidden = true)]
 		public string Uninstall { get; set; }
 
-		[Option("squirrel-firstrun")]
+		[Option("squirrel-firstrun", Hidden = true)]
 		public bool FirstRun { get; set; }
 
-		[HelpOption('h', "help")]
-		public string GetUsage()
+		public static ParserResult<Options> ParseCommandLineArgs(TextWriter writer, string[] args)
 		{
-			return HelpText.AutoBuild(this, current => HelpText.DefaultParsingErrorsHandler(this, current));
-		}
-
-		[ParserState]
-		public IParserState LastParserState { get; set; }
-
-		public static Options ParseCommandLineArgs(TextWriter writer, string[] args)
-		{
-			var options = new Options();
-			using var parser = new Parser(s =>
-			{
-				s.MutuallyExclusive = true;
-				s.HelpWriter = writer;
-			});
-			return parser.ParseArguments(args, options) ? options : null;
+			using var parser = new Parser(s => s.HelpWriter = writer);
+			return parser.ParseArguments<Options>(args);
 		}
 
 		public string PackageDir { get; set; }
