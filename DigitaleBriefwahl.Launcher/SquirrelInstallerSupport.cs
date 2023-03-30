@@ -50,7 +50,7 @@ namespace DigitaleBriefwahl.Launcher
 								$"app-{updateInfo.FutureReleaseEntry?.Version}");
 						return true;
 					}
-					Logger.Log("No updates");
+					Logger.Log($"No updates: FirstRun={options.FirstRun}, IsInstall={options.IsInstall}, IsSquirrelCommand={options.IsSquirrelCommand}");
 					if (options.IsInstall || options.FirstRun)
 						Console.WriteLine("Keine neuere Version vorhanden.");
 					else
