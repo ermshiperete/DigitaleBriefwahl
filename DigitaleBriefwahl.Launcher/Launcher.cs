@@ -70,7 +70,16 @@ namespace DigitaleBriefwahl.Launcher
 
 			Directory.CreateDirectory(OutputDir);
 
-			ZipFile.ExtractToDirectory(sourceArchiveFileName, OutputDir);
+			try
+			{
+				ZipFile.ExtractToDirectory(sourceArchiveFileName, OutputDir);
+			}
+			catch (InvalidDataException e)
+			{
+				Logger.Log($"{e.GetType()} exception unzipping {sourceArchiveFileName}: {e.Message}");
+				Console.WriteLine("Fehler beim Entpacken.");
+				return null;
+			}
 
 			return OutputDir;
 		}
