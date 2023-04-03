@@ -218,7 +218,9 @@ namespace DigitaleBriefwahl.Launcher
 				{
 					// just ignore
 					Logger.Log($"Got {e.GetType()} in trying to download voting app");
-					ReportNetworkProblemsForDownload(GetUrlFromFile(options.UrlFile), GetBallotFilename(options.UrlFile));
+					var url = GetUrlFromFile(options.UrlFile);
+					if (!string.IsNullOrEmpty(url))
+						ReportNetworkProblemsForDownload(url, GetBallotFilename(options.UrlFile));
 				}
 			}
 
@@ -234,6 +236,8 @@ namespace DigitaleBriefwahl.Launcher
 		private static async Task<string> DownloadVotingAppFromUrlFile(string urlFile)
 		{
 			var url = GetUrlFromFile(urlFile);
+			if (string.IsNullOrEmpty(url))
+				return null;
 			var uri = new Uri(url);
 			var ballotFile = GetBallotFilename(urlFile);
 
@@ -268,7 +272,17 @@ namespace DigitaleBriefwahl.Launcher
 
 		private static string GetUrlFromFile(string urlFile)
 		{
-			return File.ReadAllText(urlFile).Replace("wahlurl://", "https://");
+			try
+			{
+				return File.ReadAllText(urlFile).Replace("wahlurl://", "https://");
+			}
+			catch (UnauthorizedAccessException e)
+			{
+				Logger.Log($"Missing permission for file {urlFile}: {e.Message}");
+				Console.WriteLine($"Keine Berechtigung, die Datei {urlFile} zu lesen");
+				Console.ReadLine();
+				return null;
+			}
 		}
 
 		private static void ReportNetworkProblemsForDownload(string url, string ballotFile)
