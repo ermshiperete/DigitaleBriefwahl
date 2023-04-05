@@ -424,6 +424,7 @@ namespace DigitaleBriefwahl
 				page.Tag = view;
 				_tabControl.Pages.Add(page);
 			}
+
 			_tabControl.SelectedIndexChanged += OnSelectedIndexChanged;
 			return _tabControl;
 		}
@@ -455,6 +456,8 @@ namespace DigitaleBriefwahl
 			stackLayout.Add(buttonBar);
 			stackLayout.EndHorizontal();
 			stackLayout.EndVertical();
+
+			OnSelectedIndexChanged(this, EventArgs.Empty);
 			return stackLayout;
 		}
 
@@ -477,7 +480,7 @@ namespace DigitaleBriefwahl
 		private void OnSelectedIndexChanged(object sender, EventArgs e)
 		{
 			_nextButton.Enabled = true;
-			_nextButton.Text = _tabControl.SelectedIndex < _tabControl.Pages.Count - 1 ? "Weiter" : "Abschicken";
+			_nextButton.Text = _tabControl.SelectedIndex < _tabControl.Pages.Count - 1 && _tabControl.Pages.Count > 1 ? "Weiter" : "Abschicken";
 			_backButton.Enabled = _tabControl.SelectedIndex > 0;
 		}
 
