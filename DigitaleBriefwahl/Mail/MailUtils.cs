@@ -2,7 +2,6 @@
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 using System;
-using System.IO;
 using DigitaleBriefwahl.ExceptionHandling;
 using DigitaleBriefwahl.Utils;
 using SIL.PlatformUtilities;
@@ -12,6 +11,7 @@ namespace DigitaleBriefwahl.Mail
 	public static class MailUtils
 	{
 		private static IRegistry Registry => RegistryManager.Registry;
+		private static IFile File => FileManager.File;
 
 		public static bool IsWindowsThunderbirdInstalled
 		{
@@ -37,7 +37,7 @@ namespace DigitaleBriefwahl.Mail
 			InstalledOutlookVersion > 10 && // minimum Outlook 2003 (11.0)
 			NumberOfOutlookProfiles > 0;
 
-		public static string WindowsThunderbirdPath => Path.Combine(
+		public static string WindowsThunderbirdPath => System.IO.Path.Combine(
 			Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
 			"Mozilla Thunderbird", "thunderbird.exe");
 
@@ -121,13 +121,13 @@ namespace DigitaleBriefwahl.Mail
 					if (key == null || key.SubKeyCount <= 0)
 						return -1;
 
-					foreach (var subkeyName in key.GetSubKeyNames())
+					foreach (var subKeyName in key.GetSubKeyNames())
 					{
-						if (subkeyName.Length < 2 || !int.TryParse(subkeyName.Substring(0, 2), out var version))
+						if (subKeyName.Length < 2 || !int.TryParse(subKeyName.Substring(0, 2), out var version))
 							continue;
-						var subkey = key.OpenSubKey(subkeyName)?.OpenSubKey(@"Outlook\Profiles");
-						if (subkey != null)
-							return subkey.SubKeyCount;
+						var subKey = key.OpenSubKey(subKeyName)?.OpenSubKey(@"Outlook\Profiles");
+						if (subKey != null)
+							return subKey.SubKeyCount;
 					}
 					return -1;
 				}

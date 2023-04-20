@@ -12,12 +12,6 @@ namespace DigitaleBriefwahlTests.Utils
 		private Dictionary<string, InMemoryRegistryKey> _children = new Dictionary<string, InMemoryRegistryKey>();
 		private Dictionary<string, object>              _values   = new Dictionary<string, object>();
 
-		public void Reset()
-		{
-			_children.Clear();
-			_values.Clear();
-		}
-
 		public IRegistryKey CreateKey(string path, string key, string value)
 		{
 			if (string.IsNullOrEmpty(path))
@@ -31,8 +25,8 @@ namespace DigitaleBriefwahlTests.Utils
 			{
 				registryKey = new InMemoryRegistryKey();
 				_children.Add(first, registryKey);
-				registryKey.CreateKey(rest, key, value);
 			}
+			registryKey.CreateKey(rest, key, value);
 
 			return registryKey;
 		}
@@ -54,8 +48,10 @@ namespace DigitaleBriefwahlTests.Utils
 
 		public IRegistryKey OpenSubKey(string name)
 		{
+			if (string.IsNullOrEmpty(name))
+				return this;
 			var (first, rest) = SplitFirstPart(name);
-			return _children[first]?.OpenSubKey(rest);
+			return _children.TryGetValue(first, out var child) ? child.OpenSubKey(rest) : null;
 		}
 
 		public object GetValue(string name) => _values[name];

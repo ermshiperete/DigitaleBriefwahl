@@ -13,9 +13,10 @@ namespace DigitaleBriefwahl.Utils
 			Registry = registry;
 		}
 
-		public static void Release()
+		public static void Reset()
 		{
 			Registry?.Dispose();
+			Registry = new WindowsRegistry();
 		}
 	}
 }

@@ -12,7 +12,7 @@ namespace DigitaleBriefwahl.Utils
 
 		internal WindowsRegistryKey(RegistryKey registryKey)
 		{
-			_registryKey = registryKey ?? throw new ArgumentNullException(nameof(registryKey));
+			_registryKey = registryKey;
 		}
 
 		public void Dispose()
@@ -20,7 +20,11 @@ namespace DigitaleBriefwahl.Utils
 			_registryKey?.Dispose();
 		}
 
-		public IRegistryKey OpenSubKey(string name) => new WindowsRegistryKey(_registryKey.OpenSubKey(name));
+		public IRegistryKey OpenSubKey(string name)
+		{
+			var subKey = _registryKey.OpenSubKey(name);
+			return subKey == null ? null : new WindowsRegistryKey(subKey);
+		}
 
 		public object GetValue(string name) => _registryKey.GetValue(name);
 
