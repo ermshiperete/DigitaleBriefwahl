@@ -54,10 +54,11 @@ namespace DigitaleBriefwahl.Mail
 					if (value == "Mozilla Thunderbird")
 					{
 						var lmValue = GetDefaultValue(Registry.LocalMachine, @"Software\Clients\Mail");
+						Logger.Log($@"HKLM\Software\Clients\Mail: {lmValue}");
 						// if the values in HKLM and HKCU don't agree then MAPI is probably not going
 						// to work - so observed with Portable Thunderbird which still brought up
 						// non-configured Outlook
-						retVal = lmValue == "Mozilla Thunderbird";
+						retVal = (lmValue == "Mozilla Thunderbird") || string.IsNullOrEmpty(lmValue);
 						if (!retVal)
 						{
 							Logger.Log("Not using preferred email provider since HKCU and HKLM disagree");

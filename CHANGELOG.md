@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - gracefully deal with permission exception (#32)
+- show correct button text if we have only one election tab
+- improve sending emails and logging
 
 ## [1.3.0] - 2023-04-03
 

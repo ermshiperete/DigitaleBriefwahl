@@ -41,7 +41,8 @@ namespace DigitaleBriefwahl.Mail
 			return new SIL.Email.MailToEmailProvider();
 		}
 
-		public static bool ThunderbirdIsDefault() {
+		public static bool ThunderbirdIsDefault()
+		{
 			var result = ThunderbirdIsDefaultOnX();
 			if (!result)
 				result |= ThunderbirdIsDefaultOnGnome();

@@ -54,6 +54,7 @@ namespace DigitaleBriefwahl.Mail
 				}
 			};
 
+			Logger.Log($"Sending email with {GetType()}: {EmailCommand} {commandLine}");
 			try
 			{
 				return p.Start();
