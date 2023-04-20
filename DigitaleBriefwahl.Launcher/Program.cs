@@ -1,4 +1,4 @@
-// Copyright (c) 2018-2021 Eberhard Beilharz
+// Copyright (c) 2018-2023 Eberhard Beilharz
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 
@@ -31,6 +31,7 @@ namespace DigitaleBriefwahl.Launcher
 		{
 			ExceptionLogging.Initialize("5012aef9a281f091c1fceea40c03003b", "Launcher", args);
 
+			Logger.Log($"Launcher starting (version {GitVersionInformation.FullSemVer})");
 			Logger.Log($"{SquirrelInstallerSupport.Executable} {string.Join(" ", args.Select(s => $"\"{s}\""))}");
 
 			using var writer = new StreamWriter(Logger.LogFile, true);
