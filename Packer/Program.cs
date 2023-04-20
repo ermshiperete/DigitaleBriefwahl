@@ -17,7 +17,6 @@ using DigitaleBriefwahl.ExceptionHandling;
 using DigitaleBriefwahl.Mail;
 using DigitaleBriefwahl.Model;
 using DigitaleBriefwahl.Utils;
-using Microsoft.Win32;
 using SIL.Email;
 using MapiEmailProvider = DigitaleBriefwahl.Mail.MapiEmailProvider;
 using ThunderbirdEmailProvider = DigitaleBriefwahl.Mail.ThunderbirdEmailProvider;
@@ -293,11 +292,6 @@ namespace Packer
 			return MoveToExeLocation(new EncryptVote(Config.Title).WritePublicKey());
 		}
 
-		private static string GetDefaultValue(string path)
-		{
-			using var key = Registry.CurrentUser.OpenSubKey(path);
-			return key?.GetValue("") as string;
-		}
 
 		private static bool SendEmail(IEmailProvider emailProvider, string zipFile,
 			string ballotFile, string publicKeyFile)

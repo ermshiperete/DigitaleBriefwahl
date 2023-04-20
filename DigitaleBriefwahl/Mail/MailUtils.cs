@@ -1,16 +1,18 @@
-// Copyright (c) 2018-2022 Eberhard Beilharz
+// Copyright (c) 2018-2023 Eberhard Beilharz
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 using System;
 using System.IO;
 using DigitaleBriefwahl.ExceptionHandling;
-using Microsoft.Win32;
+using DigitaleBriefwahl.Utils;
 using SIL.PlatformUtilities;
 
 namespace DigitaleBriefwahl.Mail
 {
 	public static class MailUtils
 	{
+		private static IRegistry Registry => RegistryManager.Registry;
+
 		public static bool IsWindowsThunderbirdInstalled
 		{
 			get
@@ -80,7 +82,7 @@ namespace DigitaleBriefwahl.Mail
 			}
 		}
 
-		private static string GetDefaultValue(RegistryKey regKey, string path)
+		private static string GetDefaultValue(IRegistryKey regKey, string path)
 		{
 			using var key = regKey.OpenSubKey(path);
 			return key?.GetValue("") as string;

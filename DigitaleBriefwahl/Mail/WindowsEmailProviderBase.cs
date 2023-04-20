@@ -1,14 +1,13 @@
-﻿// Copyright (c) 2018-2022 Eberhard Beilharz
+﻿// Copyright (c) 2018-2023 Eberhard Beilharz
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using DigitaleBriefwahl.ExceptionHandling;
-using Microsoft.Win32;
+using DigitaleBriefwahl.Utils;
 using SIL.Email;
 using SIL.PlatformUtilities;
 
@@ -16,6 +15,8 @@ namespace DigitaleBriefwahl.Mail
 {
 	public abstract class WindowsEmailProviderBase : IEmailProvider
 	{
+		protected IRegistry Registry => RegistryManager.Registry;
+
 		public IEmailMessage CreateMessage()
 		{
 			return new EmailMessage();
@@ -54,7 +55,7 @@ namespace DigitaleBriefwahl.Mail
 				}
 			};
 
-			Logger.Log($"Sending email with {GetType()}: {EmailCommand} {commandLine}");
+			Logger.Log($"Sending email: {EmailCommand} {commandLine}");
 			try
 			{
 				return p.Start();
