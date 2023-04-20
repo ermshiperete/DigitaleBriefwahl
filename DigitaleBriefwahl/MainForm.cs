@@ -234,7 +234,7 @@ namespace DigitaleBriefwahl
 					bldr.AppendLine(
 						$"Falls das der Fall ist, bitte die Datei '{newFileName}' an die E-Mail anhängen.");
 
-					MessageBox.Show(bldr.ToString(), "Stimmzettel kann u.U. angehängt werden");
+					MessageBox.Show(bldr.ToString(), "Stimmzettel kann u.U. nicht angehängt werden");
 
 					mailSent = SendEmail(EmailProviderFactory.AlternateEmailProvider(), filename);
 					Logger.Log($"Sending email through alternate email provider successful: {mailSent}");
