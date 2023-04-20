@@ -3,6 +3,8 @@
 // (https://opensource.org/licenses/GPL-3.0)
 
 using DigitaleBriefwahl.Mail;
+using DigitaleBriefwahl.Utils;
+using DigitaleBriefwahlTests.Utils;
 using NUnit.Framework;
 
 namespace DigitaleBriefwahlTests.Mail
@@ -13,17 +15,29 @@ namespace DigitaleBriefwahlTests.Mail
 	{
 		private class ThunderbirdWindowsEmailProviderFacade : ThunderbirdWindowsEmailProvider
 		{
-			public ThunderbirdWindowsEmailProviderFacade(string path)
+			private readonly string _path;
+
+			public ThunderbirdWindowsEmailProviderFacade(string path = null)
 			{
-				MailtoCommand = path;
+				_path = path;
 			}
 
-			protected override string MailtoCommand { get; }
+			protected override string MailtoCommand => string.IsNullOrEmpty(_path) ? base.MailtoCommand : _path;
 
-			public string GetEmailCommand()
-			{
-				return EmailCommand;
-			}
+			public string GetEmailCommand() => EmailCommand;
+			public bool GetIsApplicable() => IsApplicable;
+		}
+
+		private InMemoryRegistry _registry;
+		private InMemoryFile     _file;
+
+		[SetUp]
+		public void SetUp()
+		{
+			_registry = new InMemoryRegistry();
+			RegistryManager.SetRegistryProvider(_registry);
+			_file = new InMemoryFile();
+			FileManager.SetFileProvider(_file);
 		}
 
 		[Test]
@@ -45,6 +59,28 @@ namespace DigitaleBriefwahlTests.Mail
 			var sut = new ThunderbirdWindowsEmailProviderFacade(thunderbird);
 
 			Assert.That(sut.GetEmailCommand(), Is.EqualTo(thunderbird));
+		}
+
+		[Test]
+		public void IsApplicable_Installed()
+		{
+			((InMemoryRegistryKey)_registry.CurrentUser).CreateKey(@"Software\Clients\Mail", "",
+				"Mozilla Thunderbird");
+			((InMemoryRegistryKey)_registry.ClassesRoot).CreateKey(@"mailto\shell\open\command",
+				"", "\"C:\\Users\\User\\AppData\\Local\\Mozilla Thunderbird\\thunderbird.exe\"");
+			var sut = new ThunderbirdWindowsEmailProviderFacade();
+			Assert.That(sut.GetIsApplicable, Is.True);
+		}
+
+		[Test]
+		public void IsApplicable_DifferentCommand()
+		{
+			((InMemoryRegistryKey)_registry.CurrentUser).CreateKey(@"Software\Clients\Mail", "",
+				"Mozilla Thunderbird");
+			((InMemoryRegistryKey)_registry.ClassesRoot).CreateKey(@"mailto\shell\open\command",
+				"", @"""C:\Program Files\Microsoft Office\Root\Office16\OUTLOOK.EXE""");
+			var sut = new ThunderbirdWindowsEmailProviderFacade();
+			Assert.That(sut.GetIsApplicable, Is.False);
 		}
 	}
 }

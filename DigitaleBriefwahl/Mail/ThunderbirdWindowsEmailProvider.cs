@@ -6,13 +6,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using Microsoft.Win32;
 
 namespace DigitaleBriefwahl.Mail
 {
 	public class ThunderbirdWindowsEmailProvider: WindowsEmailProviderBase
 	{
-		protected override bool IsApplicable => MailUtils.IsWindowsThunderbirdInstalled;
+		protected override bool IsApplicable => MailUtils.IsWindowsThunderbirdInstalled &&
+			MailtoCommand.Contains("thunderbird");
 
 		protected override string EscapeString(string input)
 		{
