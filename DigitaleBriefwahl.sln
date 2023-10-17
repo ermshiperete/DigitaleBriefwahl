@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitaleBriefwahl.Exception
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitaleBriefwahl.Launcher.Mac", "DigitaleBriefwahl.Launcher.Mac\DigitaleBriefwahl.Launcher.Mac.csproj", "{D1A58D0B-FDBE-4DA5-804D-91EF72DDCB77}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitaleBriefwahl.ExceptionHandlingTests", "DigitaleBriefwahl.ExceptionHandlingTests\DigitaleBriefwahl.ExceptionHandlingTests.csproj", "{6AA420EF-E130-47E9-8E60-49E7053FD1FF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,12 @@ Global
 		{3911DD70-24B8-4482-8CF2-456A14CEDEA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3911DD70-24B8-4482-8CF2-456A14CEDEA0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3911DD70-24B8-4482-8CF2-456A14CEDEA0}.ReleaseMac|Any CPU.ActiveCfg = Release|Any CPU
+		{6AA420EF-E130-47E9-8E60-49E7053FD1FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AA420EF-E130-47E9-8E60-49E7053FD1FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AA420EF-E130-47E9-8E60-49E7053FD1FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AA420EF-E130-47E9-8E60-49E7053FD1FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6AA420EF-E130-47E9-8E60-49E7053FD1FF}.ReleaseMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AA420EF-E130-47E9-8E60-49E7053FD1FF}.ReleaseMac|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

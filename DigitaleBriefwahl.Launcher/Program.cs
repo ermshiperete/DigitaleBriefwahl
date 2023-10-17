@@ -34,8 +34,7 @@ namespace DigitaleBriefwahl.Launcher
 			Logger.Log($"Launcher starting (version {GitVersionInformation.FullSemVer})");
 			Logger.Log($"{SquirrelInstallerSupport.Executable} {string.Join(" ", args.Select(s => $"\"{s}\""))}");
 
-			using var writer = new StreamWriter(Logger.LogFile, true);
-			var parseResult = Options.ParseCommandLineArgs(writer, args);
+			var parseResult = RetryUtils.Retry(() => GetParserResult(args));
 
 			parseResult.WithNotParsed(x =>
 			{
@@ -104,6 +103,20 @@ namespace DigitaleBriefwahl.Launcher
 
 			Console.WriteLine("Zum Beenden 'Enter'-Taste drücken");
 			Console.ReadLine();
+		}
+
+		private static ParserResult<Options> GetParserResult(string[] args)
+		{
+			try
+			{
+				using var writer = new StreamWriter(Logger.LogFile, true);
+				return Options.ParseCommandLineArgs(writer, args);
+			}
+			catch (IOException)
+			{
+				// just ignore - we can't write to log file
+				return Options.ParseCommandLineArgs(null, args);;
+			}
 		}
 
 		private static bool UpdateAndLaunchApp(Options options)

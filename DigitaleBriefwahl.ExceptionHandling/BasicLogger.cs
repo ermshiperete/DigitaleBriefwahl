@@ -65,8 +65,8 @@ namespace DigitaleBriefwahl.ExceptionHandling
 		{
 			try
 			{
-				File.AppendAllText(LogFile,
-					$"[{Process.GetCurrentProcess().Id}] {text.TrimEnd('\r', '\n')}{Environment.NewLine}");
+				RetryUtils.Retry(() => File.AppendAllText(LogFile,
+					$"[{Process.GetCurrentProcess().Id}] {text.TrimEnd('\r', '\n')}{Environment.NewLine}"));
 			}
 			catch (IOException)
 			{

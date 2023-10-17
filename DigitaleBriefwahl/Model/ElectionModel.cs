@@ -50,8 +50,7 @@ namespace DigitaleBriefwahl.Model
 			foreach (var keydata in nomineeLimitData)
 			{
 				var noString = keydata.KeyName.Substring(Configuration.NomineeLimitKey.Length);
-				int no;
-				if (!int.TryParse(noString, out no) || no < 1 || no > Nominees.Count)
+				if (!int.TryParse(noString, out var no) || no < 1 || no > Nominees.Count)
 				{
 					throw new InvalidConfigurationException(
 						$"Invalid nominee limit key: {keydata.KeyName}");
@@ -61,9 +60,9 @@ namespace DigitaleBriefwahl.Model
 				{
 					throw new InvalidConfigurationException($"Invalid nominee limit value: {keydata.Value}");
 				}
-				int min;
+
 				int max = 0;
-				if (!int.TryParse(limitSplit[0], out min) || min < 1 || min > Votes ||
+				if (!int.TryParse(limitSplit[0], out var min) || min < 1 || min > Votes ||
 					(limitSplit.Length > 1 &&
 						(!int.TryParse(limitSplit[1], out max) || max < 1 || max > votes)))
 				{
