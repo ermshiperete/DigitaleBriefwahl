@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [1.3.3] - 2023-10-17
+
+### Fixed
+
+- fixed IOException starting launcher when log file couldn't be opened
+
 ## [1.3.2] - 2023-04-20
 
 ### Fixed
