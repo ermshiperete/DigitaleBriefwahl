@@ -84,7 +84,7 @@ namespace DigitaleBriefwahl.ExceptionHandling
 		{
 			try
 			{
-				File.Delete(LogFile);
+				RetryUtils.Retry(() => File.Delete(LogFile));
 			}
 			catch (IOException)
 			{
@@ -96,7 +96,7 @@ namespace DigitaleBriefwahl.ExceptionHandling
 
 		public string GetLogSinceLastStart()
 		{
-			var allLog = File.ReadAllText(LogFile);
+			var allLog = RetryUtils.Retry(() => File.ReadAllText(LogFile));
 			return allLog.Substring(allLog.LastIndexOf($"[{Process.GetCurrentProcess().Id}] {SeparatorLine}"));
 		}
 	}
