@@ -24,7 +24,7 @@
 		<Message Text="RestartBuild=$(RestartBuild)"/>
 		<Message Text="MSBuildProjectDirectory=$(MSBuildProjectDirectory)"/>
 		<Exec Command='$(NuGetCommand) install SIL.BuildTasks -excludeVersion -version 2.5.0 -source "$(PackageSources)" -solutionDirectory "$(RootDir)"' />
-		<Exec Command='$(NuGetCommand) install NUnit.ConsoleRunner -excludeVersion -version 3.15.0 -source "$(PackageSources)" -solutionDirectory "$(RootDir)"' />
+		<Exec Command='$(NuGetCommand) install NUnit.ConsoleRunner -excludeVersion -version 3.16.3 -source "$(PackageSources)" -solutionDirectory "$(RootDir)"' />
 	</Target>
 
 	<Target Name="Build">
