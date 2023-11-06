@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- replaced non-ASCII characters in encrypted filename (#41)
+
 ## [1.3.3] - 2023-10-17
 
 ### Fixed
