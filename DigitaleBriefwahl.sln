@@ -32,6 +32,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitaleBriefwahl.Launcher.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigitaleBriefwahl.ExceptionHandlingTests", "DigitaleBriefwahl.ExceptionHandlingTests\DigitaleBriefwahl.ExceptionHandlingTests.csproj", "{6AA420EF-E130-47E9-8E60-49E7053FD1FF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigiTally", "DigiTally\DigiTally.csproj", "{3A5F2619-8AB5-451A-9165-A4FF79E03623}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DigiTallyTests", "DigiTallyTests\DigiTallyTests.csproj", "{B9F5501B-3754-464A-BE58-40590CC6016F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +85,18 @@ Global
 		{6AA420EF-E130-47E9-8E60-49E7053FD1FF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6AA420EF-E130-47E9-8E60-49E7053FD1FF}.ReleaseMac|Any CPU.ActiveCfg = Debug|Any CPU
 		{6AA420EF-E130-47E9-8E60-49E7053FD1FF}.ReleaseMac|Any CPU.Build.0 = Debug|Any CPU
+		{3A5F2619-8AB5-451A-9165-A4FF79E03623}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A5F2619-8AB5-451A-9165-A4FF79E03623}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A5F2619-8AB5-451A-9165-A4FF79E03623}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A5F2619-8AB5-451A-9165-A4FF79E03623}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A5F2619-8AB5-451A-9165-A4FF79E03623}.ReleaseMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A5F2619-8AB5-451A-9165-A4FF79E03623}.ReleaseMac|Any CPU.Build.0 = Debug|Any CPU
+		{B9F5501B-3754-464A-BE58-40590CC6016F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9F5501B-3754-464A-BE58-40590CC6016F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9F5501B-3754-464A-BE58-40590CC6016F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9F5501B-3754-464A-BE58-40590CC6016F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9F5501B-3754-464A-BE58-40590CC6016F}.ReleaseMac|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9F5501B-3754-464A-BE58-40590CC6016F}.ReleaseMac|Any CPU.Build.0 = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

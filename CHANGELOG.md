@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Added
+
+- DigiTally, a tool to count the ballots
+
 ### Fixed
 
 - replaced non-ASCII characters in encrypted filename (#41)

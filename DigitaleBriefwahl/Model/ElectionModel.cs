@@ -1,9 +1,11 @@
-// Copyright (c) 2016 Eberhard Beilharz
+// Copyright (c) 2016-2024 Eberhard Beilharz
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 using System;
 using IniParser.Model;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace DigitaleBriefwahl.Model
@@ -93,6 +95,12 @@ namespace DigitaleBriefwahl.Model
 
 		public abstract List<string> EmptyVotes { get; }
 
+		protected abstract Dictionary<string, CandidateResult> ReadVotesFromBallotInternal(StreamReader stream);
+
+		public int Invalid { get; protected set; }
+
+		public int BallotsProcessed { get; protected set; }
+
 		public override string ToString()
 		{
 			return
@@ -104,6 +112,36 @@ namespace DigitaleBriefwahl.Model
 			// Normalize line endings so that the ballot has the same length
 			// regardless of whether it's run on Windows or Linux. We use Windows line endings.
 			return bldr.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n").ToString();
+		}
+
+		public Dictionary<string, CandidateResult> ReadVotesFromBallot(StreamReader stream, Dictionary<string, CandidateResult> results)
+		{
+			BallotsProcessed++;
+
+			results ??= new Dictionary<string, CandidateResult>();
+			var votes = ReadVotesFromBallotInternal(stream);
+
+			if (votes == null)
+				return results;
+
+			foreach (var vote in votes)
+			{
+				if (results.TryGetValue(vote.Key, out var result))
+				{
+					result.CopyFrom(vote.Value);
+				}
+				else
+				{
+					results.Add(vote.Key, vote.Value);
+				}
+			}
+
+			return results;
+		}
+
+		public virtual string GetResultString(Dictionary<string, CandidateResult> results)
+		{
+			return $"({BallotsProcessed} ballots, thereof {Invalid} invalid)";
 		}
 	}
 }
