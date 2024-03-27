@@ -26,7 +26,8 @@ jobs:
         dotnet-version: 8.0.x
 
     - name: Build
-      run: dotnet build
+      run: msbuild /t:Build
+      working-directory: build/
 
     - name: Test
       run: dotnet test --logger "html;logfilename=TestResults.html"
