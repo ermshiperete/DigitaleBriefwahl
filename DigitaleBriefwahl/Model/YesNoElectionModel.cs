@@ -1,10 +1,13 @@
-// Copyright (c) 2017 Eberhard Beilharz
+// Copyright (c) 2017-2024 Eberhard Beilharz
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using IniParser.Model;
 
 namespace DigitaleBriefwahl.Model
@@ -83,6 +86,57 @@ namespace DigitaleBriefwahl.Model
 					votes.Add(Abstention);
 				return votes;
 			}
+		}
+
+		public override Dictionary<string, ElectionResult> ReadVotesFromBallot(StreamReader stream, Dictionary<string, ElectionResult> votes)
+		{
+			var skipLine = stream.ReadLine();
+			if (skipLine != "(J=Ja, E=Enthaltung, N=Nein)")
+			{
+				Debug.WriteLine($"Missing line '(J=Ja, E=Enthaltung, N=Nein)'. Got {skipLine}");
+				return votes;
+			}
+
+			votes ??= new Dictionary<string, ElectionResult>();
+
+			for (var line = stream.ReadLine(); !string.IsNullOrEmpty(line); line = stream.ReadLine())
+			{
+				// 1. [J] Mickey Mouse
+				var regex = new Regex("[0-9]+. \\[(J|E|N)\\] (.+)");
+				if (!regex.IsMatch(line))
+				{
+					Debug.WriteLine($"Can't interpret {line}");
+					continue;
+				}
+
+				var match = regex.Match(line);
+				var name = match.Groups[2].Value;
+				if (!votes.TryGetValue(name, out var res))
+				{
+					res = new YesNoElectionResult();
+					votes[name] = res;
+				}
+
+				var result = res as YesNoElectionResult;
+				switch (match.Groups[1].Value)
+				{
+					case "J":
+						result.Yes++;
+						break;
+					case "N":
+						result.No++;
+						break;
+					case "E":
+						result.Abstain++;
+						break;
+					default:
+						Debug.WriteLine($"Invalid vote: {line}");
+						result.Invalid++;
+						break;
+				}
+			}
+
+			return votes;
 		}
 	}
 }

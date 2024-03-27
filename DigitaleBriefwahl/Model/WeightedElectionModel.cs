@@ -1,9 +1,15 @@
-// Copyright (c) 2017 Eberhard Beilharz
+// Copyright (c) 2017-2024 Eberhard Beilharz
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
+using System.Text.RegularExpressions;
 using IniParser.Model;
 
 namespace DigitaleBriefwahl.Model
@@ -58,6 +64,54 @@ namespace DigitaleBriefwahl.Model
 
 				return votes;
 			}
+		}
+
+		public override Dictionary<string, ElectionResult> ReadVotesFromBallot(StreamReader stream, Dictionary<string, ElectionResult> votes)
+		{
+			var skipLine = stream.ReadLine();
+			var instructions =
+				new Regex("(\\d Stimmen; Wahl der Reihenfolge nach mit 1.-\\d. kennzeichnen)");
+			if (!instructions.IsMatch(skipLine))
+			{
+				Debug.WriteLine($"Missing line '({Votes} Stimmen; Wahl der Reihenfolge nach mit 1.-{Votes}. kennzeichnen)'. Got {skipLine}");
+				return votes;
+			}
+
+			votes ??= new Dictionary<string, ElectionResult>();
+
+			for (var line = stream.ReadLine(); !string.IsNullOrEmpty(line); line = stream.ReadLine())
+			{
+				// 1. Mickey Mouse
+				var regex = new Regex("(([0-9]+).|  ) (.+)");
+				if (!regex.IsMatch(line))
+				{
+					Debug.WriteLine($"Can't interpret {line}");
+					continue;
+				}
+
+				var match = regex.Match(line);
+				var name = match.Groups[3].Value;
+				if (!votes.TryGetValue(name, out var res))
+				{
+					res = new WeightedElectionResult();
+					votes[name] = res;
+				}
+
+				var result = res as WeightedElectionResult;
+				if (string.IsNullOrWhiteSpace(match.Groups[1].Value))
+					continue;
+
+				if (!Int32.TryParse(match.Groups[2].Value, out var rank))
+				{
+					Debug.WriteLine($"Invalid rank {match.Groups[2].Value} in line {line}");
+					result.Invalid++;
+					continue;
+				}
+
+				result.Points += Votes - rank + 1;
+			}
+
+			return votes;
 		}
 	}
 }

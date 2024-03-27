@@ -1,9 +1,10 @@
-// Copyright (c) 2016 Eberhard Beilharz
+// Copyright (c) 2016-2024 Eberhard Beilharz
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 using System;
 using IniParser.Model;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace DigitaleBriefwahl.Model
@@ -92,6 +93,10 @@ namespace DigitaleBriefwahl.Model
 		public abstract string GetResult(List<string> nominees, bool writeEmptyBallot);
 
 		public abstract List<string> EmptyVotes { get; }
+
+		public abstract Dictionary<string, ElectionResult> ReadVotesFromBallot(StreamReader stream, Dictionary<string, ElectionResult> results);
+
+		public int Invalid { get; protected set; }
 
 		public override string ToString()
 		{

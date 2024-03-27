@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>DigitaleBriefwahlTests</RootNamespace>
-    <AssemblyTitle>DigitaleBriefwahlTests</AssemblyTitle>
+    <RootNamespace>DigitaleBriefwahl.Tally.Tests</RootNamespace>
+    <AssemblyTitle>DigiTallyTests</AssemblyTitle>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <OutputPath>bin/$(Configuration)</OutputPath>
@@ -13,7 +13,6 @@
     <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DigitaleBriefwahl.ExceptionHandling\DigitaleBriefwahl.ExceptionHandling.csproj" />
-    <ProjectReference Include="..\DigitaleBriefwahl\DigitaleBriefwahl.csproj" />
+    <ProjectReference Include="..\DigiTally\DigiTally.csproj" />
   </ItemGroup>
 </Project>
