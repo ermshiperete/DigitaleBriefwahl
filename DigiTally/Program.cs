@@ -20,7 +20,7 @@ namespace DigiTally
 				return;
 			}
 
-			var readBallot = new ReadBallot(configName);
+			var readBallot = new ReadBallots(configName);
 
 			// foreach file in directory
 			//     readBallot.AddBallot(file)

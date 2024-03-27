@@ -1,45 +1,45 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using DigitaleBriefwahl.Model;
 
 namespace DigitaleBriefwahl.Tally
 {
-	public class ReadBallot
+	public class ReadBallots
 	{
 		private Configuration                            _configuration;
 		private Dictionary<ElectionModel, Dictionary<string, ElectionResult>> _results;
 
-		public ReadBallot(string configFileName)
+		public ReadBallots(string configFileName)
 		{
 			_results = new Dictionary<ElectionModel, Dictionary<string, ElectionResult>>();
 			_configuration = Configuration.Configure(configFileName);
-			IsReadable = true;
 		}
 
-		public void AddBallot(string ballotFileName)
+		public bool AddBallot(string ballotFileName)
 		{
 			using var ballotFile = new StreamReader(ballotFileName);
 			var title = ballotFile.ReadLine();     // The election
 			var separator = ballotFile.ReadLine(); // ============
-			if (!separator.StartsWith("="))
+			if (string.IsNullOrWhiteSpace(separator) || !separator.StartsWith("="))
 			{
-				IsReadable = false;
-				return;
+				return false;
 			}
 			SkipEmptyLines(ballotFile);
 			foreach (var election in _configuration.Elections)
 			{
 				var electionTitle = ballotFile.ReadLine(); // Election
 				separator = ballotFile.ReadLine();         // --------
-				if (!separator.StartsWith("--") || electionTitle != election.Name)
+				if (string.IsNullOrWhiteSpace(separator) || !separator.StartsWith("--") || electionTitle != election.Name)
 				{
-					IsReadable = false;
-					return;
+					return false;
 				}
 
 				_results[election] = election.ReadVotesFromBallot(ballotFile, _results.TryGetValue(election, out var result) ? result: null);
 			}
+
+			return true;
 		}
 
 		private void SkipEmptyLines(StreamReader stream)
@@ -54,8 +54,7 @@ namespace DigitaleBriefwahl.Tally
 			}
 		}
 
-		public bool IsReadable { get; private set; }
-
+		public int NumberOfInvalidBallots => _results.Count(r => r.Key.Invalid > 0);
 		public Dictionary<ElectionModel, Dictionary<string, ElectionResult>> Results => _results;
 	}
 }

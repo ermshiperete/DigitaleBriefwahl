@@ -5,6 +5,7 @@ using System;
 using IniParser.Model;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace DigitaleBriefwahl.Model
@@ -94,7 +95,7 @@ namespace DigitaleBriefwahl.Model
 
 		public abstract List<string> EmptyVotes { get; }
 
-		public abstract Dictionary<string, ElectionResult> ReadVotesFromBallot(StreamReader stream, Dictionary<string, ElectionResult> results);
+		protected abstract Dictionary<string, ElectionResult> ReadVotesFromBallotInternal(StreamReader stream);
 
 		public int Invalid { get; protected set; }
 
@@ -109,6 +110,29 @@ namespace DigitaleBriefwahl.Model
 			// Normalize line endings so that the ballot has the same length
 			// regardless of whether it's run on Windows or Linux. We use Windows line endings.
 			return bldr.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n").ToString();
+		}
+
+		public Dictionary<string, ElectionResult> ReadVotesFromBallot(StreamReader stream, Dictionary<string, ElectionResult> results)
+		{
+			results ??= new Dictionary<string, ElectionResult>();
+			var votes = ReadVotesFromBallotInternal(stream);
+
+			if (Invalid > 0)
+				return results;
+
+			foreach (var vote in votes)
+			{
+				if (results.TryGetValue(vote.Key, out var result))
+				{
+					result.CopyFrom(vote.Value);
+				}
+				else
+				{
+					results.Add(vote.Key, vote.Value);
+				}
+			}
+
+			return results;
 		}
 	}
 }

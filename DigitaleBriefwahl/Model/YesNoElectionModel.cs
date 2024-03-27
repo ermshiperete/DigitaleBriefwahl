@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using DigitaleBriefwahl.ExceptionHandling;
 using IniParser.Model;
 
 namespace DigitaleBriefwahl.Model
@@ -88,16 +89,17 @@ namespace DigitaleBriefwahl.Model
 			}
 		}
 
-		public override Dictionary<string, ElectionResult> ReadVotesFromBallot(StreamReader stream, Dictionary<string, ElectionResult> votes)
+		protected override Dictionary<string, ElectionResult> ReadVotesFromBallotInternal(StreamReader stream)
 		{
 			var skipLine = stream.ReadLine();
 			if (skipLine != "(J=Ja, E=Enthaltung, N=Nein)")
 			{
-				Debug.WriteLine($"Missing line '(J=Ja, E=Enthaltung, N=Nein)'. Got {skipLine}");
-				return votes;
+				Logger.Error($"Missing line '(J=Ja, E=Enthaltung, N=Nein)'. Got {skipLine}");
+				return new Dictionary<string, ElectionResult>();
 			}
 
-			votes ??= new Dictionary<string, ElectionResult>();
+			var votes = new Dictionary<string, ElectionResult>();
+			var invalid = false;
 
 			for (var line = stream.ReadLine(); !string.IsNullOrEmpty(line); line = stream.ReadLine())
 			{
@@ -105,7 +107,8 @@ namespace DigitaleBriefwahl.Model
 				var regex = new Regex("[0-9]+. \\[(J|E|N)\\] (.+)");
 				if (!regex.IsMatch(line))
 				{
-					Debug.WriteLine($"Can't interpret {line}");
+					Logger.Error($"Can't interpret {line}");
+					invalid = true;
 					continue;
 				}
 
@@ -130,12 +133,16 @@ namespace DigitaleBriefwahl.Model
 						result.Abstain++;
 						break;
 					default:
-						Debug.WriteLine($"Invalid vote: {line}");
-						result.Invalid++;
+						Logger.Error($"Invalid vote: {line}");
+						invalid = true;
 						break;
 				}
 			}
 
+			if (invalid)
+			{
+				Invalid++;
+			}
 			return votes;
 		}
 	}

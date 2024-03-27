@@ -78,12 +78,10 @@ Kandidat4=Daisy Duck
 				"\r\n" +
 				"12345\r\n");
 			_ballotFileNames.Add(ballotFileName);
-			var ballot = new ReadBallot(_configFileName);
-			ballot.AddBallot(ballotFileName);
-			Assert.That(ballot.IsReadable, Is.True);
-			var result = ballot.Results;
-			Assert.That(result.Keys.First().Invalid, Is.EqualTo(0));
-			var election = result.First().Value;
+			var sut = new ReadBallots(_configFileName);
+			Assert.That(sut.AddBallot(ballotFileName), Is.True);
+			Assert.That(sut.NumberOfInvalidBallots, Is.EqualTo(0));
+			var election = sut.Results.First().Value;
 
 			CheckYesNoResult(election["Mickey Mouse"], 1, 1, 0, 0);
 			CheckYesNoResult(election["Donald Duck"], 1, 0, 1, 0);
@@ -127,15 +125,13 @@ Kandidat4=Daisy Duck
 			_ballotFileNames.Add(ballotFileName2);
 
 			// Execute
-			var sut = new ReadBallot(_configFileName);
-			sut.AddBallot(ballotFileName1);
-			sut.AddBallot(ballotFileName2);
+			var sut = new ReadBallots(_configFileName);
+			Assert.That(sut.AddBallot(ballotFileName1), Is.True);
+			Assert.That(sut.AddBallot(ballotFileName2), Is.True);
 
 			// Verify
-			Assert.That(sut.IsReadable, Is.True);
-			var result = sut.Results;
-			Assert.That(result.Keys.First().Invalid, Is.EqualTo(0));
-			var election = result.First().Value;
+			Assert.That(sut.NumberOfInvalidBallots, Is.EqualTo(0));
+			var election = sut.Results.First().Value;
 
 			CheckYesNoResult(election["Mickey Mouse"], 2, 1, 1, 0, 0);
 			CheckYesNoResult(election["Donald Duck"], 2, 0, 1, 1, 0);

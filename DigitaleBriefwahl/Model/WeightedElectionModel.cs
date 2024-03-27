@@ -10,6 +10,7 @@ using System.IO;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Text.RegularExpressions;
+using DigitaleBriefwahl.ExceptionHandling;
 using IniParser.Model;
 
 namespace DigitaleBriefwahl.Model
@@ -66,50 +67,77 @@ namespace DigitaleBriefwahl.Model
 			}
 		}
 
-		public override Dictionary<string, ElectionResult> ReadVotesFromBallot(StreamReader stream, Dictionary<string, ElectionResult> votes)
+		protected override Dictionary<string, ElectionResult> ReadVotesFromBallotInternal
+			(StreamReader	stream)
 		{
 			var skipLine = stream.ReadLine();
-			var instructions =
-				new Regex("(\\d Stimmen; Wahl der Reihenfolge nach mit 1.-\\d. kennzeichnen)");
-			if (!instructions.IsMatch(skipLine))
+			var instructions = new Regex("(\\d Stimmen; Wahl der Reihenfolge nach mit 1.-\\d. kennzeichnen)");
+			if (string.IsNullOrEmpty(skipLine) || !instructions.IsMatch(skipLine))
 			{
-				Debug.WriteLine($"Missing line '({Votes} Stimmen; Wahl der Reihenfolge nach mit 1.-{Votes}. kennzeichnen)'. Got {skipLine}");
-				return votes;
+				Logger.Error($"Missing line '({Votes} Stimmen; Wahl der Reihenfolge nach mit 1.-{Votes}. kennzeichnen)'. Got {skipLine}");
+				Invalid++;
+				return new Dictionary<string, ElectionResult>();
 			}
 
-			votes ??= new Dictionary<string, ElectionResult>();
+			var votes = new Dictionary<string, ElectionResult>();
+			var nomineesSeen = new List<string>();
+			var rankSeen = new List<int>();
+			var invalid = false;
 
 			for (var line = stream.ReadLine(); !string.IsNullOrEmpty(line); line = stream.ReadLine())
 			{
 				// 1. Mickey Mouse
+				ElectionResult res = null;
 				var regex = new Regex("(([0-9]+).|  ) (.+)");
 				if (!regex.IsMatch(line))
 				{
-					Debug.WriteLine($"Can't interpret {line}");
+					Logger.Error($"Can't interpret {line}");
 					continue;
 				}
 
 				var match = regex.Match(line);
 				var name = match.Groups[3].Value;
-				if (!votes.TryGetValue(name, out var res))
+				if (nomineesSeen.Contains(name))
+				{
+					// we saw this name before - INVALID
+					Logger.Error($"Double name {name}");
+					invalid = true;
+					continue;
+				}
+
+				nomineesSeen.Add(name);
+				if (!votes.TryGetValue(name, out res))
 				{
 					res = new WeightedElectionResult();
 					votes[name] = res;
 				}
 
-				var result = res as WeightedElectionResult;
 				if (string.IsNullOrWhiteSpace(match.Groups[1].Value))
 					continue;
 
 				if (!Int32.TryParse(match.Groups[2].Value, out var rank))
 				{
-					Debug.WriteLine($"Invalid rank {match.Groups[2].Value} in line {line}");
-					result.Invalid++;
+					Logger.Error($"Invalid rank {match.Groups[2].Value} in line {line}");
+					invalid = true;
 					continue;
 				}
 
-				result.Points += Votes - rank + 1;
+				if (rankSeen.Contains(rank))
+				{
+					Logger.Error($"Double rank: {rank} ({name})");
+					invalid = true;
+					continue;
+				}
+				rankSeen.Add(rank);
+
+				if (res is WeightedElectionResult result)
+				{
+					result.Points += Votes - rank + 1;
+				}
 			}
+
+			if (invalid)
+				Invalid++;
 
 			return votes;
 		}

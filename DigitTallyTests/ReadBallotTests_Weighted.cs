@@ -19,8 +19,8 @@ namespace DigitaleBriefwahl.Tally.Tests
 			int expectedInvalid = 0, [CallerLineNumber] int lineNumber = 0)
 		{
 			var weightedResult = result as WeightedElectionResult;
-			Assert.That(weightedResult.Points, Is.EqualTo(expectedPoints),
-				$"Expected {expectedPoints} points but got {weightedResult.Points} in line {lineNumber}");
+			Assert.That(weightedResult?.Points, Is.EqualTo(expectedPoints),
+				$"Expected {expectedPoints} points but got {weightedResult?.Points} in line {lineNumber}");
 			Assert.That(result.Invalid, Is.EqualTo(expectedInvalid),
 				$"Expected {expectedInvalid} Invalid but got {result.Invalid} in line {lineNumber}");
 		}
@@ -64,7 +64,7 @@ Kandidat4=Daisy Duck
 				"\r\n" +
 				"Election\r\n" +
 				"--------\r\n" +
-				$"(2 Stimmen; Wahl der Reihenfolge nach mit 1.-2. kennzeichnen)\r\n" +
+				"(2 Stimmen; Wahl der Reihenfolge nach mit 1.-2. kennzeichnen)\r\n" +
 				"2. Mickey Mouse\r\n" +
 				"   Donald Duck\r\n" +
 				"1. Dagobert Duck\r\n" +
@@ -73,12 +73,10 @@ Kandidat4=Daisy Duck
 				"\r\n" +
 				"12345\r\n");
 			_ballotFileNames.Add(ballotFileName);
-			var ballot = new ReadBallot(_configFileName);
-			ballot.AddBallot(ballotFileName);
-			Assert.That(ballot.IsReadable, Is.True);
-			var result = ballot.Results;
-			Assert.That(result.Keys.First().Invalid, Is.EqualTo(0));
-			var election = result.First().Value;
+			var sut = new ReadBallots(_configFileName);
+			Assert.That(sut.AddBallot(ballotFileName), Is.True);
+			Assert.That(sut.NumberOfInvalidBallots, Is.EqualTo(0));
+			var election = sut.Results.First().Value;
 
 			CheckWeightedResult(election["Mickey Mouse"], 1, 0);
 			CheckWeightedResult(election["Donald Duck"], 0, 0);
@@ -96,7 +94,7 @@ Kandidat4=Daisy Duck
 											"\r\n" +
 											"Election\r\n" +
 											"--------\r\n" +
-											$"(2 Stimmen; Wahl der Reihenfolge nach mit 1.-2. kennzeichnen)\r\n" +
+											"(2 Stimmen; Wahl der Reihenfolge nach mit 1.-2. kennzeichnen)\r\n" +
 											"1. Mickey Mouse\r\n" +
 											"   Donald Duck\r\n" +
 											"   Dagobert Duck\r\n" +
@@ -111,7 +109,7 @@ Kandidat4=Daisy Duck
 											"\r\n" +
 											"Election\r\n" +
 											"--------\r\n" +
-											$"(2 Stimmen; Wahl der Reihenfolge nach mit 1.-2. kennzeichnen)\r\n" +
+											"(2 Stimmen; Wahl der Reihenfolge nach mit 1.-2. kennzeichnen)\r\n" +
 											"   Mickey Mouse\r\n" +
 											"   Donald Duck\r\n" +
 											"2. Dagobert Duck\r\n" +
@@ -122,15 +120,13 @@ Kandidat4=Daisy Duck
 			_ballotFileNames.Add(ballotFileName2);
 
 			// Execute
-			var sut = new ReadBallot(_configFileName);
-			sut.AddBallot(ballotFileName1);
-			sut.AddBallot(ballotFileName2);
+			var sut = new ReadBallots(_configFileName);
+			Assert.That(sut.AddBallot(ballotFileName1), Is.True);
+			Assert.That(sut.AddBallot(ballotFileName2), Is.True);
 
 			// Verify
-			Assert.That(sut.IsReadable, Is.True);
-			var result = sut.Results;
-			Assert.That(result.Keys.First().Invalid, Is.EqualTo(0));
-			var election = result.First().Value;
+			Assert.That(sut.NumberOfInvalidBallots, Is.EqualTo(0));
+			var election = sut.Results.First().Value;
 
 			CheckWeightedResult(election["Mickey Mouse"], 2, 0);
 			CheckWeightedResult(election["Donald Duck"], 0, 0);
@@ -139,9 +135,53 @@ Kandidat4=Daisy Duck
 		}
 
 		[Test]
-		public void WeightedElection_Invalid()
+		public void WeightedElection_Invalid_SameRankTwice()
 		{
-			Assert.Fail();
+			var ballotFileName = Path.GetTempFileName();
+			File.WriteAllText(ballotFileName, "The election\r\n" +
+				"============\r\n" +
+				"\r\n" +
+				"Election\r\n" +
+				"--------\r\n" +
+				"(2 Stimmen; Wahl der Reihenfolge nach mit 1.-2. kennzeichnen)\r\n" +
+				"1. Mickey Mouse\r\n" +
+				"   Donald Duck\r\n" +
+				"1. Dagobert Duck\r\n" +
+				"   Daisy Duck\r\n" +
+				"\r\n" +
+				"\r\n" +
+				"12345\r\n");
+			_ballotFileNames.Add(ballotFileName);
+			var sut = new ReadBallots(_configFileName);
+			Assert.That(sut.AddBallot(ballotFileName), Is.True);
+			Assert.That(sut.NumberOfInvalidBallots, Is.EqualTo(1));
+			var election = sut.Results.First().Value;
+			Assert.That(election.Keys.Count, Is.EqualTo(0));
+		}
+
+		[Test]
+		public void WeightedElection_Invalid_SameNameTwice()
+		{
+			var ballotFileName = Path.GetTempFileName();
+			File.WriteAllText(ballotFileName, "The election\r\n" +
+				"============\r\n" +
+				"\r\n" +
+				"Election\r\n" +
+				"--------\r\n" +
+				"(2 Stimmen; Wahl der Reihenfolge nach mit 1.-2. kennzeichnen)\r\n" +
+				"1. Mickey Mouse\r\n" +
+				"   Donald Duck\r\n" +
+				"2. Mickey Mouse\r\n" +
+				"   Daisy Duck\r\n" +
+				"\r\n" +
+				"\r\n" +
+				"12345\r\n");
+			_ballotFileNames.Add(ballotFileName);
+			var sut = new ReadBallots(_configFileName);
+			Assert.That(sut.AddBallot(ballotFileName), Is.True);
+			Assert.That(sut.NumberOfInvalidBallots, Is.EqualTo(1));
+			var election = sut.Results.First().Value;
+			Assert.That(election.Keys.Count, Is.EqualTo(0));
 		}
 	}
 
