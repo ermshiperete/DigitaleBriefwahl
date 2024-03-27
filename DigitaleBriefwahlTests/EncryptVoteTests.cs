@@ -41,5 +41,26 @@ namespace DigitaleBriefwahlTests
 			Assert.That(sut.GetEncryptedFilePath(sut.BallotFilePath),
 				Is.EqualTo(sut.BallotFilePath.Substring(0, sut.BallotFilePath.Length - 4) + ".gpg"));
 		}
+
+		[Test]
+		public void GetEncryptedFilePath_Umlaut_AllASCII()
+		{
+			var sut= new EncryptVote("ÄÖÜäöüß");
+			var filePath = Path.GetFileName(sut.GetEncryptedFilePath(sut.BallotFilePath));
+			Assert.That(filePath.StartsWith("AEOEUEaeoeuess"), Is.True,
+				$"Unexpected FilePath.\n    Expected: AEOEUEaeoeuess...\n    But was:  {filePath}");
+		}
+
+		[Test]
+		public void GetEncryptedFilePath_Other_AllASCII()
+		{
+			var sut= new EncryptVote("ខ្មែរ");
+			var filePath = sut.GetEncryptedFilePath(sut.BallotFilePath);
+			foreach (var c in filePath.ToCharArray())
+			{
+				Assert.That(c, Is.LessThanOrEqualTo(128),
+					$"FilePath contains non-ASCII characters: {filePath}");
+			}
+		}
 	}
 }

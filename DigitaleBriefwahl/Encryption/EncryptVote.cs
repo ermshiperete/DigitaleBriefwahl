@@ -120,9 +120,26 @@ namespace DigitaleBriefwahl.Encryption
 			return encOut.ToArray();
 		}
 
+		private const  string   Umlauts            = "äöüÄÖÜß";
+		private static string[] UmlautReplacements = { "ae", "oe", "ue", "AE", "OE", "UE", "ss" };
+
 		private static string GetSanitizedElection(string election)
 		{
-			return election.Replace(' ', '_').Replace('.', '_');
+			var filePath = election.Replace(' ', '_').Replace('.', '_');
+			var bldr = new StringBuilder();
+			for (int i = 0; i < filePath.Length; i++)
+			{
+				var c = filePath[i];
+				if (c > 128)
+				{
+					var umlautIndex = Umlauts.IndexOf(c);
+					bldr.Append(umlautIndex >= 0 ? UmlautReplacements[umlautIndex] : "_");
+				}
+				else
+					bldr.Append(c);
+			}
+
+			return bldr.ToString();
 		}
 
 		public string WriteVote(string vote, string filePath = null)
