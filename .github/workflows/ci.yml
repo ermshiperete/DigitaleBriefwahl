@@ -25,9 +25,18 @@ jobs:
       with:
         dotnet-version: 8.0.x
 
-    - name: Build
+    - name: Build (Linux)
+      if: matrix.os == 'ubuntu-latest'
       run: msbuild /t:Build
       working-directory: build/
+
+    - name: Install nuget (Windows)
+      if: matrix.os != 'ubuntu-latest'
+      run: choco install nuget.commandline
+
+    - name: Build (Windows)
+      if: matrix.os != 'ubuntu-latest'
+      run: dotnet build
 
     - name: Test
       run: dotnet test --logger "html;logfilename=TestResults.html"
