@@ -80,6 +80,11 @@ namespace DigitaleBriefwahl.Model
 			}
 
 			var votes = new Dictionary<string, ElectionResult>();
+			foreach (var nominee in Nominees)
+			{
+				votes[nominee] = new WeightedElectionResult();
+			}
+
 			var nomineesSeen = new List<string>();
 			var rankSeen = new List<int>();
 			var invalid = false;
@@ -108,8 +113,10 @@ namespace DigitaleBriefwahl.Model
 				nomineesSeen.Add(name);
 				if (!votes.TryGetValue(name, out res))
 				{
-					res = new WeightedElectionResult();
-					votes[name] = res;
+					// Name is not in the nominee list - INVALID
+					Logger.Error($"{name} is not nominated.");
+					invalid = true;
+					continue;
 				}
 
 				if (string.IsNullOrWhiteSpace(match.Groups[1].Value))
