@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - replaced non-ASCII characters in encrypted filename (#41)
+- fixed crash if there are fewer nominees than votes
 
 ## [1.3.3] - 2023-10-17
 

@@ -51,7 +51,7 @@ namespace DigitaleBriefwahl.Model
 			get
 			{
 				var votes = new List<string>();
-				for (int i = 0; i < Votes; i++)
+				for (int i = 0; i < Votes && i < Nominees.Count; i++)
 				{
 					votes.Add(Nominees[i]);
 				}
