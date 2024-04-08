@@ -79,26 +79,21 @@ namespace DigitaleBriefwahl.Encryption
 			using var stream = new MemoryStream();
 			var compressedDataGenerator = new PgpCompressedDataGenerator(CompressionAlgorithmTag.Zip);
 
-			using (var compressedStream = compressedDataGenerator.Open(stream))
+			using var compressedStream = compressedDataGenerator.Open(stream);
+			var lData = new PgpLiteralDataGenerator();
+
+			// we want to Generate compressed data. This might be a user option later,
+			// in which case we would pass in bOut.
+			using (var pOut = lData.Open(
+						compressedStream, // the compressed output stream
+						PgpLiteralData.Binary,
+						"data",           // "filename" to store
+						inputData.Length, // length of clear data
+						DateTime.UtcNow   // current time
+						))
 			{
-				var lData = new PgpLiteralDataGenerator();
-
-				// we want to Generate compressed data. This might be a user option later,
-				// in which case we would pass in bOut.
-				using (var pOut = lData.Open(
-							compressedStream, // the compressed output stream
-							PgpLiteralData.Binary,
-							"data",           // "filename" to store
-							inputData.Length, // length of clear data
-							DateTime.UtcNow   // current time
-							))
-				{
-					pOut.Write(inputData, 0, inputData.Length);
-
-					lData.Close();
-				}
+				pOut.Write(inputData, 0, inputData.Length);
 			}
-			compressedDataGenerator.Close();
 			return stream.ToArray();
 		}
 
