@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Added
 
 - DigiTally, a tool to count the ballots
+- `FehlendOk` option to allow missing votes in weighted elections
 
 ### Fixed
 

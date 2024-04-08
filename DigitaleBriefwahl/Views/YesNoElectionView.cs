@@ -83,7 +83,7 @@ namespace DigitaleBriefwahl.Views
 			_radioButtons[i][2].TextColor = color;
 		}
 
-		public override string GetResult(bool writeEmptyBallot)
+		private List<string> GetResultList()
 		{
 			var votes = new List<string>();
 			for (var i = 0; i < Election.Nominees.Count; i++)
@@ -96,7 +96,12 @@ namespace DigitaleBriefwahl.Views
 					votes.Add(YesNoElectionModel.Abstention);
 			}
 
-			return Election.GetResult(votes, writeEmptyBallot);
+			return votes;
+		}
+
+		public override string GetResult(bool writeEmptyBallot)
+		{
+			return Election.GetResult(GetResultList(), writeEmptyBallot);
 		}
 	}
 }

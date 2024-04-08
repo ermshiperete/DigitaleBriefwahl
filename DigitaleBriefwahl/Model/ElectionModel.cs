@@ -143,6 +143,9 @@ namespace DigitaleBriefwahl.Model
 		{
 			return $"({BallotsProcessed} ballots, thereof {Invalid} invalid)";
 		}
+
+		public abstract bool SkipNominee(string name, int iVote);
+		public abstract HashSet<int> GetInvalidVotes(List<string> electedNominees);
 	}
 }
 

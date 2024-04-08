@@ -183,5 +183,16 @@ namespace DigitaleBriefwahl.Model
 			bldr.AppendLine(base.GetResultString(results));
 			return bldr.ToString();
 		}
+
+		public override bool SkipNominee(string name, int iVote)
+		{
+			return false;
+		}
+
+		public override HashSet<int> GetInvalidVotes(List<string> electedNominees)
+		{
+			// Unused - handled by the UI
+			return null;
+		}
 	}
 }

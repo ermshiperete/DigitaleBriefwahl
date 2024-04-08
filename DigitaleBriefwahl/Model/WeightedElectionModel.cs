@@ -5,22 +5,21 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Text.RegularExpressions;
 using DigitaleBriefwahl.ExceptionHandling;
 using IniParser.Model;
-using SIL.Extensions;
 
 namespace DigitaleBriefwahl.Model
 {
 	public class WeightedElectionModel: ElectionModel
 	{
+		private bool MissingOk { get; }
 		public WeightedElectionModel(string name, IniData data) : base(name, data)
 		{
+			MissingOk = data[name].ContainsKey(Configuration.MissingOk) && data[name][Configuration.MissingOk] == "true";
 		}
 
 		public override string GetResult(List<string> electedNominees, bool writeEmptyBallot)
@@ -215,6 +214,65 @@ namespace DigitaleBriefwahl.Model
 
 			bldr.AppendLine(base.GetResultString(results));
 			return bldr.ToString();
+		}
+
+		public override bool SkipNominee(string name, int iVote)
+		{
+			var vote = iVote + 1;
+			if (!NomineeLimits.TryGetValue(name, out var limit))
+				return false;
+
+			return vote < limit.Item1 || vote > limit.Item2;
+		}
+
+		public override HashSet<int> GetInvalidVotes(List<string> electedNominees)
+		{
+			var invalid = new HashSet<int>();
+			var lim = Math.Min(Votes, electedNominees.Count);
+			for (int i = lim; i < Votes; i++)
+			{
+				if (!MissingOk)
+				{
+					// Missing votes
+					invalid.Add(i);
+				}
+
+			}
+
+			for (var i = 0; i < lim; i++)
+			{
+				var electedNominee = electedNominees[i].Trim();
+				if (string.IsNullOrEmpty(electedNominee))
+				{
+					if (!MissingOk)
+						invalid.Add(i);
+					continue;
+				}
+
+				if (!Nominees.Contains(electedNominee))
+				{
+					invalid.Add(i);
+					continue;
+				}
+
+				for (var j = i + 1; j < lim; j++)
+				{
+					if (electedNominee != electedNominees[j] ||
+						electedNominee == Configuration.Abstention)
+					{
+						continue;
+					}
+
+					invalid.Add(i);
+					invalid.Add(j);
+				}
+
+				if (!SkipNominee(electedNominee, i))
+					continue;
+
+				invalid.Add(i);
+			}
+			return invalid;
 		}
 	}
 }

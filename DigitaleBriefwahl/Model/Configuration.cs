@@ -23,6 +23,9 @@ namespace DigitaleBriefwahl.Model
 		internal const string NomineeLimitKey = "LimitKandidat";
 		internal const string PublicKeyKey = "PublicKey";
 		internal const string Email = "Email";
+		internal const string MissingOk = "FehlendOk";
+		internal const string Abstention = "<Enthaltung>";
+
 
 		public const string ConfigName = "wahl.ini";
 

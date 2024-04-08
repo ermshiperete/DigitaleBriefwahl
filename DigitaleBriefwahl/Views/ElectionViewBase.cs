@@ -12,8 +12,6 @@ namespace DigitaleBriefwahl.Views
 	{
 		private TabPage _page;
 
-		public const string Abstention = "<Enthaltung>";
-
 		protected ElectionModel Election { get; }
 
 		protected ElectionViewBase(ElectionModel election)

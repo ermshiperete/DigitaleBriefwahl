@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Eberhard Beilharz
+// Copyright (c) 2016-2024 Eberhard Beilharz
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 using System;
@@ -12,7 +12,7 @@ namespace DigitaleBriefwahl.Views
 {
     internal class WeightedElectionView: ElectionViewBase
 	{
-		private List<ComboBox> _ComboBoxes;
+		private List<ComboBox> _comboBoxes;
 		private Color _defaultTextColor;
 
 		public WeightedElectionView(ElectionModel election)
@@ -25,7 +25,7 @@ namespace DigitaleBriefwahl.Views
 			var page = base.Layout();
 
 			var layout = page.Content as StackLayout;
-			_ComboBoxes = new List<ComboBox>(Election.Votes);
+			_comboBoxes = new List<ComboBox>(Election.Votes);
 			for (var i = 0; i < Election.Votes; i++)
 			{
 				if (Election.TextBefore[i] != null)
@@ -45,84 +45,55 @@ namespace DigitaleBriefwahl.Views
 					}
 				};
 				var combo = new ComboBox();
-				_ComboBoxes.Add(combo);
+				_comboBoxes.Add(combo);
 				foreach (var nominee in Election.Nominees)
 				{
-					if (SkipNominee(nominee, i))
+					if (Election.SkipNominee(nominee, i))
 						continue;
 					combo.Items.Add(new ListItem { Text = nominee });
 				}
-				combo.Items.Add(new ListItem { Text = Abstention });
+				combo.Items.Add(new ListItem { Text = Configuration.Abstention });
 				voteLine.Items.Add(combo);
 				layout.Items.Add(new StackLayoutItem(voteLine));
 			}
 			if (Election.Votes > 0)
-				_defaultTextColor = _ComboBoxes[0].TextColor;
+				_defaultTextColor = _comboBoxes[0].TextColor;
 			return page;
-		}
-
-		private bool SkipNominee(string name, int iVote)
-		{
-			var vote = iVote + 1;
-			if (!Election.NomineeLimits.ContainsKey(name))
-				return false;
-
-			var limit = Election.NomineeLimits[name];
-			return vote < limit.Item1 || vote > limit.Item2;
 		}
 
 		public override bool VerifyOk()
 		{
-			var allOk = true;
 			for (var i = 0; i < Election.Votes; i++)
-				_ComboBoxes[i].TextColor = _defaultTextColor;
+				_comboBoxes[i].TextColor = _defaultTextColor;
 
-			for (var i = 0; i < Election.Votes; i++)
+			var invalids = Election.GetInvalidVotes(GetResultList());
+			var isFirst = true;
+			foreach (var invalid in invalids)
 			{
-				if (string.IsNullOrEmpty(_ComboBoxes[i].SelectedKey))
+				_comboBoxes[invalid].TextColor = Colors.Red;
+				if (isFirst)
 				{
-					_ComboBoxes[i].TextColor = Colors.Red;
-					if (allOk)
-						_ComboBoxes[i].Focus();
-					allOk = false;
-					continue;
+					_comboBoxes[invalid].Focus();
+					isFirst = false;
 				}
-
-				for (var j = i + 1; j < Election.Votes; j++)
-				{
-					if (_ComboBoxes[i].SelectedKey != _ComboBoxes[j].SelectedKey ||
-						_ComboBoxes[i].SelectedKey == Abstention)
-					{
-						continue;
-					}
-
-					_ComboBoxes[i].TextColor = Colors.Red;
-					_ComboBoxes[j].TextColor = Colors.Red;
-					if (allOk)
-						_ComboBoxes[i].Focus();
-					allOk = false;
-				}
-
-				if (!SkipNominee(_ComboBoxes[i].SelectedKey, i))
-					continue;
-
-				_ComboBoxes[i].TextColor = Colors.Red;
-				if (allOk)
-					_ComboBoxes[i].Focus();
-				allOk = false;
 			}
-			return allOk;
+			return invalids.Count == 0;
 		}
 
-		public override string GetResult(bool writeEmptyBallot)
+		private List<string> GetResultList()
 		{
 			var electedNominees = new List<string>();
 			for (var i = 0; i < Election.Votes; i++)
 			{
-				electedNominees.Add(_ComboBoxes[i].SelectedKey);
+				electedNominees.Add(_comboBoxes[i].SelectedKey);
 			}
 
-			return Election.GetResult(electedNominees, writeEmptyBallot);
+			return electedNominees;
+		}
+
+		public override string GetResult(bool writeEmptyBallot)
+		{
+			return Election.GetResult(GetResultList(), writeEmptyBallot);
 		}
 	}
 }
