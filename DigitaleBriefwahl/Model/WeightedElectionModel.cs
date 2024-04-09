@@ -241,7 +241,7 @@ namespace DigitaleBriefwahl.Model
 
 			for (var i = 0; i < lim; i++)
 			{
-				var electedNominee = electedNominees[i].Trim();
+				var electedNominee = electedNominees[i]?.Trim();
 				if (string.IsNullOrEmpty(electedNominee))
 				{
 					if (!MissingOk)
