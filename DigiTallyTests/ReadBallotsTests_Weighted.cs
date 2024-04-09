@@ -340,6 +340,38 @@ Kandidat4=Daisy Duck
 
 "));
 		}
+
+		[Test]
+		public void GetResultString_Abstains()
+		{
+			var ballotFileName = Path.GetTempFileName();
+			File.WriteAllText(ballotFileName, "The election\r\n" +
+				"============\r\n" +
+				"\r\n" +
+				"Election\r\n" +
+				"--------\r\n" +
+				"(2 Stimmen; Wahl der Reihenfolge nach mit 1.-2. kennzeichnen)\r\n" +
+				"   Mickey Mouse\r\n" +
+				"   Donald Duck\r\n" +
+				"   Dagobert Duck\r\n" +
+				"   Daisy Duck\r\n" +
+				"\r\n" +
+				"\r\n" +
+				"12345\r\n");
+			_ballotFileNames.Add(ballotFileName);
+			var sut = new ReadBallots(_configFileName);
+			Assert.That(sut.AddBallot(ballotFileName), Is.True);
+			Assert.That(sut.GetResultString(), Is.EqualTo(@"Election
+--------
+   Dagobert Duck (0 points)
+   Daisy Duck (0 points)
+   Donald Duck (0 points)
+   Mickey Mouse (0 points)
+(1 ballots, thereof 0 invalid)
+
+"));
+		}
+
 	}
 
 }

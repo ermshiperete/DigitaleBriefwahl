@@ -190,5 +190,86 @@ Kandidat4=Four
 			Assert.That(election2.Key.BallotsProcessed, Is.EqualTo(1));
 			Assert.That(election2.Key.Invalid, Is.EqualTo(1));
 		}
+
+		[Test]
+		public void GetResultString_Valid_OnlyOneNominee()
+		{
+			File.WriteAllText(_configFileName, @"[Wahlen]
+Titel=The election
+Wahl1=Election
+Email=election@example.com
+PublicKey=12345678.asc
+
+[Election]
+Text=Some description
+Typ=Weighted
+FehlendOk=true
+Stimmen=2
+Kandidat1=Mickey Mouse
+");
+			var ballotFileName = Path.GetTempFileName();
+			File.WriteAllText(ballotFileName, "The election\r\n" +
+				"============\r\n" +
+				"\r\n" +
+				"Election\r\n" +
+				"--------\r\n" +
+				"(2 Stimmen; Wahl der Reihenfolge nach mit 1.-2. kennzeichnen)\r\n" +
+				"2. Mickey Mouse\r\n" +
+				"\r\n" +
+				"\r\n" +
+				"12345\r\n");
+			_ballotFileNames.Add(ballotFileName);
+			var sut = new ReadBallots(_configFileName);
+			Assert.That(sut.AddBallot(ballotFileName), Is.True);
+			Assert.That(sut.NumberOfInvalidBallots, Is.EqualTo(0));
+
+			var election1 = sut.Results.First();
+			Assert.That(election1.Key.BallotsProcessed, Is.EqualTo(1));
+			Assert.That(election1.Key.Invalid, Is.EqualTo(0));
+			Assert.That(sut.GetResultString(), Is.EqualTo(@"Election
+--------
+1. Mickey Mouse (1 points)
+(1 ballots, thereof 0 invalid)
+
+"));
+		}
+
+		[Test]
+		public void GetResultString_Invalid_TwoNomineesOneVote()
+		{
+			File.WriteAllText(_configFileName, @"[Wahlen]
+Titel=The election
+Wahl1=Election
+Email=election@example.com
+PublicKey=12345678.asc
+
+[Election]
+Text=Some description
+Typ=Weighted
+FehlendOk=false
+Stimmen=2
+Kandidat1=Mickey Mouse
+Kandidat2=Dagobert Duck
+");
+			var ballotFileName = Path.GetTempFileName();
+			File.WriteAllText(ballotFileName, "The election\r\n" +
+			                                  "============\r\n" +
+			                                  "\r\n" +
+			                                  "Election\r\n" +
+			                                  "--------\r\n" +
+			                                  "(2 Stimmen; Wahl der Reihenfolge nach mit 1.-2. kennzeichnen)\r\n" +
+			                                  "2. Mickey Mouse\r\n" +
+			                                  "\r\n" +
+			                                  "\r\n" +
+			                                  "12345\r\n");
+			_ballotFileNames.Add(ballotFileName);
+			var sut = new ReadBallots(_configFileName);
+			Assert.That(sut.AddBallot(ballotFileName), Is.True);
+			Assert.That(sut.NumberOfInvalidBallots, Is.EqualTo(1));
+
+			var election1 = sut.Results.First();
+			Assert.That(election1.Key.BallotsProcessed, Is.EqualTo(1));
+			Assert.That(election1.Key.Invalid, Is.EqualTo(1));
+		}
 	}
 }

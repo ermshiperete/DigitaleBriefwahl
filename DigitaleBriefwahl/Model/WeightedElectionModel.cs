@@ -88,9 +88,12 @@ namespace DigitaleBriefwahl.Model
 			var nomineesSeen = new List<string>();
 			var rankSeen = new List<int>();
 			var invalid = false;
+			var lineCount = 0;
 
 			for (var line = stream.ReadLine(); !string.IsNullOrEmpty(line); line = stream.ReadLine())
 			{
+				lineCount++;
+
 				// 1. Mickey Mouse
 				CandidateResult res = null;
 				var regex = new Regex("(([0-9]+).|  ) (.+)");
@@ -143,7 +146,7 @@ namespace DigitaleBriefwahl.Model
 				}
 			}
 
-			if (invalid)
+			if (invalid || (lineCount < Votes && !MissingOk ))
 			{
 				Invalid++;
 				return null;
@@ -154,15 +157,15 @@ namespace DigitaleBriefwahl.Model
 
 		private class FindIndexPredicate
 		{
-			private string Name;
+			private readonly string _name;
 			public FindIndexPredicate(string name)
 			{
-				Name = name;
+				_name = name;
 			}
 
 			public bool Find(KeyValuePair<string, CandidateResult> kv)
 			{
-				return kv.Key == Name;
+				return kv.Key == _name;
 			}
 		}
 
@@ -189,6 +192,9 @@ namespace DigitaleBriefwahl.Model
 				candidate)
 		{
 			var index = results.FindIndex(new FindIndexPredicate(candidate).Find);
+			if (index < 0 || ((WeightedCandidateResult)results[index].Value).Points <= 0)
+				return Int32.MaxValue;
+
 			if (index > 0 && ((WeightedCandidateResult)results[index].Value).Points == ((WeightedCandidateResult)results[index-1].Value).Points)
 			{
 				return index;
