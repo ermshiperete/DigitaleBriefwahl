@@ -249,7 +249,7 @@ namespace DigitaleBriefwahl.Model
 					continue;
 				}
 
-				if (!Nominees.Contains(electedNominee))
+				if (!Nominees.Contains(electedNominee) && electedNominee != Configuration.Abstention)
 				{
 					invalid.Add(i);
 					continue;
