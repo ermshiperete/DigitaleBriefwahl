@@ -26,6 +26,11 @@ This document describes how to create a new release.
   You can omit the language subdirectories (`de`, `es`,...) but you'll have to include the
   `lib` subdirectory!
 
+### DigiTally
+
+- Compress all files from `output/Release/DigiTally/net472` into a `DigitaleBriefwahl.
+  DigiTally-1.4.0.zip` file.
+
 ### MacOS
 
 - The binaries for OSX can be built on Linux: `cd macos && make`
