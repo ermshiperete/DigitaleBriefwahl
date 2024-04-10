@@ -13,9 +13,10 @@ This document describes how to create a new release.
 
 ### Windows
 
-- The binaries for Windows are built on TC. It might be necessary to upload the artifacts from the last
-  build to the `Releases` folder so that squirrel can properly calculate the delta files. Also, delete
-  old versions from `Releases` that are no longer needed.
+- The binaries for Windows are built on TC. The artifacts from the last release
+  will be automatically downloaded from GitHub into the `Releases` folder so
+  that squirrel can properly calculate the delta files, but it might necessary
+  to delete old versions from `Releases` that are no longer needed.
 - Run the build from https://build.palaso.org/viewType.html?buildTypeId=DigitaleBriefwahl
 - Download the generated artifacts and attach to GitHub release
 
