@@ -45,31 +45,38 @@ The field `ZwischentextVorX=` specifies a text that will be displayed before the
 The field `LimitKandidatY=a-b` limits the availability of nominee `Y` on the selections
 between `a` and `b`.
 
-`wahl.ini:`
+If the optional field `FehlendOk` is set to `true` then missing/empty votes in a
+weighted election are acceptable, otherwise they are treated as invalid
+(default).
 
-	[Wahlen]
-	Title=The big election 2017
-	Wahl1=First Election
-	Wahl2=Second Election
-	Email=election@example.com
-	PublicKey = 12345678.asc
+`wahl.ini`:
 
-	[First Election]
-	Text=A short description of the election
-	Typ=YesNo
-	Stimmen=1
-	Kandidat1=Mickey Mouse
+```ini
+[Wahlen]
+Title=The big election 2017
+Wahl1=First Election
+Wahl2=Second Election
+Email=election@example.com
+PublicKey = 12345678.asc
 
-	[Second Election]
-	Text=Some description
-	Typ=Weighted
-	Stimmen=3
-	ZwischentextVor1=The famous mouse
-	Kandidat1=Mickey Mouse
-	Kandidat2=Donald Duck
-	LimitKandidat2=2-3
-	Kandidat3=Dagobert Duck
-	Kandidat4=Goofy
+[First Election]
+Text=A short description of the election
+Typ=YesNo
+Stimmen=1
+Kandidat1=Mickey Mouse
+
+[Second Election]
+Text=Some description
+Typ=Weighted
+FehlendOk=false
+Stimmen=3
+ZwischentextVor1=The famous mouse
+Kandidat1=Mickey Mouse
+Kandidat2=Donald Duck
+LimitKandidat2=2-3
+Kandidat3=Dagobert Duck
+Kandidat4=Goofy
+```
 
 ## Special Thanks To
 
