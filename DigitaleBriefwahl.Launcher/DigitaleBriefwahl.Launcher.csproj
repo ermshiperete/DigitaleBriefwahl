@@ -40,23 +40,39 @@
 
   <Target Name="BuildSquirrelPackage" AfterTargets="CopyFilesToOutputDirectory">
     <WriteLinesToFile File="$(OutputPath)/../Version.txt" Lines="$(GitVersion_FullSemVer)" Overwrite="true" />
-    <PropertyGroup>
+
+    <PropertyGroup Condition="'$(OS)' == 'Windows_NT'">
+      <RootDir Condition="'$(RootDir)' == ''">$(MSBuildProjectDirectory)\..</RootDir>
+      <NuGetToolsPath>$(RootDir)\build</NuGetToolsPath>
+      <NuGetExePath Condition=" '$(NuGetExePath)' == '' ">$(NuGetToolsPath)\nuget.exe</NuGetExePath>
+      <NuGetCommand>"$(NuGetExePath)"</NuGetCommand>
+      <FullOutputPath>$(ProjectDir)\bin\$(Configuration)</FullOutputPath>
+      <NuGetBuildFolder>$(RootDir)\SquirrelBuild</NuGetBuildFolder>
+      <!-- squirrel expects to find the files in lib/net45 regardless of framework used -->
+      <FilesFolder>$(NuGetBuildFolder)\lib\net45</FilesFolder>
+    </PropertyGroup>
+
+    <PropertyGroup Condition="'$(OS)' != 'Windows_NT'">
       <RootDir Condition="'$(RootDir)' == ''">$(MSBuildProjectDirectory)/..</RootDir>
       <NuGetToolsPath>$(RootDir)/build</NuGetToolsPath>
       <NuGetExePath Condition=" '$(NuGetExePath)' == '' ">$(NuGetToolsPath)/nuget.exe</NuGetExePath>
-      <NuGetCommand Condition=" '$(OS)' == 'Windows_NT'">"$(NuGetExePath)"</NuGetCommand>
-      <NuGetCommand Condition=" '$(OS)' != 'Windows_NT' ">mono --debug $(NuGetExePath)</NuGetCommand>
+      <NuGetCommand>mono --debug $(NuGetExePath)</NuGetCommand>
       <FullOutputPath>$(ProjectDir)/bin/$(Configuration)</FullOutputPath>
-      <NuSpecFile>DigitaleBriefwahl.Launcher.nuspec</NuSpecFile>
       <NuGetBuildFolder>$(RootDir)/SquirrelBuild</NuGetBuildFolder>
       <!-- squirrel expects to find the files in lib/net45 regardless of framework used -->
       <FilesFolder>$(NuGetBuildFolder)/lib/net45</FilesFolder>
     </PropertyGroup>
+
+    <PropertyGroup>
+      <NuSpecFile>DigitaleBriefwahl.Launcher.nuspec</NuSpecFile>
+    </PropertyGroup>
+
     <ItemGroup>
       <FilesToDelete Include="$(NuGetBuildFolder)\**\*.*" />
       <Files Include="$(OutputPath)/**/*.*" />
       <Files Remove="$(OutputPath)/**/*.pdb" Condition="'$(OS)'!='Windows_NT'" />
     </ItemGroup>
+
     <Delete Files="@(FilesToDelete)" />
     <MakeDir Directories="$(NuGetBuildFolder)" />
     <Copy SourceFiles="@(Files)" DestinationFolder="$(FilesFolder)" />
