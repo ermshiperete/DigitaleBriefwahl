@@ -84,16 +84,16 @@ namespace DigitaleBriefwahl.Encryption
 
 			// we want to Generate compressed data. This might be a user option later,
 			// in which case we would pass in bOut.
-			using (var pOut = lData.Open(
-						compressedStream, // the compressed output stream
-						PgpLiteralData.Binary,
-						"data",           // "filename" to store
-						inputData.Length, // length of clear data
-						DateTime.UtcNow   // current time
-						))
-			{
-				pOut.Write(inputData, 0, inputData.Length);
-			}
+			using var pOut = lData.Open(
+				compressedStream, // the compressed output stream
+				PgpLiteralData.Binary,
+				"data", // "filename" to store
+				inputData.Length, // length of clear data
+				DateTime.UtcNow // current time
+			);
+			pOut.Write(inputData, 0, inputData.Length);
+			pOut.Close();
+			compressedStream.Close();
 			return stream.ToArray();
 		}
 

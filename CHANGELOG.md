@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [1.4.1] - 2024-06-10
+
+### Fixed
+
+- last version corrupted the encrypted file. This is fixed again.
+
 ## [1.4.0] - 2024-04-09
 
 ### Added
@@ -298,8 +304,9 @@ Re-release
 
 - Initial beta version
 
-[Unreleased]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.4.0...master
+[Unreleased]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.4.1...master
 
+[1.4.1]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.3.3...v1.4.0
 [1.3.3]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.3.2...v1.3.3
 [1.3.2]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.3.1...v1.3.2
