@@ -29,8 +29,8 @@ This document describes how to create a new release.
 
 ### DigiTally
 
-- Compress all files from `output/Release/DigiTally/net472` into a `DigitaleBriefwahl.
-  DigiTally-1.4.0.zip` file.
+- Compress all files from `output/Release/DigiTally/net472` into a
+  `DigitaleBriefwahl.DigiTally-1.4.0.zip` file.
 
 ### MacOS
 
