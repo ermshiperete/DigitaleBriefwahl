@@ -141,7 +141,12 @@ namespace DigitaleBriefwahl.Model
 
 		public virtual string GetResultString(Dictionary<string, CandidateResult> results)
 		{
-			return $"({BallotsProcessed} ballots, thereof {Invalid} invalid)";
+			return $"({GetResultStringSummary(results)})";
+		}
+
+		protected virtual string GetResultStringSummary(Dictionary<string, CandidateResult> results)
+		{
+			return $"{BallotsProcessed} ballots, thereof {Invalid} invalid";
 		}
 
 		public abstract bool SkipNominee(string name, int iVote);

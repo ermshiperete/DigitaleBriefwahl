@@ -6,7 +6,7 @@ using DigitaleBriefwahl;
 using DigitaleBriefwahl.Model;
 using NUnit.Framework;
 
-namespace DigitaleBriefwahlTests
+namespace DigitaleBriefwahlTests.Model
 {
 	[TestFixture]
 	public class ElectionModelFactoryTests

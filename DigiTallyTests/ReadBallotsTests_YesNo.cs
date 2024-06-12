@@ -2,12 +2,15 @@
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using DigitaleBriefwahl.Model;
 using NUnit.Framework;
+using SIL.Providers;
+using SIL.TestUtilities.Providers;
 
 namespace DigitaleBriefwahl.Tally.Tests
 {
@@ -279,6 +282,8 @@ Kandidat4=Daisy Duck
 		[Test]
 		public void GetResultString()
 		{
+			DateTimeProvider.SetProvider(new ReproducibleDateTimeProvider(new DateTime(2024, 6,
+				12, 15, 32, 0)));
 			var ballotFileName = Path.GetTempFileName();
 			File.WriteAllText(ballotFileName, "The election\r\n" +
 			                                  "============\r\n" +
@@ -296,7 +301,7 @@ Kandidat4=Daisy Duck
 			_ballotFileNames.Add(ballotFileName);
 			var sut = new ReadBallots(_configFileName);
 			Assert.That(sut.AddBallot(ballotFileName), Is.True);
-			Assert.That(sut.GetResultString(), Is.EqualTo(@"Election
+			Assert.That(sut.GetResultString(), Is.EqualTo($@"Election
 --------
 Mickey Mouse: 1 J, 0 N, 0 E
 Donald Duck: 0 J, 1 N, 0 E
@@ -304,12 +309,15 @@ Dagobert Duck: 1 J, 0 N, 0 E
 Daisy Duck: 0 J, 0 N, 1 E
 (1 ballots, thereof 0 invalid)
 
+(DigiTally version {GitVersionInformation.SemVer}; report executed 2024-06-12 15:32)
 "));
 		}
 
 		[Test]
 		public void GetResultString_DifferentOrder()
 		{
+			DateTimeProvider.SetProvider(new ReproducibleDateTimeProvider(new DateTime(2024, 6,
+				12, 15, 32, 0)));
 			var ballotFileName = Path.GetTempFileName();
 			File.WriteAllText(ballotFileName, "The election\r\n" +
 			                                  "============\r\n" +
@@ -327,7 +335,7 @@ Daisy Duck: 0 J, 0 N, 1 E
 			_ballotFileNames.Add(ballotFileName);
 			var sut = new ReadBallots(_configFileName);
 			Assert.That(sut.AddBallot(ballotFileName), Is.True);
-			Assert.That(sut.GetResultString(), Is.EqualTo(@"Election
+			Assert.That(sut.GetResultString(), Is.EqualTo($@"Election
 --------
 Mickey Mouse: 1 J, 0 N, 0 E
 Donald Duck: 0 J, 1 N, 0 E
@@ -335,6 +343,7 @@ Dagobert Duck: 1 J, 0 N, 0 E
 Daisy Duck: 0 J, 0 N, 1 E
 (1 ballots, thereof 0 invalid)
 
+(DigiTally version {GitVersionInformation.SemVer}; report executed 2024-06-12 15:32)
 "));
 		}
 

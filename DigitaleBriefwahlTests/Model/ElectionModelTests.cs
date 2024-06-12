@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2016 Eberhard Beilharz
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
+
 using System;
 using System.IO;
 using DigitaleBriefwahl;
@@ -9,7 +10,7 @@ using IniParser;
 using IniParser.Model;
 using NUnit.Framework;
 
-namespace DigitaleBriefwahlTests
+namespace DigitaleBriefwahlTests.Model
 {
 	[TestFixture]
 	public class ElectionModelTests

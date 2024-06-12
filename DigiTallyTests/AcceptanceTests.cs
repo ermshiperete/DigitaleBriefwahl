@@ -2,10 +2,13 @@
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using NUnit.Framework;
+using SIL.Providers;
+using SIL.TestUtilities.Providers;
 
 namespace DigitaleBriefwahl.Tally.Tests
 {
@@ -58,6 +61,7 @@ Kandidat4=Four
 		[Test]
 		public void EndToEnd()
 		{
+			// Setup
 			var ballotFileName1 = Path.Combine(_ballotDirectoryName, Path.GetRandomFileName());
 			File.WriteAllText(ballotFileName1, "The election\r\n" +
 			                                  "============\r\n" +
@@ -127,9 +131,14 @@ Kandidat4=Four
 			                                   "\r\n" +
 			                                   "12345\r\n");
 
+			DateTimeProvider.SetProvider(new ReproducibleDateTimeProvider(new DateTime(2024, 6,
+				12, 15, 32, 0)));
+
+			// Execute
 			var output = Program.TallyBallots(_configFileName, _ballotDirectoryName);
 
-			Assert.That(output, Is.EqualTo(@"The election
+			// Verify
+			Assert.That(output, Is.EqualTo(@$"The election
 ============
 
 Total of 3 ballots, thereof 1 at least partially invalid.
@@ -140,7 +149,7 @@ Election1
 2. Mickey Mouse (3 points)
    Donald Duck (2 points)
    Daisy Duck (0 points)
-(3 ballots, thereof 0 invalid)
+(3 ballots, thereof 0 invalid; max 6 points)
 
 Election2
 ---------
@@ -150,6 +159,7 @@ Three: 1 J, 0 N, 1 E
 Four: 0 J, 0 N, 2 E
 (3 ballots, thereof 1 invalid)
 
+(DigiTally version {GitVersionInformation.SemVer}; report executed 2024-06-12 15:32)
 "));
 		}
 

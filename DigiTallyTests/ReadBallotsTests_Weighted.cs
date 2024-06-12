@@ -1,12 +1,16 @@
 ﻿// Copyright (c) 2024 Eberhard Beilharz
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using DigitaleBriefwahl.Model;
 using NUnit.Framework;
+using SIL.Providers;
+using SIL.TestUtilities.Providers;
 
 namespace DigitaleBriefwahl.Tally.Tests
 {
@@ -43,6 +47,8 @@ Kandidat2=Donald Duck
 Kandidat3=Dagobert Duck
 Kandidat4=Daisy Duck
 ");
+			DateTimeProvider.SetProvider(new ReproducibleDateTimeProvider(new DateTime(2024, 6,
+				12, 15, 32, 0)));
 		}
 
 		[TearDown]
@@ -283,14 +289,15 @@ Kandidat4=Daisy Duck
 			_ballotFileNames.Add(ballotFileName);
 			var sut = new ReadBallots(_configFileName);
 			Assert.That(sut.AddBallot(ballotFileName), Is.True);
-			Assert.That(sut.GetResultString(), Is.EqualTo(@"Election
+			Assert.That(sut.GetResultString(), Is.EqualTo($@"Election
 --------
 1. Dagobert Duck (2 points)
 2. Mickey Mouse (1 points)
    Daisy Duck (0 points)
    Donald Duck (0 points)
-(1 ballots, thereof 0 invalid)
+(1 ballots, thereof 0 invalid; max 2 points)
 
+(DigiTally version {GitVersionInformation.SemVer}; report executed 2024-06-12 15:32)
 "));
 		}
 
@@ -330,14 +337,15 @@ Kandidat4=Daisy Duck
 			var sut = new ReadBallots(_configFileName);
 			Assert.That(sut.AddBallot(ballotFileName1), Is.True);
 			Assert.That(sut.AddBallot(ballotFileName2), Is.True);
-			Assert.That(sut.GetResultString(), Is.EqualTo(@"Election
+			Assert.That(sut.GetResultString(), Is.EqualTo($@"Election
 --------
 1. Dagobert Duck (3 points)
 1. Mickey Mouse (3 points)
    Daisy Duck (0 points)
    Donald Duck (0 points)
-(2 ballots, thereof 0 invalid)
+(2 ballots, thereof 0 invalid; max 4 points)
 
+(DigiTally version {GitVersionInformation.SemVer}; report executed 2024-06-12 15:32)
 "));
 		}
 
@@ -361,14 +369,15 @@ Kandidat4=Daisy Duck
 			_ballotFileNames.Add(ballotFileName);
 			var sut = new ReadBallots(_configFileName);
 			Assert.That(sut.AddBallot(ballotFileName), Is.True);
-			Assert.That(sut.GetResultString(), Is.EqualTo(@"Election
+			Assert.That(sut.GetResultString(), Is.EqualTo($@"Election
 --------
    Dagobert Duck (0 points)
    Daisy Duck (0 points)
    Donald Duck (0 points)
    Mickey Mouse (0 points)
-(1 ballots, thereof 0 invalid)
+(1 ballots, thereof 0 invalid; max 2 points)
 
+(DigiTally version {GitVersionInformation.SemVer}; report executed 2024-06-12 15:32)
 "));
 		}
 

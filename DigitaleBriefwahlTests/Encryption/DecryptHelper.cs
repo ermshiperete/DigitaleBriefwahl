@@ -13,10 +13,9 @@ namespace DigitaleBriefwahlTests.Encryption
 			using Stream inputStream = PgpUtilities.GetDecoderStream(keyIn);
 			PgpSecretKeyRingBundle secretKeyRingBundle = new PgpSecretKeyRingBundle(inputStream);
 
-			PgpSecretKey key = null;
-			foreach (PgpSecretKeyRing kRing in secretKeyRingBundle.GetKeyRings())
+			foreach (var kRing in secretKeyRingBundle.GetKeyRings())
 			{
-				foreach (PgpSecretKey secretKey in kRing.GetSecretKeys())
+				foreach (var secretKey in kRing.GetSecretKeys())
 				{
 					return secretKey.ExtractPrivateKey(passPhrase);
 				}

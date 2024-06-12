@@ -7,7 +7,7 @@ using System.Linq;
 using DigitaleBriefwahl.Model;
 using NUnit.Framework;
 
-namespace DigitaleBriefwahlTests
+namespace DigitaleBriefwahlTests.Model
 {
 	[TestFixture]
 	public class YesNoElectionModelTests

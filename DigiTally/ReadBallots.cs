@@ -2,17 +2,19 @@
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using DigitaleBriefwahl.Model;
+using SIL.Providers;
 
 namespace DigitaleBriefwahl.Tally
 {
 	public class ReadBallots
 	{
-		private Configuration _configuration;
-		private Dictionary<ElectionModel, Dictionary<string, CandidateResult>> _results;
+		private readonly Configuration _configuration;
+		private readonly Dictionary<ElectionModel, Dictionary<string, CandidateResult>> _results;
 
 		public ReadBallots(string configFileName)
 		{
@@ -78,6 +80,9 @@ namespace DigitaleBriefwahl.Tally
 				strBuilder.AppendLine(new string('-', election.Key.Name.Length));
 				strBuilder.AppendLine(election.Key.GetResultString(election.Value));
 			}
+
+			strBuilder.AppendLine($"(DigiTally version {GitVersionInformation.SemVer}; " +
+				$"report executed {DateTimeProvider.Current.Now:yyyy-MM-dd HH:mm})");
 			return strBuilder.ToString();
 		}
 	}

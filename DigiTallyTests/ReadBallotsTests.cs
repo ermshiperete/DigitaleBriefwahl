@@ -2,10 +2,13 @@
 // This software is licensed under the GNU General Public License version 3
 // (https://opensource.org/licenses/GPL-3.0)
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using SIL.Providers;
+using SIL.TestUtilities.Providers;
 
 namespace DigitaleBriefwahl.Tally.Tests
 {
@@ -194,6 +197,8 @@ Kandidat4=Four
 		[Test]
 		public void GetResultString_Valid_OnlyOneNominee()
 		{
+			DateTimeProvider.SetProvider(new ReproducibleDateTimeProvider(new DateTime(2024, 6,
+				12, 15, 32, 0)));
 			File.WriteAllText(_configFileName, @"[Wahlen]
 Titel=The election
 Wahl1=Election
@@ -226,11 +231,12 @@ Kandidat1=Mickey Mouse
 			var election1 = sut.Results.First();
 			Assert.That(election1.Key.BallotsProcessed, Is.EqualTo(1));
 			Assert.That(election1.Key.Invalid, Is.EqualTo(0));
-			Assert.That(sut.GetResultString(), Is.EqualTo(@"Election
+			Assert.That(sut.GetResultString(), Is.EqualTo($@"Election
 --------
 1. Mickey Mouse (1 points)
-(1 ballots, thereof 0 invalid)
+(1 ballots, thereof 0 invalid; max 2 points)
 
+(DigiTally version {GitVersionInformation.SemVer}; report executed 2024-06-12 15:32)
 "));
 		}
 

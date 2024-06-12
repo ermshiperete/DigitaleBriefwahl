@@ -218,8 +218,13 @@ namespace DigitaleBriefwahl.Model
 				bldr.AppendLine($"{placing} {candidate} ({weightedResult.Points} points)");
 			}
 
-			bldr.AppendLine(base.GetResultString(results));
+			bldr.AppendLine(GetResultStringSummary(results));
 			return bldr.ToString();
+		}
+
+		protected override string GetResultStringSummary(Dictionary<string, CandidateResult> results)
+		{
+			return $"({base.GetResultStringSummary(results)}; max {(BallotsProcessed - Invalid) * Votes} points)";
 		}
 
 		public override bool SkipNominee(string name, int iVote)
