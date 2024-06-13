@@ -233,7 +233,7 @@ Kandidat1=Mickey Mouse
 			Assert.That(election1.Key.Invalid, Is.EqualTo(0));
 			Assert.That(sut.GetResultString(), Is.EqualTo($@"Election
 --------
-1. Mickey Mouse (1 points)
+1. Mickey Mouse (1 points, 50%)
 (1 ballots, thereof 0 invalid)
 (max 2 points per candidate)
 (max 3 points total, sum 1 points, 2 unallocated)

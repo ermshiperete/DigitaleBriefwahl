@@ -145,10 +145,10 @@ Total of 3 ballots, thereof 1 at least partially invalid.
 
 Election1
 ---------
-1. Dagobert Duck (4 points)
-2. Mickey Mouse (3 points)
-   Donald Duck (2 points)
-   Daisy Duck (0 points)
+1. Dagobert Duck (4 points, 66%)
+2. Mickey Mouse (3 points, 50%)
+   Donald Duck (2 points, 33%)
+   Daisy Duck (0 points, 0%)
 (3 ballots, thereof 0 invalid)
 (max 6 points per candidate)
 (max 9 points total, sum 9 points, 0 unallocated)

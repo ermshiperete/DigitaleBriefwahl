@@ -291,10 +291,10 @@ Kandidat4=Daisy Duck
 			Assert.That(sut.AddBallot(ballotFileName), Is.True);
 			Assert.That(sut.GetResultString(), Is.EqualTo($@"Election
 --------
-1. Dagobert Duck (2 points)
-2. Mickey Mouse (1 points)
-   Daisy Duck (0 points)
-   Donald Duck (0 points)
+1. Dagobert Duck (2 points, 100%)
+2. Mickey Mouse (1 points, 50%)
+   Daisy Duck (0 points, 0%)
+   Donald Duck (0 points, 0%)
 (1 ballots, thereof 0 invalid)
 (max 2 points per candidate)
 (max 3 points total, sum 3 points, 0 unallocated)
@@ -341,10 +341,10 @@ Kandidat4=Daisy Duck
 			Assert.That(sut.AddBallot(ballotFileName2), Is.True);
 			Assert.That(sut.GetResultString(), Is.EqualTo($@"Election
 --------
-1. Dagobert Duck (3 points)
-1. Mickey Mouse (3 points)
-   Daisy Duck (0 points)
-   Donald Duck (0 points)
+1. Dagobert Duck (3 points, 75%)
+1. Mickey Mouse (3 points, 75%)
+   Daisy Duck (0 points, 0%)
+   Donald Duck (0 points, 0%)
 (2 ballots, thereof 0 invalid)
 (max 4 points per candidate)
 (max 6 points total, sum 6 points, 0 unallocated)
@@ -375,10 +375,10 @@ Kandidat4=Daisy Duck
 			Assert.That(sut.AddBallot(ballotFileName), Is.True);
 			Assert.That(sut.GetResultString(), Is.EqualTo($@"Election
 --------
-   Dagobert Duck (0 points)
-   Daisy Duck (0 points)
-   Donald Duck (0 points)
-   Mickey Mouse (0 points)
+   Dagobert Duck (0 points, 0%)
+   Daisy Duck (0 points, 0%)
+   Donald Duck (0 points, 0%)
+   Mickey Mouse (0 points, 0%)
 (1 ballots, thereof 0 invalid)
 (max 2 points per candidate)
 (max 3 points total, sum 0 points, 3 unallocated)

@@ -216,13 +216,16 @@ namespace DigitaleBriefwahl.Model
 
 				var rank = GetRank(orderedResults, candidate);
 				var placing = rank <= Votes ? $"{rank}." : "  ";
-				bldr.AppendLine($"{placing} {candidate} ({weightedResult.Points} points)");
+				bldr.AppendLine($"{placing} {candidate} ({weightedResult.Points} points, " +
+				                $"{weightedResult.Points * 100 / MaxPointsPerCandidate}%)");
 				SumTotalPoints += weightedResult.Points;
 			}
 
 			bldr.AppendLine(GetResultStringSummary(results));
 			return bldr.ToString();
 		}
+
+		private int MaxPointsPerCandidate => (BallotsProcessed - Invalid) * Votes;
 
 		private int MaxTotalPoints
 		{
@@ -243,7 +246,7 @@ namespace DigitaleBriefwahl.Model
 		{
 			var bldr = new StringBuilder();
 			bldr.AppendLine($"({base.GetResultStringSummary(results)})");
-			bldr.AppendLine($"(max {(BallotsProcessed - Invalid) * Votes} points per candidate)");
+			bldr.AppendLine($"(max {MaxPointsPerCandidate} points per candidate)");
 			bldr.Append    ($"(max {MaxTotalPoints} points total, sum {SumTotalPoints} points, {UnallocatedPoints} unallocated)");
 			return bldr.ToString();
 		}
