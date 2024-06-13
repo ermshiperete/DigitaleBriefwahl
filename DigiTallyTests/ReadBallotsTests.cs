@@ -234,7 +234,9 @@ Kandidat1=Mickey Mouse
 			Assert.That(sut.GetResultString(), Is.EqualTo($@"Election
 --------
 1. Mickey Mouse (1 points)
-(1 ballots, thereof 0 invalid; max 2 points)
+(1 ballots, thereof 0 invalid)
+(max 2 points per candidate)
+(max 3 points total, sum 1 points, 2 unallocated)
 
 (DigiTally version {GitVersionInformation.SemVer}; report executed 2024-06-12 15:32)
 "));

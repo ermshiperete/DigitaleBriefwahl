@@ -295,7 +295,9 @@ Kandidat4=Daisy Duck
 2. Mickey Mouse (1 points)
    Daisy Duck (0 points)
    Donald Duck (0 points)
-(1 ballots, thereof 0 invalid; max 2 points)
+(1 ballots, thereof 0 invalid)
+(max 2 points per candidate)
+(max 3 points total, sum 3 points, 0 unallocated)
 
 (DigiTally version {GitVersionInformation.SemVer}; report executed 2024-06-12 15:32)
 "));
@@ -343,7 +345,9 @@ Kandidat4=Daisy Duck
 1. Mickey Mouse (3 points)
    Daisy Duck (0 points)
    Donald Duck (0 points)
-(2 ballots, thereof 0 invalid; max 4 points)
+(2 ballots, thereof 0 invalid)
+(max 4 points per candidate)
+(max 6 points total, sum 6 points, 0 unallocated)
 
 (DigiTally version {GitVersionInformation.SemVer}; report executed 2024-06-12 15:32)
 "));
@@ -375,7 +379,9 @@ Kandidat4=Daisy Duck
    Daisy Duck (0 points)
    Donald Duck (0 points)
    Mickey Mouse (0 points)
-(1 ballots, thereof 0 invalid; max 2 points)
+(1 ballots, thereof 0 invalid)
+(max 2 points per candidate)
+(max 3 points total, sum 0 points, 3 unallocated)
 
 (DigiTally version {GitVersionInformation.SemVer}; report executed 2024-06-12 15:32)
 "));
