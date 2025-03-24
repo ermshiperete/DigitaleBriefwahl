@@ -205,7 +205,7 @@ namespace DigitaleBriefwahl
 				{
 					var emailProvider = SIL.PlatformUtilities.Platform.IsWindows ?
 						new MapiEmailProvider() :
-						EmailProviderFactory.PreferredEmailProvider();
+						EmailProviderFactory.GetPreferredEmailProvider();
 					mailSent = SendEmail(emailProvider, filename);
 					Logger.Log($"Sending email through preferred email provider successful: {mailSent}");
 				}

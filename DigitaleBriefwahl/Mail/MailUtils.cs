@@ -73,7 +73,7 @@ namespace DigitaleBriefwahl.Mail
 				{
 					value = GetDefaultValue(Registry.LocalMachine, @"Software\Clients\Mail");
 					Logger.Log($@"HKLM\Software\Clients\Mail: {value}");
-					if (!string.IsNullOrEmpty(value))
+					if (value == "Microsoft Outlook")
 						retVal = NumberOfOutlookProfiles > 0;
 				}
 

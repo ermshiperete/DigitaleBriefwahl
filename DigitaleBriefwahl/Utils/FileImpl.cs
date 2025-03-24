@@ -11,5 +11,10 @@ namespace DigitaleBriefwahl.Utils
 		{
 			return File.Exists(path);
 		}
+
+		public StreamReader OpenText(string path)
+		{
+			return File.OpenText(path);
+		}
 	}
 }

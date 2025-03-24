@@ -6,5 +6,6 @@ namespace DigitaleBriefwahl.Utils
 	public interface IFile
 	{
 		bool Exists(string path);
+		System.IO.StreamReader OpenText(string path);
 	}
 }

@@ -208,6 +208,21 @@ namespace DigitaleBriefwahlTests.Mail
 
 		[Test]
 		[Platform(Include = "Win")]
+		public void CanUsePreferredEmailProvider_Other()
+		{
+			((InMemoryRegistryKey)_registry.LocalMachine).CreateKey(@"Software\Clients\Mail", "",
+				"Foo");
+			((InMemoryRegistryKey)_registry.ClassesRoot).CreateKey(@"Outlook.Application\CurVer",
+				"", "Outlook.Application.15");
+			((InMemoryRegistryKey)_registry.CurrentUser).CreateKey(@"Software\Microsoft\Office", "",
+				"Microsoft Outlook");
+			((InMemoryRegistryKey)_registry.CurrentUser).CreateKey(@"Software\Microsoft\Office\01\Outlook\Profiles\01", "",
+				"");
+			Assert.That(MailUtils.CanUsePreferredEmailProvider, Is.False);
+		}
+
+		[Test]
+		[Platform(Include = "Win")]
 		[TestCase("15", ExpectedResult = true)]
 		[TestCase("11", ExpectedResult = false, Description = "False because of missing profiles")]
 		[TestCase("10", ExpectedResult = false)]

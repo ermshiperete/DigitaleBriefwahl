@@ -4,6 +4,7 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Xml.XPath;
+using DigitaleBriefwahl.Utils;
 using SIL.PlatformUtilities;
 using IEmailProvider = SIL.Email.IEmailProvider;
 
@@ -11,25 +12,21 @@ namespace DigitaleBriefwahl.Mail
 {
 	public static class EmailProviderFactory
 	{
-		public static IEmailProvider PreferredEmailProvider()
+		private static IFile File => FileManager.File;
+
+		public static IEmailProvider GetPreferredEmailProvider(bool returnAlternateProvider = true)
 		{
-			if (Platform.IsWindows)
-				return new MapiEmailProvider();
-
-			if (Platform.IsMac)
-				return new SIL.Email.MacOsXEmailProvider();
-
-			if (ThunderbirdIsDefault())
+			if (MailUtils.CanUsePreferredEmailProvider)
 			{
-				Console.WriteLine("Using Thunderbird provider");
-				return new ThunderbirdEmailProvider();
+				return Platform.IsWindows
+					? (IEmailProvider)new MapiEmailProvider()
+					: (IEmailProvider)new ThunderbirdEmailProvider();
 			}
-			if (File.Exists("/usr/bin/xdg-email"))
-			{
-				Console.WriteLine("Using xdg-email provider");
-				return new LinuxEmailProvider();
-			}
-			return new SIL.Email.MailToEmailProvider();
+			if (MailUtils.IsWindowsThunderbirdInstalled)
+				return new ThunderbirdWindowsEmailProvider();
+			if (MailUtils.IsOutlookInstalled)
+				return new OutlookEmailProvider();
+			return returnAlternateProvider ? AlternateEmailProvider() : null;
 		}
 
 		public static IEmailProvider AlternateEmailProvider()
