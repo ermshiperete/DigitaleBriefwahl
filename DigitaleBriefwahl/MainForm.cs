@@ -118,19 +118,9 @@ namespace DigitaleBriefwahl
 
 		private void OnSendLogClicked(object sender, EventArgs e)
 		{
-			IEmailProvider emailProvider;
 			var appendLogfileContents = false;
-			if (MailUtils.CanUsePreferredEmailProvider)
-			{
-				emailProvider = SIL.PlatformUtilities.Platform.IsWindows
-					? (IEmailProvider)new MapiEmailProvider()
-					: (IEmailProvider)new ThunderbirdEmailProvider();
-			}
-			else if (MailUtils.IsWindowsThunderbirdInstalled)
-				emailProvider = new ThunderbirdWindowsEmailProvider();
-			else if (MailUtils.IsOutlookInstalled)
-				emailProvider = new OutlookEmailProvider();
-			else
+			var emailProvider = EmailProviderFactory.GetPreferredEmailProvider(false);
+			if (emailProvider == null)
 			{
 				emailProvider = EmailProviderFactory.AlternateEmailProvider();
 				appendLogfileContents = true;

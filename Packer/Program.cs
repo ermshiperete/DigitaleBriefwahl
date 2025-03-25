@@ -162,16 +162,7 @@ namespace Packer
 			Console.WriteLine($"\t{Path.GetFileName(ballotFile)}");
 			Console.WriteLine($"\t{Path.GetFileName(publicKeyFile)}");
 
-			IEmailProvider provider = null;
-			if (MailUtils.CanUsePreferredEmailProvider)
-				provider = SIL.PlatformUtilities.Platform.IsWindows
-					? (IEmailProvider)new MapiEmailProvider()
-					: (IEmailProvider)new ThunderbirdEmailProvider();
-			else if (MailUtils.IsWindowsThunderbirdInstalled)
-				provider = new ThunderbirdWindowsEmailProvider();
-			else if (MailUtils.IsOutlookInstalled)
-				provider = new OutlookEmailProvider();
-
+			var provider = EmailProviderFactory.GetPreferredEmailProvider(false);
 			if (provider != null)
 				SendEmail(provider, urlFile, ballotFile, publicKeyFile);
 			else
