@@ -5,7 +5,7 @@ using System.IO;
 
 namespace DigitaleBriefwahl.Utils
 {
-	public class FileImpl: IFile
+	internal class FileImpl: IFile
 	{
 		public bool Exists(string path)
 		{

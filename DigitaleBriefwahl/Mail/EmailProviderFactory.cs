@@ -1,26 +1,32 @@
 // Copyright (c) 2008-2018 SIL International
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 using System;
-using System.IO;
 using System.Xml;
 using System.Xml.XPath;
 using DigitaleBriefwahl.Utils;
 using SIL.PlatformUtilities;
-using IEmailProvider = SIL.Email.IEmailProvider;
 
 namespace DigitaleBriefwahl.Mail
 {
 	public static class EmailProviderFactory
 	{
 		private static IFile File => FileManager.File;
+		private static Type _thunderbirdEmailProviderType = typeof(ThunderbirdEmailProvider);
+
+		// Used in unit tests
+		public static void SetThunderbirdEmailProviderType(Type type)
+		{
+			_thunderbirdEmailProviderType = type;
+		}
 
 		public static IEmailProvider GetPreferredEmailProvider(bool returnAlternateProvider = true)
 		{
 			if (MailUtils.CanUsePreferredEmailProvider)
 			{
-				return Platform.IsWindows
-					? (IEmailProvider)new MapiEmailProvider()
-					: (IEmailProvider)new ThunderbirdEmailProvider();
+				if (Platform.IsWindows)
+					return new MapiEmailProvider();
+				if (Activator.CreateInstance(_thunderbirdEmailProviderType) is IEmailProvider provider && provider.IsApplicable)
+					return provider;
 			}
 			if (MailUtils.IsWindowsThunderbirdInstalled)
 				return new ThunderbirdWindowsEmailProvider();
@@ -31,11 +37,17 @@ namespace DigitaleBriefwahl.Mail
 
 		public static IEmailProvider AlternateEmailProvider()
 		{
-			if (Platform.IsLinux && !ThunderbirdIsDefault() && !File.Exists("/usr/bin/xdg-email"))
+			if (Platform.IsLinux && !ThunderbirdIsDefault())
 			{
-				return null;
+				if (!File.Exists("/usr/bin/xdg-email"))
+				{
+					return null;
+				}
+
+				return new LinuxEmailProvider();
 			}
-			return new SIL.Email.MailToEmailProvider();
+
+			return new MailToEmailProvider();
 		}
 
 		public static bool ThunderbirdIsDefault()

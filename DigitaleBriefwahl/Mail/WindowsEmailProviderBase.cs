@@ -24,7 +24,7 @@ namespace DigitaleBriefwahl.Mail
 
 		protected abstract string EscapeString(string input);
 
-		protected abstract bool IsApplicable { get; }
+		public abstract bool IsApplicable { get; }
 
 		protected abstract string EmailCommand { get; }
 		protected abstract string FormatString { get; }

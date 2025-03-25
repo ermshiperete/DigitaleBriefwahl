@@ -15,6 +15,7 @@ namespace DigitaleBriefwahlTests.Mail
 	{
 		private InMemoryRegistry _registry;
 		private InMemoryFile     _file;
+		private InMemoryEnvironment _environment;
 
 		[SetUp]
 		public void SetUp()
@@ -23,6 +24,9 @@ namespace DigitaleBriefwahlTests.Mail
 			RegistryManager.SetRegistryProvider(_registry);
 			_file = new InMemoryFile();
 			FileManager.SetFileProvider(_file);
+			_environment = new InMemoryEnvironment();
+			EnvironmentManager.SetEnvironmentProvider(_environment);
+			EmailProviderFactory.SetThunderbirdEmailProviderType(typeof(ThunderbirdEmailProviderFacade));
 		}
 
 		[TearDown]
@@ -30,6 +34,7 @@ namespace DigitaleBriefwahlTests.Mail
 		{
 			RegistryManager.Reset();
 			FileManager.Reset();
+			EnvironmentManager.Reset();
 		}
 
 		[Test]
@@ -96,8 +101,10 @@ namespace DigitaleBriefwahlTests.Mail
 			var helpersRcFile = $"{home}/.config/xfce4/helpers.rc";
 			_file.SetExistingFile(helpersRcFile);
 			_file.AddFileContent(helpersRcFile, "MailReader=thunderbird");
+			_environment.SetEnvironmentVariable("PATH", "/usr/local/bin:/usr/bin/:/snap/bin");
+			_file.SetExistingFile("/usr/bin/thunderbird");
 
-			Assert.That(EmailProviderFactory.GetPreferredEmailProvider(), Is.TypeOf<ThunderbirdEmailProvider>());
+			Assert.That(EmailProviderFactory.GetPreferredEmailProvider(), Is.TypeOf<ThunderbirdEmailProviderFacade>());
 		}
 
 		[Test]
@@ -105,23 +112,21 @@ namespace DigitaleBriefwahlTests.Mail
 		public void GetPreferredEmailProvider_Linux_XdgEmailExists()
 		{
 			_file.SetExistingFile("/usr/bin/xdg-email");
-			// TODO
-			Assert.That(EmailProviderFactory.GetPreferredEmailProvider(), Is.TypeOf<ThunderbirdEmailProvider>());//Is.TypeOf<LinuxEmailProvider>());
+			Assert.That(EmailProviderFactory.GetPreferredEmailProvider(), Is.TypeOf<LinuxEmailProvider>());
 		}
 
 		[Test]
 		[Platform(Include = "Linux")]
 		public void GetPreferredEmailProvider_Linux_Fallback()
 		{
-			// TODO
-			Assert.That(EmailProviderFactory.GetPreferredEmailProvider(), Is.TypeOf<ThunderbirdEmailProvider>());//Is.TypeOf<SIL.Email.MailToEmailProvider>());
+			Assert.That(EmailProviderFactory.GetPreferredEmailProvider(), Is.Null);
 		}
 
 		[Test]
 		[Platform(Include = "Win")]
 		public void AlternateEmailProvider_Win()
 		{
-			Assert.That(EmailProviderFactory.AlternateEmailProvider(), Is.TypeOf<SIL.Email.MailToEmailProvider>());
+			Assert.That(EmailProviderFactory.AlternateEmailProvider(), Is.TypeOf<MailToEmailProvider>());
 		}
 
 		[Test]
@@ -136,7 +141,7 @@ namespace DigitaleBriefwahlTests.Mail
 		public void AlternateEmailProvider_Linux_XdgEmailExists()
 		{
 			_file.SetExistingFile("/usr/bin/xdg-email");
-			Assert.That(EmailProviderFactory.AlternateEmailProvider(), Is.TypeOf<SIL.Email.MailToEmailProvider>());
+			Assert.That(EmailProviderFactory.AlternateEmailProvider(), Is.TypeOf<LinuxEmailProvider>());
 		}
 
 		[Test]
@@ -148,7 +153,7 @@ namespace DigitaleBriefwahlTests.Mail
 			_file.SetExistingFile(helpersRcFile);
 			_file.AddFileContent(helpersRcFile, "MailReader=thunderbird");
 
-			Assert.That(EmailProviderFactory.AlternateEmailProvider(), Is.TypeOf<SIL.Email.MailToEmailProvider>());
+			Assert.That(EmailProviderFactory.AlternateEmailProvider(), Is.TypeOf<MailToEmailProvider>());
 		}
 
 		[Test]
@@ -166,7 +171,7 @@ namespace DigitaleBriefwahlTests.Mail
 </gconf>
 ");
 
-			Assert.That(EmailProviderFactory.AlternateEmailProvider(), Is.TypeOf<SIL.Email.MailToEmailProvider>());
+			Assert.That(EmailProviderFactory.AlternateEmailProvider(), Is.TypeOf<MailToEmailProvider>());
 		}
 	}
 }

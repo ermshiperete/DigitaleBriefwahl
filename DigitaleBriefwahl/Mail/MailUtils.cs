@@ -46,7 +46,9 @@ namespace DigitaleBriefwahl.Mail
 			get
 			{
 				if (!Platform.IsWindows)
+				{
 					return true;
+				}
 
 				var retVal = false;
 				var value = GetDefaultValue(Registry.CurrentUser, @"Software\Clients\Mail");

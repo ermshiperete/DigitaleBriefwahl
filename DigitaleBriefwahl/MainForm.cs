@@ -17,7 +17,6 @@ using Eto.Forms;
 using SIL.IO;
 using Configuration = DigitaleBriefwahl.Model.Configuration;
 using Thread = System.Threading.Thread;
-using IEmailProvider = SIL.Email.IEmailProvider;
 
 namespace DigitaleBriefwahl
 {

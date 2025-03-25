@@ -5,12 +5,17 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 using System.Threading.Tasks;
+using DigitaleBriefwahl.Utils;
 using SIL.Email;
 
 namespace DigitaleBriefwahl.Mail
 {
 	public class LinuxEmailProvider : IEmailProvider
 	{
+		protected static IFile File => FileManager.File;
+		protected static IPath Path => FileManager.Path;
+		protected static IEnvironment Environment => EnvironmentManager.Environment;
+
 		public IEmailMessage CreateMessage()
 		{
 			return new EmailMessage();
@@ -98,5 +103,6 @@ namespace DigitaleBriefwahl.Mail
 		{
 			return GetArguments(attachments, "--attach ");
 		}
+		public virtual bool IsApplicable => true;
 	}
 }

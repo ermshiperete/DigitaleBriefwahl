@@ -14,7 +14,7 @@ namespace DigitaleBriefwahl.Mail
 {
 	public class OutlookEmailProvider: WindowsEmailProviderBase
 	{
-		protected override bool IsApplicable => MailUtils.IsOutlookInstalled;
+		public override bool IsApplicable => MailUtils.IsOutlookInstalled;
 
 		protected override string EscapeString(string input)
 		{

@@ -14,6 +14,7 @@ namespace DigitaleBriefwahlTests.Mail
 	{
 		private InMemoryRegistry _registry;
 		private InMemoryFile     _file;
+		private InMemoryEnvironment _environment;
 
 		[SetUp]
 		public void SetUp()
@@ -22,6 +23,9 @@ namespace DigitaleBriefwahlTests.Mail
 			RegistryManager.SetRegistryProvider(_registry);
 			_file = new InMemoryFile();
 			FileManager.SetFileProvider(_file);
+			_environment = new InMemoryEnvironment();
+			EnvironmentManager.SetEnvironmentProvider(_environment);
+			EmailProviderFactory.SetThunderbirdEmailProviderType(typeof(ThunderbirdEmailProviderFacade));
 		}
 
 		[TearDown]
@@ -29,6 +33,7 @@ namespace DigitaleBriefwahlTests.Mail
 		{
 			RegistryManager.Reset();
 			FileManager.Reset();
+			EnvironmentManager.Reset();
 		}
 
 		[Test]
@@ -219,6 +224,23 @@ namespace DigitaleBriefwahlTests.Mail
 			((InMemoryRegistryKey)_registry.CurrentUser).CreateKey(@"Software\Microsoft\Office\01\Outlook\Profiles\01", "",
 				"");
 			Assert.That(MailUtils.CanUsePreferredEmailProvider, Is.False);
+		}
+
+		[Test]
+		[Platform(Include = "Linux")]
+		public void CanUsePreferredEmailProvider_Linux_Thunderbird()
+		{
+			_environment.SetEnvironmentVariable("PATH", "/usr/local/bin:/usr/bin/:/snap/bin");
+			_file.SetExistingFile("/usr/bin/thunderbird");
+
+			Assert.That(MailUtils.CanUsePreferredEmailProvider, Is.True);
+		}
+
+		[Test]
+		[Platform(Include = "Linux")]
+		public void CanUsePreferredEmailProvider_Linux_Other()
+		{
+			Assert.That(MailUtils.CanUsePreferredEmailProvider, Is.True);
 		}
 
 		[Test]

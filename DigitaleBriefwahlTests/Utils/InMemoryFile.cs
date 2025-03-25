@@ -1,13 +1,14 @@
-﻿// Copyright (c) 2023 Eberhard Beilharz
+﻿// Copyright (c) 2023-2025 Eberhard Beilharz
 // This software is licensed under the MIT License (http://opensource.org/licenses/MIT)
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using DigitaleBriefwahl.Utils;
 
 namespace DigitaleBriefwahlTests.Utils
 {
-	public class InMemoryFile: IFile
+	public class InMemoryFile: IFile, IPath
 	{
 		private readonly HashSet<string> _files = new HashSet<string>();
 		private readonly Dictionary<string, string> _fileContents = new Dictionary<string, string>();
@@ -44,5 +45,23 @@ namespace DigitaleBriefwahlTests.Utils
 			memoryStream.Position = 0;
 			return new StreamReader(memoryStream);
 		}
+
+		public string GetFullPath(string path)
+		{
+			foreach (var fullPath in _files)
+			{
+				if (fullPath.EndsWith(path))
+					return fullPath;
+			}
+
+			throw new ArgumentException(path);
+		}
+
+		public string Combine(string path1, string path2)
+		{
+			return System.IO.Path.Combine(path1, path2);
+		}
+
+		public char PathSeparator => System.IO.Path.PathSeparator;
 	}
 }

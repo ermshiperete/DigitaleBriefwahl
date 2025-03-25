@@ -11,7 +11,7 @@ namespace DigitaleBriefwahl.Mail
 {
 	public class ThunderbirdWindowsEmailProvider: WindowsEmailProviderBase
 	{
-		protected override bool IsApplicable => MailUtils.IsWindowsThunderbirdInstalled &&
+		public override bool IsApplicable => MailUtils.IsWindowsThunderbirdInstalled &&
 			MailtoCommand.Contains("thunderbird");
 
 		protected override string EscapeString(string input)

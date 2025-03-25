@@ -17,9 +17,6 @@ using DigitaleBriefwahl.ExceptionHandling;
 using DigitaleBriefwahl.Mail;
 using DigitaleBriefwahl.Model;
 using DigitaleBriefwahl.Utils;
-using SIL.Email;
-using MapiEmailProvider = DigitaleBriefwahl.Mail.MapiEmailProvider;
-using ThunderbirdEmailProvider = DigitaleBriefwahl.Mail.ThunderbirdEmailProvider;
 
 namespace Packer
 {

@@ -44,5 +44,7 @@ namespace DigitaleBriefwahl.Mail
 			Logger.Log($"SendMessage with MapiEmailProvider failed with {mapi.Error()}");
 			return false;
 		}
+
+		public bool IsApplicable => true;
 	}
 }
