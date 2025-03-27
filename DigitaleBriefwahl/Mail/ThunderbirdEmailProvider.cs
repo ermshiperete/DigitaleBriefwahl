@@ -96,10 +96,18 @@ namespace DigitaleBriefwahl.Mail
 				if (!IsApplicable)
 					return null;
 
-				return IsThunderbirdFlatpak ? $"flatpak run {FlatpakThunderbird}" : Thunderbird;
+				return IsThunderbirdFlatpak ? $"flatpak" : Thunderbird;
 			}
 		}
 
-
+		protected override string ExtraEmailArgs
+		{
+			get
+			{
+				if (!IsApplicable)
+					return null;
+				return IsThunderbirdFlatpak ? $"run {FlatpakThunderbird} " : string.Empty;
+			}
+		}
 	}
 }

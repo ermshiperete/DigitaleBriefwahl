@@ -52,16 +52,11 @@ namespace DigitaleBriefwahl.Mail
 
 		protected virtual bool StartEmailProcess(string commandLine)
 		{
-			using var p = new Process
-			{
-				StartInfo =
-				{
-					FileName = EmailCommand,
-					Arguments = commandLine,
-					UseShellExecute = true,
-					ErrorDialog = true
-				}
-			};
+			using var p = new Process();
+			p.StartInfo.FileName = EmailCommand;
+			p.StartInfo.Arguments = $"{ExtraEmailArgs}{commandLine}";
+			p.StartInfo.UseShellExecute = true;
+			p.StartInfo.ErrorDialog = true;
 
 			var retVal = p.Start();
 			p.WaitForExit();
@@ -69,6 +64,7 @@ namespace DigitaleBriefwahl.Mail
 		}
 
 		protected virtual string EmailCommand => "xdg-email";
+		protected virtual string ExtraEmailArgs => string.Empty;
 
 		protected virtual string FormatString => "--subject '{1}' --body '{2}'{3}{4}{5}{0}";
 

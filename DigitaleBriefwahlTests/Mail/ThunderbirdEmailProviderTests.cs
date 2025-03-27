@@ -68,7 +68,7 @@ namespace DigitaleBriefwahlTests.Mail
 			var emailProvider = new ThunderbirdEmailProviderFacade();
 			emailProvider.SetFlatpak(true);
 
-			Assert.That(emailProvider.GetEmailCommand(), Is.EqualTo("flatpak run org.mozilla.Thunderbird"));
+			Assert.That(emailProvider.GetEmailCommand(), Is.EqualTo("flatpak"));
 		}
 
 		[Test]
@@ -126,5 +126,23 @@ namespace DigitaleBriefwahlTests.Mail
 			Assert.That(emailProvider.GetIsApplicable(), Is.False);
 		}
 
+		[Test]
+		public void ExtraEmailArgs_DebPackage()
+		{
+			_environment.SetEnvironmentVariable("PATH", "/usr/local/bin:/usr/bin/:/snap/bin");
+			_file.SetExistingFile("/usr/bin/thunderbird");
+			var emailProvider = new ThunderbirdEmailProviderFacade();
+
+			Assert.That(emailProvider.GetExtraEmailArgs(), Is.Empty);
+		}
+
+		[Test]
+		public void ExtraEmailArgs_Flatpak()
+		{
+			var emailProvider = new ThunderbirdEmailProviderFacade();
+			emailProvider.SetFlatpak(true);
+
+			Assert.That(emailProvider.GetExtraEmailArgs(), Is.EqualTo("run org.mozilla.Thunderbird "));
+		}
 	}
 }

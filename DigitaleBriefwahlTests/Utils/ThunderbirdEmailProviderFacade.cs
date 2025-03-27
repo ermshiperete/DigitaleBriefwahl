@@ -25,6 +25,7 @@ namespace DigitaleBriefwahlTests.Utils
 		protected override bool IsThunderbirdFlatpak => _hasFlatpak;
 
 		public string GetEmailCommand() => string.IsNullOrEmpty(_path) ? EmailCommand : _path;
+		public string GetExtraEmailArgs() => ExtraEmailArgs;
 		public bool GetIsApplicable() => IsApplicable;
 	}
 
