@@ -16,6 +16,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- Detect Thunderbird running as flatpak on Linux
+
 ## [1.4.1] - 2024-06-10
 
 ### Fixed
