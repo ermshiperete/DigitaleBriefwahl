@@ -1,8 +1,8 @@
-digitale-briefwahl (1.5.0) UNRELEASED; urgency=medium
+digitale-briefwahl (1.5.0) noble; urgency=medium
 
   * Detect Thunderbird running as flatpak on Linux
 
- -- Eberhard Beilharz <eb1@sil.org>  Fri, 28 Mar 2025 10:38:21 +0100
+ -- Eberhard Beilharz <eb1@sil.org>  Fri, 28 Mar 2025 11:49:57 +0100
 
 digitale-briefwahl (1.4.1) jammy; urgency=medium
 

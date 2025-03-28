@@ -39,7 +39,9 @@ This document describes how to create a new release.
 
 ### Linux
 
+- Run `dch -r`
 - Run `./mksource`
 - this creates a source package in the parent directory
+- sign the source package: `debsign -k${DEBSIGN_KEYID} ../digitale-briefwahl_1.5.0_source.changes`
 - dput the created source package:
-  `dput ppa:ermshiperete/digitale-briefwahl ../digitale-briefwahl_1.0.3_source.changes`
+  `dput ppa:ermshiperete/digitale-briefwahl ../digitale-briefwahl_1.5.0_source.changes`
