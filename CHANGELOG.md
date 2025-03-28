@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [1.5.0] - 2025-03-28
+
 ### Changed
 
 - Detect Thunderbird running as flatpak on Linux
@@ -308,8 +310,9 @@ Re-release
 
 - Initial beta version
 
-[Unreleased]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.4.1...master
+[Unreleased]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.5.0...master
 
+[1.5.0]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.4.1...v1.5.0
 [1.4.1]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.3.3...v1.4.0
 [1.3.3]: https://github.com/ermshiperete/DigitaleBriefwahl/compare/v1.3.2...v1.3.3
