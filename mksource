@@ -30,4 +30,21 @@ rm -rf output
 rm -rf lib
 
 # Create the source package
-debuild $DEBUILD_ADDITIONAL_OPTS -S -sa -Zbzip2 -i'.*' -I.vscode -I.idea -I.git
+debuild $DEBUILD_ADDITIONAL_OPTS -S -sa -Zbzip2 -i'.*' \
+  --tar-ignore=.vscode \
+  --tar-ignore=.idea \
+  --tar-ignore=.git \
+  --tar-ignore=.github \
+  --tar-ignore=DigitaleBriefwahl/build \
+  --tar-ignore=DigitaleBriefwahl/DigitaleBriefwahl \
+  --tar-ignore=DigitaleBriefwahl/DigitaleBriefwahl.Desktop \
+  --tar-ignore=DigitaleBriefwahl/DigitaleBriefwahl.ExceptionHandling \
+  --tar-ignore=DigitaleBriefwahl/DigitaleBriefwahl.ExceptionHandlingTests \
+  --tar-ignore=DigitaleBriefwahl/DigitaleBriefwahl.Launcher \
+  --tar-ignore=DigitaleBriefwahl/DigitaleBriefwahl.Launcher.Mac \
+  --tar-ignore=DigitaleBriefwahl/DigitaleBriefwahlTests \
+  --tar-ignore=DigitaleBriefwahl/DigiTally \
+  --tar-ignore=DigitaleBriefwahl/DigiTallyTests \
+  --tar-ignore=DigitaleBriefwahl/macos \
+  --tar-ignore=DigitaleBriefwahl/Packer \
+  --tar-ignore=DigitaleBriefwahl/SquirrelBuild
