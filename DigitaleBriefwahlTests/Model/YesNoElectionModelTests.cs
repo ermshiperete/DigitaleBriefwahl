@@ -3,6 +3,7 @@
 // (https://opensource.org/licenses/GPL-3.0)
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using DigitaleBriefwahl.Model;
 using NUnit.Framework;
@@ -22,10 +23,10 @@ namespace DigitaleBriefwahlTests.Model
 		[TestCase("E\nE\nE\nE", true, ExpectedResult = "Election\r\n" +
 "--------\r\n" +
 "(J=Ja, E=Enthaltung, N=Nein)\r\n" +
-"1. [E] Mickey Mouse\r\n" +
-"2. [E] Donald Duck\r\n" +
-"3. [E] Dagobert Duck\r\n" +
-"4. [E] Daisy Duck\r\n")]
+"1. [ ] Mickey Mouse\r\n" +
+"2. [ ] Donald Duck\r\n" +
+"3. [ ] Dagobert Duck\r\n" +
+"4. [ ] Daisy Duck\r\n")]
 		public string GetResult_TwoVotes(string votes, bool writeEmptyBallot)
 		{
 			// Setup
@@ -97,6 +98,31 @@ Kandidat4=Daisy Duck
 			// Execute
 			Assert.That(() => model.GetResult(votes.Split('\n').ToList(), false),
 				Throws.Exception.TypeOf(expectedException));
+		}
+
+		[Test]
+		public void GetResult_WriteEmptyBallot()
+		{
+			// Setup
+			const string ini = @"[Election]
+Text=Some description
+Typ=YesNo
+Stimmen=1
+Kandidat1=Mickey Mouse
+";
+			var data = ElectionModelTests.ReadIniDataFromString(ini);
+			var model = ElectionModelFactory.Create("Election", data);
+			var votes = new List<string> { "E" };
+
+			// Execute
+			var result = model.GetResult(votes, true);
+
+			// Verify
+			Assert.That(result, Is.EqualTo(
+				"Election\r\n" +
+				"--------\r\n" +
+				"(J=Ja, E=Enthaltung, N=Nein)\r\n" +
+				"1. [ ] Mickey Mouse\r\n"));
 		}
 
 		[Test]

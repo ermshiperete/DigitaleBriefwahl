@@ -63,6 +63,7 @@ namespace DigitaleBriefwahl.Model
 						nameof(votes));
 				}
 
+				var voteToWrite = vote;
 				switch (vote)
 				{
 					case No:
@@ -71,7 +72,9 @@ namespace DigitaleBriefwahl.Model
 						voteCount++;
 						break;
 					case Abstention:
-						if (!writeEmptyBallot)
+						if (writeEmptyBallot)
+							voteToWrite = " ";
+						else
 							voteCount++;
 						break;
 					default:
@@ -87,7 +90,7 @@ namespace DigitaleBriefwahl.Model
 						nameof(votes));
 				}
 
-				bldr.AppendFormat("{0}. [{1}] {2}\n", i + 1, vote, Nominees[i]);
+				bldr.AppendFormat("{0}. [{1}] {2}\n", i + 1, voteToWrite, Nominees[i]);
 			}
 			return NormalizeLineEndings(bldr);
 		}
