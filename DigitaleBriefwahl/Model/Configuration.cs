@@ -38,6 +38,8 @@ namespace DigitaleBriefwahl.Model
 
 		public string Title { get; private set; }
 
+		public string FileTitle => Title.Replace(" ", "_");
+
 		public List<ElectionModel> Elections { get; private set; }
 
 		public string PublicKey { get; private set; }

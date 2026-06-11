@@ -12,6 +12,8 @@ namespace DigitaleBriefwahl.Model
 {
 	public abstract class ElectionModel
 	{
+		private readonly List<BallotResult> _ballotResults = new List<BallotResult>();
+
 		protected ElectionModel(string name, IniData data)
 		{
 			Name = name;
@@ -91,11 +93,16 @@ namespace DigitaleBriefwahl.Model
 
 		public Dictionary<string, Tuple<int, int>> NomineeLimits { get; }
 
+		public IReadOnlyList<BallotResult> BallotResults => _ballotResults;
+
 		public abstract string GetResult(List<string> nominees, bool writeEmptyBallot);
 
 		public abstract List<string> EmptyVotes { get; }
 
-		protected abstract Dictionary<string, CandidateResult> ReadVotesFromBallotInternal(StreamReader stream);
+		protected abstract BallotResult CreateBallotResult();
+
+		protected abstract Dictionary<string, CandidateResult> ReadVotesFromBallotInternal
+			(TextReader stream, BallotResult ballotResult);
 
 		public int Invalid { get; protected set; }
 
@@ -114,12 +121,15 @@ namespace DigitaleBriefwahl.Model
 			return bldr.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n").ToString();
 		}
 
-		public Dictionary<string, CandidateResult> ReadVotesFromBallot(StreamReader stream, Dictionary<string, CandidateResult> results)
+		public Dictionary<string, CandidateResult> ReadVotesFromBallot(TextReader stream,
+			Dictionary<string, CandidateResult> results)
 		{
 			BallotsProcessed++;
 
 			results ??= new Dictionary<string, CandidateResult>();
-			var votes = ReadVotesFromBallotInternal(stream);
+			var ballotResult = CreateBallotResult();
+			_ballotResults.Add(ballotResult);
+			var votes = ReadVotesFromBallotInternal(stream, ballotResult);
 
 			if (votes == null)
 				return results;
@@ -151,6 +161,21 @@ namespace DigitaleBriefwahl.Model
 
 		public abstract bool SkipNominee(string name, int iVote);
 		public abstract HashSet<int> GetInvalidVotes(List<string> electedNominees);
+
+		public override bool Equals(object obj)
+		{
+			return Equals(obj as ElectionModel);
+		}
+
+		protected bool Equals(ElectionModel other)
+		{
+			return Name == other.Name;
+		}
+
+		public override int GetHashCode()
+		{
+			return (Name != null ? Name.GetHashCode() : 0);
+		}
 	}
 }
 

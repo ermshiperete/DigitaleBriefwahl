@@ -106,7 +106,15 @@ namespace DigitaleBriefwahl.Model
 			}
 		}
 
-		protected override Dictionary<string, CandidateResult> ReadVotesFromBallotInternal(StreamReader stream)
+		protected override BallotResult CreateBallotResult()
+		{
+			var ballotResult = new BallotResult();
+			for (var i = 0; i < Nominees.Count; i++)
+				ballotResult.YesNoVotes.Add(string.Empty);
+			return ballotResult;
+		}
+
+		protected override Dictionary<string, CandidateResult> ReadVotesFromBallotInternal(TextReader stream, BallotResult ballotResult)
 		{
 			var skipLine = stream.ReadLine();
 			if (skipLine != "(J=Ja, E=Enthaltung, N=Nein)")
@@ -148,7 +156,8 @@ namespace DigitaleBriefwahl.Model
 				}
 
 				var result = res as YesNoCandidateResult;
-				switch (match.Groups[1].Value)
+				var vote = match.Groups[1].Value;
+				switch (vote)
 				{
 					case Yes:
 						result.Yes++;
@@ -159,14 +168,24 @@ namespace DigitaleBriefwahl.Model
 					case Abstention:
 					default:
 						result.Abstention++;
+						vote = Abstention;
 						break;
 				}
+				var candidateIndex = Nominees.IndexOf(name);
+				if (candidateIndex >= 0 && candidateIndex < ballotResult.YesNoVotes.Count)
+					ballotResult.YesNoVotes[candidateIndex] = vote;
 			}
 
 			if (invalid)
 			{
+				ballotResult.Invalid = true;
 				Invalid++;
 				return null;
+			}
+
+			if (votes.Count < Votes)
+			{
+				ballotResult.Incomplete = true;
 			}
 			return votes;
 		}

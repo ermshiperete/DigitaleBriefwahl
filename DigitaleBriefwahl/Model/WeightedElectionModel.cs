@@ -68,7 +68,15 @@ namespace DigitaleBriefwahl.Model
 			}
 		}
 
-		protected override Dictionary<string, CandidateResult> ReadVotesFromBallotInternal(StreamReader stream)
+		protected override BallotResult CreateBallotResult()
+		{
+			var ballotResult = new BallotResult();
+			for (var i = 0; i < Nominees.Count; i++)
+				ballotResult.WeightedRanks.Add(0);
+			return ballotResult;
+		}
+
+		protected override Dictionary<string, CandidateResult> ReadVotesFromBallotInternal(TextReader stream, BallotResult ballotResult)
 		{
 			var skipLine = stream.ReadLine();
 			var instructions = new Regex("\\(\\d Stimme.+");
@@ -144,12 +152,20 @@ namespace DigitaleBriefwahl.Model
 				{
 					result.Points += Votes - rank + 1;
 				}
+				var candidateIndex = Nominees.IndexOf(name);
+				if (candidateIndex >= 0 && candidateIndex < ballotResult.WeightedRanks.Count)
+					ballotResult.WeightedRanks[candidateIndex] = rank;
 			}
 
 			if (invalid || (lineCount < Votes && !MissingOk ))
 			{
+				ballotResult.Invalid = true;
 				Invalid++;
 				return null;
+			}
+			if (rankSeen.Count < Votes)
+			{
+				ballotResult.Incomplete = true;
 			}
 
 			return votes;

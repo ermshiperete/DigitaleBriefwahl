@@ -4,55 +4,80 @@
 
 using System;
 using System.IO;
-using System.Text;
+using System.Linq;
+using CommandLine;
+using CommandLine.Text;
 using DigitaleBriefwahl.ExceptionHandling;
 using DigitaleBriefwahl.Model;
 
 namespace DigitaleBriefwahl.Tally
 {
-	public class Program
+	public static class Program
 	{
-		public static string TallyBallots(string configName, string ballotsDirectory)
+		private static DigiTallyOptions Options { get; set; }
+
+
+		private static ParserResult<DigiTallyOptions> GetParserResult(string[] args)
 		{
-			var bldr = new StringBuilder();
-			var configuration = Configuration.Configure(configName);
-			var readBallot = new ReadBallots(configName);
-
-			foreach (var filename in Directory.GetFiles(ballotsDirectory))
+			try
 			{
-				readBallot.AddBallot(filename);
+				using var writer = new StreamWriter(Logger.LogFile, true);
+				return DigiTallyOptions.ParseCommandLineArgs(writer, args);
 			}
-
-			bldr.AppendLine(configuration.Title);
-			bldr.AppendLine(new string('=', configuration.Title.Length));
-			bldr.AppendLine();
-			bldr.AppendLine(
-				$"Total of {readBallot.NumberOfBallots} ballots, thereof {readBallot.NumberOfInvalidBallots} at least partially invalid.");
-			bldr.AppendLine();
-			bldr.Append(readBallot.GetResultString());
-			return bldr.ToString();
+			catch (IOException)
+			{
+				// just ignore - we can't write to log file
+				return DigiTallyOptions.ParseCommandLineArgs(null, args);;
+			}
 		}
+
 		public static void Main(string[] args)
 		{
 			ExceptionLogging.Initialize("5012aef9a281f091c1fceea40c03003b", "DigiTally", args);
 
-			// Setup command line options
-			if (args.Length <= 0 || args[0] == "--help")
+			var parseResult = RetryUtils.Retry(() => GetParserResult(args));
+
+			parseResult.WithNotParsed(x =>
 			{
-				Console.WriteLine("Usage:");
-				Console.WriteLine("DigiTally.exe ballotsDirectory [configFile]");
-				Console.WriteLine("ballotsDirectory: directory that contains the decrypted ballots");
-				Console.WriteLine("configFile: optional name and path of the config file");
+				var errors = x as Error[] ?? x.ToArray();
+				var helpText = "";
+				if (errors.IsVersion())
+				{
+					helpText = HelpText.AutoBuild(parseResult);
+				}
+				else
+				{
+					if (!errors.IsHelp())
+					{
+						Console.WriteLine("Kann übergebene Parameter nicht interpretieren.");
+						Logger.Log("Can't parse arguments");
+					}
+
+					helpText = HelpText.AutoBuild(parseResult, h =>
+					{
+						h.AdditionalNewLineAfterOption = false;
+						return HelpText.DefaultParsingErrorsHandler(parseResult, h);
+					}, e => e);
+				}
+
+				Console.WriteLine(helpText);
+				Logger.Log(helpText);
+			});
+			if (parseResult.Errors.Any())
+			{
 				return;
 			}
-			var configName = args.Length > 1 ? args[1] : Configuration.ConfigName;
+
+			Options = parseResult.Value;
+			var configName = Options.ConfigFile ?? Configuration.ConfigName;
 			if (!File.Exists(configName))
 			{
 				Console.WriteLine($"Can't find {configName}. Exiting.");
 				return;
 			}
 
-			Console.WriteLine(TallyBallots(configName, args[0]));
+			var processor = new BallotProcessor(Options);
+			Console.WriteLine(processor.GetElectionResults());
 		}
 	}
 }
